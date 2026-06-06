@@ -14,7 +14,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-30 border-b border-line bg-background/92 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 sm:px-8 lg:px-10">
+        <div className="px-6 sm:px-8 lg:px-20 flex h-16  items-center justify-between ">
           <Link href="/dashboard" className="inline-flex items-center">
             <BrandTag className="text-xl" />
           </Link>

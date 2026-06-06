@@ -33,7 +33,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={cn("h-full antialiased", "font-sans", spaceGrotesk.variable, syncopate.variable, inter.variable)}>
-      <body className="min-h-full bg-background text-foreground">
+      <body className="min-h-full  bg-background text-foreground">
         <Providers>{children}</Providers>
       </body>
     </html>
