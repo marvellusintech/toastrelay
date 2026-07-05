@@ -5,7 +5,7 @@ import type {
   ThreadItem,
   TicketTier,
   ToastMessage,
-} from "@/lib/types/events";
+} from "@/types/events";
 
 export const demoEvents: EventStage[] = [
   {

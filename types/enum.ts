@@ -1,6 +1,11 @@
 //////////////////////
 // ENUMS
 //////////////////////
+export enum SocialProvider {
+  GOOGLE = 'GOOGLE',
+  APPLE = 'APPLE'
+}
+
 
 export enum TransactionType {
   TICKET = "TICKET",

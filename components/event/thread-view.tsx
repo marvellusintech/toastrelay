@@ -3,8 +3,8 @@
 import React, { useState } from "react";
 import { ShoppingBag, CreditCard, ShieldCheck } from "lucide-react";
 import { BrandTag } from "@/components/reuseables/brand_tag";
-import { Thread, ThreadItem, User } from "@/lib/types/response";
-import { ThreadItemStatus } from "@/lib/types/enum";
+import { Thread, ThreadItem, User } from "@/types/response";
+import { ThreadItemStatus } from "@/types/enum";
 
 interface ThreadViewProps {
   thread: Thread;

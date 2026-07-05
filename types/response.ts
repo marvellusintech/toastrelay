@@ -16,6 +16,8 @@ import {
   TransactionType,
 } from "./enum";
 
+
+
 // minimal user info for event details page (used for host, toasts, moments, etc)
 export type User = {
   id: string;

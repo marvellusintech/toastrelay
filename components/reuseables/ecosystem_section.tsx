@@ -54,10 +54,10 @@ const features = [
 ];
 
 export const FeatureSection = () => (
-  <div className="py-32 px-4 md:px-8 lg:max-w-7xl lg:mx-auto">
+  <div className="py-32 px-4 md:px-24 lg:mx-auto bg-[#FAF9F6]">
     <section >
       <div className="text-center mb-20">
-        <h2 className="text-4xl font-bold mb-4 flex items-center justify-center gap-3 text-inherit">
+        <h2 className="text-4xl font-display  font-bold mb-4 flex items-center justify-center gap-3 text-inherit">
           The Ecosystem
         </h2>
         <p className="max-w-3xl mx-auto text-gray-500 md:text-xl">A cohesive suite of tools designed to handle the complexity of events, so you can focus on the celebration.</p>
@@ -71,15 +71,15 @@ export const FeatureSection = () => (
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.1 }}
               viewport={{ once: true }}
-              className="p-10 rounded-[2.5rem] bg-white border border-black/5 hover:border-turquoise/20 hover:shadow-2xl hover:shadow-turquoise/5 transition-all group"
+              className="p-10 rounded-[2.5rem] bg-white border border-black/5 hover:border-primary/20 hover:shadow-2xl hover:shadow-primary/5 transition-all group"
             >
-              <div className="w-14 h-14 bg-turquoise/5 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform shadow-sm">
-                <feature.icon className="w-7 h-7 text-turquoise" />
+              <div className="w-14 h-14 bg-primary/5 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform shadow-sm">
+                <feature.icon className="w-7 h-7 text-primary-600" />
               </div>
-              <h3 className="text-2xl font-bold mb-3 flex items-center gap-1 font-display">
-                <BrandTag>{feature.name}</BrandTag>
+              <h3 className="text-2xl  font-bold mb-3 flex items-center gap-1 font-display">
+                {feature.name} {/* <BrandTag>{feature.name}</BrandTag> */}
               </h3>
-              <p className="text-turquoise-dark text-sm font-bold mb-5 tracking-wide uppercase">
+              <p className="text-primary-600 text-sm font-bold mb-5 tracking-wide uppercase">
                 {feature.copy}
               </p>
               <p className="text-black/50 leading-relaxed text-lg">

@@ -8,7 +8,7 @@ import {
 } from "@tanstack/react-query";
 import { Toaster } from "sonner";
 
-import { ApiError } from "@/app/_queries/api_client";
+import { ApiError } from "@/lib/api";
 // import { toastError } from "@/lib/utils";
 
 function makeQueryClient() {

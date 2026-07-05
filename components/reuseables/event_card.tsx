@@ -1,7 +1,7 @@
 import { Calendar, MapPin, Radio, Ticket } from "lucide-react";
 import Link from "next/link";
 
-import type { EventStage } from "@/lib/types/events";
+import type { EventStage } from "@/types/events";
 import { formatDate } from "@/lib/utils";
 
 export function EventCard({ event }: { event: EventStage }) {

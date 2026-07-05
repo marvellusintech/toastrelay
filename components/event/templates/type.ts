@@ -1,5 +1,5 @@
 import { ReactNode, Dispatch, SetStateAction } from "react";
-import { EventDetails } from "@/lib/types/response";
+import { EventDetails } from "@/types/response";
 
 export interface EventTemplateProps {
   event: EventDetails;

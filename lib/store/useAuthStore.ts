@@ -1,6 +1,5 @@
 import { create } from 'zustand';
-import {mockCurrentUser} from '../mock_data';
-import { User } from '../types/response';
+import { User } from '../../types/response';
 
 interface AuthState {
   user: User | null;
@@ -12,9 +11,9 @@ interface AuthState {
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
-  user: mockCurrentUser,
+  user: null,
   isAuthenticated: false,
-  isLoading: true, // Defaults to true while checking initial session status
+  isLoading: true,
   
   // Set user data when they log in or session initializes
   setAuth: (user) => set({ 
