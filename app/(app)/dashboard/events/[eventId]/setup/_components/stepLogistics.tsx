@@ -1,11 +1,12 @@
 // app/(dashboard)/events/[eventId]/setup/_components/step-logistics.tsx
 "use client";
 
-import { FieldPath, useFormContext } from "react-hook-form";
+import { Controller, FieldPath, useFormContext } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { type WizardFormValues } from "@/validations/event.schema";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { DatePicker } from "@/components/DatePicker";
 
 export function StepLogistics() {
   const router = useRouter();
@@ -13,6 +14,7 @@ export function StepLogistics() {
     register,
     watch,
     trigger,
+    control, 
     formState: { errors },
   } = useFormContext<WizardFormValues>();
 
@@ -79,13 +81,20 @@ export function StepLogistics() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="text-sm font-medium text-zinc-700">
-              Start Date & Time
+              Start Date
             </label>
-            <input
-              type="datetime-local"
-              {...register("startDate")}
-              className="w-full mt-1 p-2.5 border rounded-xl bg-zinc-50 focus:bg-white text-sm"
-            />
+            <div className="mt-1">
+              <Controller
+                control={control}
+                name="startDate"
+                render={({ field }) => (
+                  <DatePicker 
+                    date={field.value ? new Date(field.value) : undefined} 
+                    setDate={field.onChange} 
+                  />
+                )}
+              />
+            </div>
             {errors.startDate && (
               <p className="text-xs text-red-500 mt-1">
                 {errors.startDate.message}
@@ -95,13 +104,25 @@ export function StepLogistics() {
 
           <div>
             <label className="text-sm font-medium text-zinc-700">
-              End Date & Time (Optional)
+              End Date (Optional)
             </label>
-            <input
-              type="datetime-local"
-              {...register("endDate")}
-              className="w-full mt-1 p-2.5 border rounded-xl bg-zinc-50 focus:bg-white text-sm"
-            />
+            <div className="mt-1">
+              <Controller
+                control={control}
+                name="endDate"
+                render={({ field }) => (
+                  <DatePicker 
+                    date={field.value ? new Date(field.value) : undefined} 
+                    setDate={field.onChange} 
+                  />
+                )}
+              />
+            </div>
+            {errors.endDate && (
+              <p className="text-xs text-red-500 mt-1">
+                {errors.endDate.message}
+              </p>
+            )}
           </div>
         </div>
 
@@ -111,7 +132,7 @@ export function StepLogistics() {
               External Hosting
             </label>
             <span className="text-xs text-zinc-500">
-              This event is ticking or streaming somewhere else
+              This event is ticketing or streaming somewhere else
             </span>
           </div>
           <input
@@ -164,7 +185,12 @@ export function StepLogistics() {
             Cancel
           </Button>
         </Link>
-        <Button variant={"secondary"} type="button" className="flex-1 lg:flex-initial" onClick={handleNext}>
+        <Button
+          variant={"secondary"}
+          type="button"
+          className="flex-1 lg:flex-initial"
+          onClick={handleNext}
+        >
           Continue to Branding
         </Button>
       </div>

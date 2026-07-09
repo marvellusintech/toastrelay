@@ -94,8 +94,8 @@ export type CreateEventValues = z.infer<typeof createEventSchema>;
 export const logisticsBaseSchema = z.object({
   name: z.string().min(3, 'Event name must be at least 3 characters'),
   slug: z.string().min(3, 'Slug must be at least 3 characters').regex(/^[a-z0-9-]+$/, 'Slugs can only contain lowercase letters, numbers, and dashes'),
-  startDate: z.string().min(1, 'Start date is required'),
-  endDate: z.string().optional(),
+  startDate: z.date().min(new Date(), 'Start date must be in the future'),
+  endDate: z.date().optional(),
  isExternal: z.boolean(), 
   location: z.string().optional(),
   externalUrl: z.string().url('Please enter a valid URL').optional(),
