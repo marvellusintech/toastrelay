@@ -9,7 +9,8 @@ import { User } from "@/types/response";
 
 export type AuthSession = {
   user: User;
-  accessToken?: string;
+  token: string;
+  tokenExpiresOn: Date;
 };
 
 export function loginApi(payload: LoginPayload) {
@@ -28,7 +29,7 @@ export async function createAccountApi(payload: RegisterPayload) {
 }
 
 export async function verifyEmailApi(payload: VerifyEmailPayload) {
-  const response = await apiClient.post<AuthSession>(`/auth/register`, {
+  const response = await apiClient.post<AuthSession>(`/auth/email/verify`, {
     data: payload,
   });
   return response;
@@ -37,7 +38,7 @@ export async function verifyEmailApi(payload: VerifyEmailPayload) {
 export async function socialAuthApi(payload: SocialAuthPayload) {
   const response = await apiClient.post<AuthSession>(`/auth/social`, {
     data: payload,
-    withCredentials:false
+    withCredentials: false,
   });
   return response;
 }

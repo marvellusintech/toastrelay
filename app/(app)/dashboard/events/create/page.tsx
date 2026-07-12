@@ -58,11 +58,11 @@ export default function CreateEventPage() {
 
   const onSubmit = async (data: CreateEventValues) => {
     try {
-      //   const res = await createEventMutation.mutateAsync(data);
+      const res = await createEventMutation.mutateAsync(data);
 
       toast.success("Event created successfully");
-      //   router.push(`/events/${res.data?.id}/setup?step=logistics`);
-      router.push(`/dashboard/events/${"new-event-id"}/setup?step=logistics`);
+        // router.push(`/events/${res.data?.id}/setup?step=logistics`);
+      router.push(`/dashboard/events/${res.data?.id}/setup?step=logistics`);
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Unable to create event",

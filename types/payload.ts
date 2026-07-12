@@ -12,6 +12,7 @@ export interface ThemeConfig {
 export type SocialAuthPayload = {
   token: string;
   provider: SocialProvider;
+  codeVerifier?: string;
 };
 
 export type RegisterPayload = {
@@ -22,7 +23,7 @@ export type RegisterPayload = {
 };
 
 export type VerifyEmailPayload = {
-  email: string;
+  code: string;
   token: string;
 };
 

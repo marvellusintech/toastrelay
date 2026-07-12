@@ -16,17 +16,20 @@ import {
   TransactionType,
 } from "./enum";
 
-
-
 // minimal user info for event details page (used for host, toasts, moments, etc)
 export type User = {
   id: string;
-  firstName: string | null;
-  lastName: string | null;
-  photoUrl: string | null;
-  role?: Role;
-  email?: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  emailVerifiedAt: Date;
+  photo: null;
+  role: string;
+  createdAt: Date;
+  updatedAt: Date;
 };
+
+
 
 export type EventType = {
   id: string;
@@ -139,7 +142,7 @@ export type EventAttendance = {
   id: string;
   checkedInAt: string;
 
-  user?: Pick<User, "id" | "firstName" | "lastName" | "photoUrl">;
+  user?: Pick<User, "id" | "firstName" | "lastName" | "photo">;
   guest?: Guest;
 };
 
@@ -158,7 +161,6 @@ export type EventTemplate = {
   };
 };
 
-
 export type EventDetails = {
   id: string;
   name: string;
@@ -171,7 +173,7 @@ export type EventDetails = {
   createdAt: string;
   updatedAt: string;
   theme: EventTheme | null;
-  template: EventTemplate
+  template: EventTemplate;
   isCustomTheme: boolean;
   host: User;
   eventType: EventType;

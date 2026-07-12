@@ -20,6 +20,7 @@ import { Input } from "@/components/ui/input";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import { loginSchema, type LoginValues } from "@/validations/auth.schema";
 import { useMutation } from "@tanstack/react-query";
+import { saveAuthToken } from "@/lib/auth-cookies";
 
 export default function Login() {
   const router = useRouter();
@@ -40,10 +41,12 @@ export default function Login() {
   async function onSubmit(data: LoginValues) {
     try {
       const response = await loginMutation.mutateAsync(data);
-      if (response.data?.user) setAuth(response.data.user);
-
-      toast.success(response.message || "Welcome back");
-      router.push("/dashboard");
+      if (response.data?.token) {
+        saveAuthToken(response.data.token);
+        setAuth(response.data.user);
+      }
+      toast.success("Welcome back");
+      router.push("/");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Unable to sign in");
     }

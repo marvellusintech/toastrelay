@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import { User } from '../../types/response';
+import { AUTH_COOKIE_NAME } from '@/lib/constants';
+import { removeAuthToken } from '../auth-cookies';
 
 interface AuthState {
   user: User | null;
@@ -10,25 +12,35 @@ interface AuthState {
   logout: () => void;
 }
 
+
+function hasAuthToken(): boolean {
+  if (typeof document === "undefined") return false;
+  const match = document.cookie.match(new RegExp(`(?:^|; )${AUTH_COOKIE_NAME}=([^;]*)`));
+  return !!match && match[1] !== "";
+}
+
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
-  isAuthenticated: false,
+isAuthenticated: hasAuthToken(),
   isLoading: true,
   
-  // Set user data when they log in or session initializes
   setAuth: (user) => set({ 
     user, 
-    isAuthenticated: !!user, 
+    isAuthenticated: hasAuthToken() || !!user, 
     isLoading: false 
   }),
+
+  // setUser: (user) =>set({user})
   
-  // Toggle loading state manually during heavy requests
   setLoading: (loading) => set({ isLoading: loading }),
   
-  // Clear the state upon user sign out
-  logout: () => set({ 
-    user: null, 
-    isAuthenticated: false, 
-    isLoading: false 
-  }),
+  logout: () => {
+    removeAuthToken();
+    
+    set({ 
+      user: null, 
+      isAuthenticated: false, 
+      isLoading: false 
+    });
+  },
 }));

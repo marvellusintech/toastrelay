@@ -14,8 +14,7 @@ import {
   type CreateAccountValues,
 } from "@/validations/auth.schema";
 
-// 1. Ensure you import SocialAuthPayload if needed, or rely on socialAuthApi signature
-import { createAccountApi, socialAuthApi } from "@/lib/api/auth";
+import { createAccountApi } from "@/lib/api/auth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -28,28 +27,7 @@ import { Input } from "@/components/ui/input";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
-import { SocialProvider } from "@/types/enum";
-
-declare global {
-  interface Window {
-    google?: {
-      accounts: {
-        oauth2: {
-          initTokenClient: (config: {
-            client_id: string | undefined;
-            scope: string;
-            callback: (response: { access_token: string; error?: string }) => void;
-          }) => { requestAccessToken: () => void };
-        };
-      };
-    };
-  }
-}
-
-interface GoogleCredentialResponse {
-  credential: string;       // This is the JWT token you need!
-  select_by: string;        // e.g., "btn", "user_1tap"
-}
+import { SocialAuthButtons } from "@/components/SocialAuthButtons";
 
 export default function CreateAccount() {
   const router = useRouter();
@@ -57,11 +35,6 @@ export default function CreateAccount() {
 
   const createAccountMutation = useMutation({
     mutationFn: createAccountApi,
-  });
-
-  // 2. Instantiate the social auth mutation
-  const socialAuthMutation = useMutation({
-    mutationFn: socialAuthApi,
   });
 
   const form = useForm<CreateAccountValues>({
@@ -76,13 +49,19 @@ export default function CreateAccount() {
 
   const [showPassword, setShowPassword] = useState(false);
 
+  const [isRegistered, setIsRegistered] = useState(false);
+const [registeredEmail, setRegisteredEmail] = useState("");
+
   async function onSubmit(data: CreateAccountValues) {
     try {
       const response = await createAccountMutation.mutateAsync(data);
       if (response.data?.user) setAuth(response.data.user);
 
       toast.success(response.message || "Account created successfully");
-      router.push("/dashboard");
+
+      setRegisteredEmail(data.email);
+    setIsRegistered(true)
+
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Unable to create account",
@@ -90,70 +69,25 @@ export default function CreateAccount() {
     }
   }
 
-  // 3. Define the handler for Google Signup
-  // async function handleGoogleSignup() {
-  //   try {
-  //     // NOTE: Replace this with your frontend provider implementation 
-  //     // (e.g., Google Identity Services SDK, Firebase pop-up, or Clerk/Supabase token capture)
-  //     const mockGoogleToken = "RECEIVED_GOOGLE_JWT_OR_ACCESS_TOKEN"; 
-
-  //     if (!mockGoogleToken) return;
-
-  //     const response = await socialAuthMutation.mutateAsync({
-  //       token: mockGoogleToken,
-  //       provider: SocialProvider.GOOGLE, // matches your SocialProvider union type
-  //     });
-
-  //     if (response.data?.user) setAuth(response.data.user);
-
-  //     toast.success(response.message || "Signed up with Google successfully");
-  //     router.push("/dashboard");
-  //   } catch (error) {
-  //     toast.error(
-  //       error instanceof Error ? error.message : "Google authentication failed",
-  //     );
-  //   }
-  // }
-
-
-
-
-  // Prevent interactions while any mutation is pending
-  const isPending = createAccountMutation.isPending 
-
- const handleGoogleSignup = () => {
-  if (!window.google) {
-    toast.error("Google authentication is loading. Please try again.");
-    return;
-  }
-
-  const client = window.google.accounts.oauth2.initTokenClient({
-    client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-    scope: "openid email profile", 
-    callback: async (tokenResponse) => {
-      if (tokenResponse.error) {
-        toast.error("Google authentication cancelled.");
-        return;
-      }
-
-      try {
-        const apiResponse = await socialAuthMutation.mutateAsync({
-          token: tokenResponse.access_token,
-          provider: SocialProvider.GOOGLE,
-        });
-
-        if (apiResponse.data?.user) setAuth(apiResponse.data.user);
-        toast.success(apiResponse.message || "Signed up successfully!");
-        router.push("/dashboard");
-      } catch (error) {
-        toast.error("Google authentication failed backend verification.");
-      }
-    },
-  });
-
-  // 4. Force the popup window to open immediately
-  client.requestAccessToken();
-};
+  const isPending = createAccountMutation.isPending;
+if (isRegistered) {
+  return (
+    <div className="py-20 px-4 lg:px-0 max-w-xl mx-auto my-20">
+      <Card className="p-8 text-center space-y-6">
+        <h3 className="text-3xl font-bold tracking-tight text-black">Check your email</h3>
+        <p className="text-sm text-black/60">
+          We’ve sent a verification link to <strong className="text-black">{registeredEmail}</strong>. Please click the link in your email to verify your account.
+        </p>
+        <div className="pt-4 border-t border-black/5">
+          <p className="text-xs text-black/40 mb-2">Wrong email address?</p>
+          <Button variant="outline" size="sm" onClick={() => setIsRegistered(false)}>
+            Change email address
+          </Button>
+        </div>
+      </Card>
+    </div>
+  );
+}
 
   return (
     <div className="py-20 px-4 lg:px-0">
@@ -176,10 +110,7 @@ export default function CreateAccount() {
             </div>
 
             <div>
-              <form
-                id="create-account-form"
-                onSubmit={form.handleSubmit(onSubmit)}
-              >
+              <form id="create-account-form" onSubmit={form.handleSubmit(onSubmit)}>
                 <FieldGroup className="grid grid-cols-1 gap-4">
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <Controller
@@ -187,9 +118,7 @@ export default function CreateAccount() {
                       control={form.control}
                       render={({ field, fieldState }) => (
                         <Field data-invalid={fieldState.invalid}>
-                          <FieldLabel htmlFor="reg-first-name">
-                            First name
-                          </FieldLabel>
+                          <FieldLabel htmlFor="reg-first-name">First name</FieldLabel>
                           <Input
                             {...field}
                             id="reg-first-name"
@@ -198,9 +127,7 @@ export default function CreateAccount() {
                             autoComplete="given-name"
                             disabled={isPending}
                           />
-                          {fieldState.invalid && (
-                            <FieldError errors={[fieldState.error]} />
-                          )}
+                          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                         </Field>
                       )}
                     />
@@ -210,9 +137,7 @@ export default function CreateAccount() {
                       control={form.control}
                       render={({ field, fieldState }) => (
                         <Field data-invalid={fieldState.invalid}>
-                          <FieldLabel htmlFor="reg-last-name">
-                            Last name
-                          </FieldLabel>
+                          <FieldLabel htmlFor="reg-last-name">Last name</FieldLabel>
                           <Input
                             {...field}
                             id="reg-last-name"
@@ -221,9 +146,7 @@ export default function CreateAccount() {
                             autoComplete="family-name"
                             disabled={isPending}
                           />
-                          {fieldState.invalid && (
-                            <FieldError errors={[fieldState.error]} />
-                          )}
+                          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                         </Field>
                       )}
                     />
@@ -244,9 +167,7 @@ export default function CreateAccount() {
                           autoComplete="email"
                           disabled={isPending}
                         />
-                        {fieldState.invalid && (
-                          <FieldError errors={[fieldState.error]} />
-                        )}
+                        {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                       </Field>
                     )}
                   />
@@ -257,7 +178,6 @@ export default function CreateAccount() {
                     render={({ field, fieldState }) => (
                       <Field data-invalid={fieldState.invalid}>
                         <FieldLabel htmlFor="reg-password">Password</FieldLabel>
-
                         <div className="relative">
                           <Input
                             {...field}
@@ -269,7 +189,6 @@ export default function CreateAccount() {
                             className="pr-10"
                             disabled={isPending}
                           />
-
                           <button
                             type="button"
                             onClick={() => setShowPassword((prev) => !prev)}
@@ -277,17 +196,10 @@ export default function CreateAccount() {
                             tabIndex={-1}
                             disabled={isPending}
                           >
-                            {showPassword ? (
-                              <EyeOff className="w-4 h-4" />
-                            ) : (
-                              <Eye className="w-4 h-4" />
-                            )}
+                            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                           </button>
                         </div>
-
-                        {fieldState.invalid && (
-                          <FieldError errors={[fieldState.error]} />
-                        )}
+                        {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                       </Field>
                     )}
                   />
@@ -299,63 +211,18 @@ export default function CreateAccount() {
                   className="mt-8 w-full"
                   disabled={form.formState.isSubmitting || isPending}
                 >
-                  {createAccountMutation.isPending
-                    ? "Creating account..."
-                    : "Create account"}
+                  {isPending ? "Creating account..." : "Create account"}
                 </Button>
               </form>
             </div>
 
-            <div className="mt-4 space-y-4">
-              <div className="relative flex py-1 items-center">
-                <div className="flex-grow border-t border-black/5"></div>
-                <span className="flex-shrink mx-4 text-black/50 text-[9px] font-mono uppercase tracking-[0.2em]">
-                  OR
-                </span>
-                <div className="flex-grow border-t border-black/5"></div>
-              </div>
-              <div className="grid grid-cols-1 gap-3">
-                {/* 4. Connected onClick handler and loading state */}
-                <Button
-                  variant={"secondary"}
-                  className="w-full"
-                  type="button"
-                  onClick={handleGoogleSignup}
-                  disabled={isPending}
-                >
-                  <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24">
-                    <path
-                      fill="currentColor"
-                      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                    />
-                    <path
-                      fill="currentColor"
-                      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                    />
-                    <path
-                      fill="currentColor"
-                      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22c-.15-.43-.19-.9-.19-1.39c0-.25.04-.49.1-.73z"
-                      fillRule="evenodd"
-                    />
-                    <path
-                      fill="currentColor"
-                      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
-                    />
-                  </svg>
-                  {socialAuthMutation.isPending
-                    ? "Connecting to Google..."
-                    : "Sign Up with Google"}
-                </Button>
-              </div>
-            </div>
+            {/* Render the reusable PKCE redirect buttons component here */}
+            <SocialAuthButtons mode="signup" disabled={isPending} />
 
             <div className="mt-4 text-center">
               <p className="text-sm text-black/40">
                 Already have a stage pass?{" "}
-                <Link
-                  href="/login"
-                  className="font-bold text-black hover:text-turquoise-dark underline"
-                >
+                <Link href="/login" className="font-bold text-black hover:text-turquoise-dark underline">
                   Sign In
                 </Link>
               </p>
