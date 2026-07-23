@@ -15,7 +15,7 @@ export type PresignedUpload = {
   key: string;
 };
 
-export function getPresignedUploadUrl(payload: PresignedUploadPayload) {
+export function getPresignedUploadUrlApi(payload: PresignedUploadPayload) {
   return apiClient<PresignedUpload, PresignedUploadPayload>("/uploads/presigned-url", {
     method: "POST",
     data: payload,
@@ -23,8 +23,8 @@ export function getPresignedUploadUrl(payload: PresignedUploadPayload) {
   });
 }
 
-export async function uploadFileToBucket(file: File, folder: UploadFolder) {
-  const response = await getPresignedUploadUrl({
+export async function uploadFileToBucketApi(file: File, folder: UploadFolder) {
+  const response = await getPresignedUploadUrlApi({
     contentType: file.type,
     fileName: file.name,
     folder,

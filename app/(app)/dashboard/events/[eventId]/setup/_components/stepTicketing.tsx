@@ -4,13 +4,23 @@
 import { useFormContext, useFieldArray } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { type WizardFormValues } from "@/validations/event.schema";
-import { Plus, Trash2 } from "lucide-react";
+import { Loader2, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { useMutation } from "@tanstack/react-query";
+import { upsertTicketApi } from "@/lib/api/events";
 
-export function StepTicketing() {
+interface StepProps {
+  onNext: () => Promise<void>;
+  isSaving: boolean;
+  eventId: string;
+}
+
+export function StepTicketing({ onNext, isSaving, eventId }: StepProps) {
   const router = useRouter();
-  const { register, watch, setValue, control } =
+  const { register, watch, setValue, control, getValues } =
     useFormContext<WizardFormValues>();
+
   const enableTicketing = watch("enableTicketing");
 
   const { fields, append, remove } = useFieldArray({
@@ -18,8 +28,27 @@ export function StepTicketing() {
     name: "ticketingData.tiers",
   });
 
-  const handleNext = () => {
-    router.push("?step=contributions");
+  const ticketEventMutation = useMutation({
+    mutationFn: upsertTicketApi,
+  });
+
+  const isPending = ticketEventMutation.isPending;
+
+  const handleNext = async () => {
+    const tiers = getValues("ticketingData.tiers");
+    if (!tiers) return;
+    try {
+      const res = await ticketEventMutation.mutateAsync({eventId, tiers});
+
+      toast.success("Ticket updated successfully");
+      await onNext();
+      router.push("?step=contributions");
+      return res
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Unable to create event",
+      );
+    }
   };
 
   return (
@@ -124,8 +153,19 @@ export function StepTicketing() {
         >
           Back
         </Button>
-        <Button type="button" onClick={handleNext} variant="secondary" className="flex-1 lg:flex-initial">
-          {enableTicketing ? "Save & Continue" : "Skip & Continue"}
+        <Button
+          type="button"
+          onClick={handleNext}
+          variant="secondary"
+          className="flex-1 lg:flex-initial"
+        >
+          {isSaving || isPending ? (
+            <Loader2 />
+          ) : enableTicketing ? (
+            "Save & Continue"
+          ) : (
+            "Skip & Continue"
+          )}
         </Button>
       </div>
     </div>

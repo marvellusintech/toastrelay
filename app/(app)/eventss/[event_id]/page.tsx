@@ -19,15 +19,8 @@ const TEMPLATE_MAP: Record<string, React.ComponentType<EventTemplateProps>> = {
 };
 
 export default function EventPage() {
-  // const { id } = useParams() as { id: string };
-  // const { data: eventData, isLoading, error } = useEvent(id); // Returns EventDetails type
-  // const { user } = useAuthStore();
+  
   const [activeTab, setActiveTab] = useState<"toasts" | "moments" | "thread">("toasts");
-
-  // if (isLoading) return <div className="min-h-screen bg-black flex items-center justify-center text-white">Loading Stage™...</div>;
-  // if (error || !eventData) return <div className="min-h-screen bg-black flex items-center justify-center text-red-400">Stage unavailable.</div>;
-
-  // 2. Safely look up chosen template by ID or string slug name configuration
   const eventData = mockEventDetails;
   const user = mockCurrentUser;
   const SelectedTemplate = TEMPLATE_MAP[eventData.template.id] || ModernDarkTemplate;

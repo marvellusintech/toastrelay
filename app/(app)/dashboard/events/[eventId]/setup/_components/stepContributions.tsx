@@ -4,10 +4,15 @@
 import { useFormContext, useFieldArray } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { type WizardFormValues } from '@/validations/event.schema';
-import { Plus, Trash2 } from 'lucide-react';
+import { Loader2, Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-export function StepContributions() {
+
+interface StepProps {
+  onNext: () => Promise<void>;
+  isSaving: boolean;
+}
+export function StepContributions({ onNext, isSaving }: StepProps) {
   const router = useRouter();
   const { register, watch, setValue, control } = useFormContext<WizardFormValues>();
   const enableContributions = watch('enableContributions');
@@ -16,6 +21,11 @@ export function StepContributions() {
     control,
     name: 'contributionsData.items'
   });
+
+  const handleSubmit = async () => {
+    await onNext();
+    router.push('?step=review');
+  }
 
   return (
     <div className="space-y-6">
@@ -115,9 +125,11 @@ export function StepContributions() {
         variant={"secondary"}
         className="flex-1 lg:flex-initial"
           type="button"
-          onClick={() => router.push('?step=review')}
+          onClick={handleSubmit}
         >
-          {enableContributions ? 'Save & Review' : 'Skip & Review'}
+          { isSaving ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) :  enableContributions ? 'Save & Review' : 'Skip & Review'}
         </Button>
       </div>
     </div>

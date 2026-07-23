@@ -29,13 +29,10 @@ export type User = {
   updatedAt: Date;
 };
 
-
-
 export type EventType = {
   id: string;
   name: string;
   label: string | null;
-  icon: string | null;
 };
 
 export type Toast = {
@@ -165,8 +162,8 @@ export type EventDetails = {
   id: string;
   name: string;
   description: string | null;
-  startDate: string;
-  endDate: string | null;
+  startDate: Date;
+  endDate: Date | undefined;
   location: string | null;
   coverImage: string | null;
   isPublic: boolean;
@@ -187,6 +184,18 @@ export type EventDetails = {
 
   thread: Thread | null;
   ticketEvent: TicketEvent | null;
+
+  status: string;
+
+  extraMedia: [];
+  slug: string;
+  eventTypeId: null | string;
+  templateId: null | string;
+  hostId: string;
+  isExternal: boolean;
+  externalUrl: null;
+  claimStatus: string;
+  createdByUserId: string;
 };
 
 //////////////////////

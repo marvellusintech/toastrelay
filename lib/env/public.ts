@@ -3,6 +3,6 @@ function stripTrailingSlash(value: string) {
 }
 
 export const publicEnv = {
-  apiBaseUrl: stripTrailingSlash(process.env.NEXT_PUBLIC_API_BASE_URL ?? ""),
+  apiBaseUrl: stripTrailingSlash(process.env.API_BASE_URL ? process.env.API_BASE_URL : process.env.NEXT_PUBLIC_API_BASE_URL ?process.env.NEXT_PUBLIC_API_BASE_URL  : ""),
   appUrl: stripTrailingSlash(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
 };

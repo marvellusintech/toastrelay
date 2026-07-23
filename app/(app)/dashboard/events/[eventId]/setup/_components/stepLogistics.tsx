@@ -7,15 +7,22 @@ import { type WizardFormValues } from "@/validations/event.schema";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { DatePicker } from "@/components/DatePicker";
+import { Loader2 } from "lucide-react";
 
-export function StepLogistics() {
+interface StepProps {
+  onNext: () => Promise<void>;
+  isSaving: boolean;
+}
+
+export function StepLogistics({ onNext, isSaving }: StepProps) {
   const router = useRouter();
   const {
     register,
     watch,
     trigger,
-    control, 
+    control,
     formState: { errors },
+    getValues,
   } = useFormContext<WizardFormValues>();
 
   const isExternal = watch("isExternal");
@@ -36,6 +43,7 @@ export function StepLogistics() {
     const isValid = await trigger(fieldsToValidate);
 
     if (isValid) {
+      await onNext();
       router.push("?step=branding");
     }
   };
@@ -79,18 +87,21 @@ export function StepLogistics() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Start Date */}
           <div>
             <label className="text-sm font-medium text-zinc-700">
-              Start Date
+              Start Date & Time
             </label>
             <div className="mt-1">
               <Controller
                 control={control}
                 name="startDate"
                 render={({ field }) => (
-                  <DatePicker 
-                    date={field.value ? new Date(field.value) : undefined} 
-                    setDate={field.onChange} 
+                  <DatePicker
+                    date={field.value ? new Date(field.value) : undefined}
+                    setDate={field.onChange}
+                    showTime
+                    placeholder="Pick start date & time"
                   />
                 )}
               />
@@ -102,18 +113,21 @@ export function StepLogistics() {
             )}
           </div>
 
+          {/* End Date */}
           <div>
             <label className="text-sm font-medium text-zinc-700">
-              End Date (Optional)
+              End Date & Time (Optional)
             </label>
             <div className="mt-1">
               <Controller
                 control={control}
                 name="endDate"
                 render={({ field }) => (
-                  <DatePicker 
-                    date={field.value ? new Date(field.value) : undefined} 
-                    setDate={field.onChange} 
+                  <DatePicker
+                    date={field.value ? new Date(field.value) : undefined}
+                    setDate={field.onChange}
+                    showTime
+                    placeholder="Pick end date & time"
                   />
                 )}
               />
@@ -125,7 +139,6 @@ export function StepLogistics() {
             )}
           </div>
         </div>
-
         <div className="flex items-center justify-between p-4 bg-zinc-50 rounded-xl border">
           <div>
             <label className="text-sm font-medium text-zinc-800 block">
@@ -191,7 +204,11 @@ export function StepLogistics() {
           className="flex-1 lg:flex-initial"
           onClick={handleNext}
         >
-          Continue to Branding
+          {isSaving ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            "Continue to Branding"
+          )}
         </Button>
       </div>
     </div>

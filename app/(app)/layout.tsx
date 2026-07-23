@@ -14,7 +14,7 @@ export default function MarketingLayout({
 
   return (
     // bg-gradient-to-b from-[#f4fbf9] to-[#ffffff]
-    <div className="min-h-screen  antialiased text-neutral-900 flex flex-col">
+    <div className="min-h-screen bg-[#FAF9F6]  antialiased text-neutral-900 flex flex-col">
       <MarketingAuthWrapper>
 
       {/* <TooltipProvider delayDuration={0}>

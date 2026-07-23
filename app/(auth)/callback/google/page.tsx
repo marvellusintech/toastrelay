@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { socialAuthApi } from "@/lib/api/auth";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import { SocialProvider } from "@/types/enum";
+import { saveAuthToken } from "@/lib/auth-cookies";
 
 let isHandshakeTriggered = false;
 
@@ -55,15 +56,16 @@ export default function GoogleCallbackPage() {
     const finalizeLogin = async () => {
       try {
         const apiResponse = await socialAuthMutation.mutateAsync({
-          token: code,           
+          token: code,
           codeVerifier: codeVerifier,
           provider: SocialProvider.GOOGLE,
         });
 
         if (apiResponse.data?.user) {
+          saveAuthToken(apiResponse.data.token, apiResponse.data.tokenExpiresOn);
           setAuth(apiResponse.data.user);
         }
-        
+
         toast.success("Logged in successfully via Google!");
         router.push("/dashboard");
       } catch (err) {

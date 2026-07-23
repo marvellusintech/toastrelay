@@ -1,4 +1,4 @@
-import { SocialProvider } from "./enum";
+import { EventStatus, SocialProvider } from "./enum";
 
 export interface ThemeConfig {
   palette?: string;
@@ -64,3 +64,30 @@ export type UpdateEventPayload = Partial<{
   isExternal: boolean;
   externalUrl: string;
 }>;
+
+
+export type GetEventsOptions = Partial<{
+  page: number;
+  limit: number;
+  search: string;
+  eventTypeId: string;
+  status: EventStatus;
+  isPublic: boolean;
+}>;
+
+
+export type GetUserEventsOptions = GetEventsOptions & {
+  role?: "host" | "guest" | "all";
+};
+
+export type TicketTierPayload = {
+  id?: string;           // Present when updating an existing tier; undefined when creating a new one
+  name: string;          // e.g., "General Admission", "VIP"
+  price: number;         // 0 for free tickets, otherwise positive amount
+  capacity: number;      // Total tickets available for this tier
+}
+
+// Full Request Body Payload
+export type UpsertTicketingPayload = {
+  tiers: TicketTierPayload[];
+}

@@ -1,81 +1,5 @@
 import { z } from "zod";
 
-// export const createEventSchema = z.object({
-//   name: z
-//     .string()
-//     .min(1, "Event name is required")
-//     .min(2, "Event name must be at least 2 characters"),
-  
-//   slug: z
-//     .string()
-//     .optional(),
-  
-//   description: z
-//     .string()
-//     .optional(),
-  
-//   startDate: z
-//     .string(),
-    
-//   endDate: z
-//     .string().optional(),
-  
-//   location: z
-//     .string()
-//     .optional(),
-  
-//   coverImage: z
-//     .string()
-//     .optional()
-//     .or(z.string().optional()), // Falls back to standard string if it's a relative path
-  
-//   extraMedia: z
-//     .array(z.string())
-//     .optional(),
-  
-//   eventTypeId: z
-//     .string()
-//     .min(1, "Event type ID is required"),
-  
-//   templateId: z
-//     .string()
-//     .min(1, "Template ID is required"),
-  
-//   theme: z
-//     .string()
-//     .refine((val) => {
-//       try {
-//         JSON.parse(val);
-//         return true;
-//       } catch {
-//         return false;
-//       }
-//     }, { message: "Invalid JSON string" }) // Matches @IsJSON()
-//     .optional(),
-  
-//   isCustomTheme: z
-//     .boolean()
-//     .optional(),
-  
-//   isPublic: z
-//     .boolean()
-//     .optional(),
-  
-//   isExternal: z
-//     .boolean()
-//     .optional(),
-  
-//   externalUrl: z
-//     .string()
-//     .url({ message: "Invalid external URL" })
-//     .optional(),
-// });
-
-// // Infer the type from the schema for TypeScript usage
-// export type CreateEventInput = z.infer<typeof createEventSchema>;
-
-
-
 
 
 
@@ -98,18 +22,26 @@ export const logisticsBaseSchema = z.object({
   endDate: z.date().optional(),
  isExternal: z.boolean(), 
   location: z.string().optional(),
-  externalUrl: z.string().url('Please enter a valid URL').optional(),
+  externalUrl: z.url('Please enter a valid URL').optional(),
+  description: z.string().min(17, "Description must be at least 10 characters"),
 });
 
 export const brandingSchema = z.object({
+  coverImage: z
+    .string()
+    .min(1, 'Please upload a cover banner image'),
+  extraMedia: z
+    .array(z.string())
+    .default([]), // Defaults to an empty array for clean list operations
+
   eventTypeId: z.string().min(1, 'Please select an event category'),
   templateId: z.string().min(1, 'Please select a base layout template'),
-isCustomTheme: z.boolean(), 
+  isCustomTheme: z.boolean().default(false),
   theme: z.object({
-   primaryColor: z.string(),
+    primaryColor: z.string(),
     backgroundColor: z.string(),
-    borderRadius: z.enum(['none', 'sm', 'md', 'lg', 'full'])
-  })
+    borderRadius: z.enum(['none', 'sm', 'md', 'lg', 'full']),
+  }),
 });
 
 export const ticketingSchema = z.object({
@@ -152,4 +84,4 @@ export const eventWizardSchema = logisticsBaseSchema
     path: ["location"]
   });
 
-export type WizardFormValues = z.infer<typeof eventWizardSchema>;
+export type WizardFormValues = z.input<typeof eventWizardSchema>;
