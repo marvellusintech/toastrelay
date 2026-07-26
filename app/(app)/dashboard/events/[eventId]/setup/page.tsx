@@ -154,44 +154,59 @@ const methods = useForm<WizardFormValues>({
       }
     : undefined,
 });
-  const handleSaveAndAdvance = async (nextStepId?: string) => {
-    if (!eventId || eventId === "undefined") {
-      console.error("Cannot update event: eventId is missing or invalid.");
-      return;
+const handleSaveAndAdvance = async (nextStepId?: string) => {
+  if (!eventId || eventId === "undefined") {
+    console.error("Cannot update event: eventId is missing or invalid.");
+    return;
+  }
+
+  try {
+    setIsSaving(true);
+
+    // 1. Validate current step inputs OR fetch current values
+    const values = methods.getValues();
+
+    const { 
+      ticketingData, 
+      contributionsData, 
+      enableTicketing, 
+      enableContributions, 
+      theme, 
+      ...cleanPayload 
+    } = values;
+
+    const formattedTheme =
+      typeof theme === "object" && theme !== null
+        ? JSON.stringify(theme)
+        : theme;
+
+    // 2. Strip empty strings ("") for foreign keys and optional fields so Prisma ignores them
+    const sanitizedPayload = Object.fromEntries(
+      Object.entries(cleanPayload).map(([key, value]) => [
+        key,
+        value === "" ? undefined : value,
+      ])
+    );
+
+    const payload = {
+      ...sanitizedPayload,
+      ...(formattedTheme !== undefined && { theme: formattedTheme }),
+    };
+
+    await updateEventApi(eventId, payload);
+
+    if (nextStepId) {
+      router.push(`?step=${nextStepId}`);
+    } else if (currentStepIndex < WIZARD_STEPS.length - 1) {
+      const targetStep = WIZARD_STEPS[currentStepIndex + 1].id;
+      router.push(`?step=${targetStep}`);
     }
-
-    try {
-      setIsSaving(true);
-      const values = methods.getValues();
-
-      const { ticketingData,
-      contributionsData, enableTicketing, enableContributions, theme, ...cleanPayload } =
-        values;
-
-      const formattedTheme =
-        typeof theme === "object" && theme !== null
-          ? JSON.stringify(theme)
-          : theme;
-
-      const payload = {
-        ...cleanPayload,
-        ...(formattedTheme !== undefined && { theme: formattedTheme }),
-      };
-
-      await updateEventApi(eventId, payload);
-
-      if (nextStepId) {
-        router.push(`?step=${nextStepId}`);
-      } else if (currentStepIndex < WIZARD_STEPS.length - 1) {
-        const targetStep = WIZARD_STEPS[currentStepIndex + 1].id;
-        router.push(`?step=${targetStep}`);
-      }
-    } catch (error) {
-      console.error("Failed to update event progress:", error);
-    } finally {
-      setIsSaving(false);
-    }
-  };
+  } catch (error) {
+    console.error("Failed to update event progress:", error);
+  } finally {
+    setIsSaving(false);
+  }
+};
 
   const handleStepJump = async (stepId: string, targetIndex: number) => {
     // Jump backward immediately, or save before jumping forward

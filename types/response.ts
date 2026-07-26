@@ -170,7 +170,7 @@ export type EventDetails = {
   createdAt: string;
   updatedAt: string;
   theme: EventTheme | null;
-  template: EventTemplate;
+  // template: EventTemplate;
   isCustomTheme: boolean;
   host: User;
   eventType: EventType;
@@ -227,3 +227,6 @@ export type UserPayment = {
   tickets?: TicketMin[];
   transaction: TransactionMin | null;
 };
+
+
+

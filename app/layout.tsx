@@ -6,7 +6,7 @@ import "./globals.css";
 import { Geist, Inter, Space_Grotesk, Syncopate } from "next/font/google";
 import { cn } from "@/lib/utils";
 import Script from "next/script";
-import { Navbar } from "@/components/layouts/navbar";
+import { AuthEventListener } from "@/components/AuthEventListener";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -48,8 +48,9 @@ export default function RootLayout({
     >
       <body className="min-h-full  bg-background text-foreground">
 
-     
+     <AuthEventListener>
         <Providers>{children}</Providers>
+        </AuthEventListener>
         <Script
           src="https://accounts.google.com/gsi/client"
           strategy="afterInteractive"

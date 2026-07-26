@@ -8,10 +8,11 @@ import { motion, AnimatePresence, useScroll, useTransform } from "motion/react";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { mockEventDetails } from "@/lib/mock_data";
 import { Pricing } from "@/components/pricing";
+import { useRouter } from "next/navigation";
 
 export default function LandingPage() {
-  // const [publicEvents, setPublicEvents] = useState<Event[]>([]);
-  const featuredEvent = mockEventDetails;
+
+    const router = useRouter();
   return (
     <main className="">
       <AnimatePresence mode="wait">
@@ -65,8 +66,8 @@ export default function LandingPage() {
               </h1>
 
               <div className="flex flex-col sm:flex-row gap-4 mt-8 mb-20">
-                <Button variant="default">Create Event </Button>
-                <Button variant="outline">Discover Events</Button>
+                <Button variant="default" onClick={() => router.push("/dashboard/events/create")}>Create Event </Button>
+                <Button variant="outline" onClick={() => router.push("/discovery")}>Discover Events</Button>
               </div>
 
               <div className="w-full grid grid-cols-2 md:grid-cols-5 gap-2 items-end  px-4 md:px-0">

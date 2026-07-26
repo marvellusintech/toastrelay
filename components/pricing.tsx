@@ -164,7 +164,7 @@ export function Pricing() {
                 </div>
                 <div className="flex items-baseline gap-1">
                   <span className="text-4xl font-black font-display text-black">
-                    $89
+                    
                   </span>
                   <span className="text-xs text-black/40 font-mono">
                     / single event

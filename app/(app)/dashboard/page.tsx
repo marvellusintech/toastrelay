@@ -52,7 +52,7 @@ export default async function DashboardPage({
             </h1>
           </div>
 
-          <Link href="/events/new">
+          <Link href="/dashboard/events/create">
             <Button variant="secondary">
               Create event
               <Plus className="h-4 w-4" />

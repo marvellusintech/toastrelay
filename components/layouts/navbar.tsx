@@ -5,11 +5,14 @@ import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useRouter } from 'next/navigation'
+import { useAuthStore } from "@/lib/store/useAuthStore";
 
 export function Navbar() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const router = useRouter();
+
+    const user = useAuthStore((state) => state.user);
 
   useEffect(() => {
     const handleScroll = () => {

@@ -1,12 +1,18 @@
-import { EventStatus, SocialProvider } from "./enum";
+import {
+  EventStatus,
+  PaymentIntentType,
+  PaymentProvider,
+  RSVPStatus,
+  SocialProvider,
+} from "./enum";
 
 export interface ThemeConfig {
-  palette?: string;
+  // palette?: string;
   primaryColor?: string;
-  secondaryColor?: string;
+  backgroundColor?: string;
   fontFamily?: string;
   borderRadius?: "none" | "sm" | "md" | "lg" | "full";
-  updatedAt?: string;
+  // updatedAt?: string;
 }
 
 export type SocialAuthPayload = {
@@ -47,24 +53,23 @@ export type CreateEventPayload = {
   name: string;
   isExternal: boolean;
 };
-export type UpdateEventPayload = Partial<{
+export type UpdateEventPayload = CreateEventPayload & Partial<{
   name: string;
   slug: string;
   description: string;
-  startDate: string;
+  startDate: Date;
   endDate: string;
   location: string;
   coverImage: string;
   extraMedia: string[];
   eventTypeId: string;
   templateId: string;
-  theme: string;
+  theme?: string;
   isCustomTheme: boolean;
   isPublic: boolean;
   isExternal: boolean;
   externalUrl: string;
 }>;
-
 
 export type GetEventsOptions = Partial<{
   page: number;
@@ -75,19 +80,51 @@ export type GetEventsOptions = Partial<{
   isPublic: boolean;
 }>;
 
-
 export type GetUserEventsOptions = GetEventsOptions & {
   role?: "host" | "guest" | "all";
 };
 
 export type TicketTierPayload = {
-  id?: string;           // Present when updating an existing tier; undefined when creating a new one
-  name: string;          // e.g., "General Admission", "VIP"
-  price: number;         // 0 for free tickets, otherwise positive amount
-  capacity: number;      // Total tickets available for this tier
-}
+  id?: string; // Present when updating an existing tier; undefined when creating a new one
+  name: string; // e.g., "General Admission", "VIP"
+  price: number; // 0 for free tickets, otherwise positive amount
+  capacity: number; // Total tickets available for this tier
+};
 
-// Full Request Body Payload
-export type UpsertTicketingPayload = {
-  tiers: TicketTierPayload[];
-}
+// // Full Request Body Payload
+// export type UpsertTicketingPayload = {
+//   tiers: TicketTierPayload[];
+// }
+
+export type SubmitRsvpPayload = {
+  eventId: string;
+  rsvpStatus: RSVPStatus;
+  name?: string;
+  email?: string;
+  phone?: string;
+};
+
+export type InitializePaymentPayload = {
+  amount: number;
+  currency: string;
+  provider: PaymentProvider;
+  intentType: PaymentIntentType;
+  intentId?: string;
+
+  email?: string;
+  eventId?: string;
+  toastContent?: string;
+  authorName?: string;
+
+  metadata?: Record<string, unknown>;
+};
+
+export type CreateToastPayload = {
+  eventId: string;
+  content: string;
+  authorName?: string;
+  amount?: number;
+  email?: string;
+  currency?: string;
+  callbackUrl?: string;
+};

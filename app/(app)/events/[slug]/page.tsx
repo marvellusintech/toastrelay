@@ -1,8 +1,8 @@
 import * as React from "react";
 import { notFound } from "next/navigation";
-import { getEventBySlugApi, getEventByIdApi } from "@/lib/api/events";
+import { getEventBySlugApi, recordEventViewApi } from "@/lib/api/events";
 import { EventDetails } from "@/types/response";
-import EventPageClient from "@/components/eventPageClient";
+import EventPageClient from "@/components/event/eventPageClient";
 
 interface PageProps {
   params: Promise<{
@@ -19,8 +19,12 @@ export default async function EventPage({ params }: PageProps) {
     const response = await getEventBySlugApi(slug);
     if (response.data) {
       eventData = response.data;
+      
+      // Fire-and-forget or await depending on whether you want to block rendering
+      recordEventViewApi(eventData.id).catch((err) =>
+        console.error("Failed to record event view:", err)
+      );
     }
-
   } catch (error) {
     console.error("Failed to fetch event by slug:", error);
   }

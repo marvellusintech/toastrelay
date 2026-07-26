@@ -52,11 +52,11 @@ interface StepProps {
 
 export function StepBranding({ onNext, isSaving }: StepProps) {
   const router = useRouter();
-  const [openCategory, setOpenCategory] = React.useState(false);
+
   const [uploadError, setUploadError] = React.useState<string | null>(null);
 
   // API State
-  const [eventTypes, setEventTypes] = React.useState<EventType[]>([]);
+
   const [templates, setTemplates] = React.useState<EventTemplate[]>([]);
   const [isLoadingMeta, setIsLoadingMeta] = React.useState(true);
 
@@ -74,30 +74,18 @@ export function StepBranding({ onNext, isSaving }: StepProps) {
   const coverImage = watch("coverImage");
   const extraMedia = watch("extraMedia") || [];
 
-  // Fetch categories and templates on mount
+  // Fetchtemplates on mount
   React.useEffect(() => {
     async function fetchMetadata() {
       try {
         setIsLoadingMeta(true);
-        const [categoriesRes, templatesRes] = await Promise.all([
-          getEventCatgoriesApi(),
+        const [templatesRes] = await Promise.all([
           getEventTemplatesApi(),
         ]);
-        
+
         // Safely parse API responses using unknown type narrowing
-        const parsedCategories = categoriesRes as unknown;
         const parsedTemplates = templatesRes as unknown;
 
-        if (Array.isArray(parsedCategories)) {
-          setEventTypes(parsedCategories);
-        } else if (
-          parsedCategories &&
-          typeof parsedCategories === "object" &&
-          "data" in parsedCategories &&
-          Array.isArray((parsedCategories as { data: unknown }).data)
-        ) {
-          setEventTypes((parsedCategories as { data: EventType[] }).data);
-        }
 
         if (Array.isArray(parsedTemplates)) {
           setTemplates(parsedTemplates);
@@ -311,9 +299,10 @@ export function StepBranding({ onNext, isSaving }: StepProps) {
                   maxFilesLimit={MAX_EXTRA_MEDIA}
                   className="aspect-square rounded-xl border-2 border-dashed border-zinc-200 bg-zinc-50 hover:bg-zinc-100/80 items-center justify-center text-center transition-colors"
                   onUploadError={(err) => setUploadError(err)}
-                  onUploadSuccess={([res]) => {
+                  onUploadSuccess={(results) => {
                     setUploadError(null);
-                    setValue("extraMedia", [...extraMedia, ...res.key], {
+                    const newKeys = results.map((res) => res.key);
+                    setValue("extraMedia", [...extraMedia, ...newKeys], {
                       shouldValidate: true,
                     });
                   }}
@@ -358,88 +347,7 @@ export function StepBranding({ onNext, isSaving }: StepProps) {
           )}
         </div>
 
-        {/* 4. Searchable Select Category (Dynamic) */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-zinc-900 block">
-            Event Category
-          </label>
-          <Controller
-            name="eventTypeId"
-            control={control}
-            render={({ field }) => (
-              <Popover open={openCategory} onOpenChange={setOpenCategory}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={openCategory}
-                    disabled={isLoadingMeta}
-                    className="w-full justify-between h-11 bg-white border-zinc-200 hover:bg-zinc-50 text-left font-normal"
-                  >
-                    {isLoadingMeta ? (
-                      <span className="flex items-center gap-2 text-zinc-400">
-                        <Loader2 className="w-4 h-4 animate-spin" /> Loading categories...
-                      </span>
-                    ) : field.value ? (
-                      eventTypes.find(
-                        (type) => type.id === field.value || type.name === field.value
-                      )?.label ||
-                      eventTypes.find(
-                        (type) => type.id === field.value || type.name === field.value
-                      )?.name ||
-                      "Select event category..."
-                    ) : (
-                      "Select event category..."
-                    )}
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent
-                  className="w-[var(--radix-popover-trigger-width)] p-0"
-                  align="start"
-                >
-                  <Command>
-                    <CommandInput placeholder="Search category..." />
-                    <CommandList>
-                      <CommandEmpty>No category found.</CommandEmpty>
-                      <CommandGroup>
-                        {eventTypes.map((type) => {
-                          const typeId = type.id;
-                          const typeLabel = type.label || type.name;
-                          return (
-                            <CommandItem
-                              key={typeId}
-                              value={typeLabel}
-                              onSelect={() => {
-                                setValue("eventTypeId", typeId, {
-                                  shouldValidate: true,
-                                });
-                                setOpenCategory(false);
-                              }}
-                            >
-                              <Check
-                                className={cn(
-                                  "mr-2 h-4 w-4",
-                                  field.value === typeId
-                                    ? "opacity-100"
-                                    : "opacity-0",
-                                )}
-                              />
-                              {typeLabel}
-                            </CommandItem>
-                          );
-                        })}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-            )}
-          />
-          {errors.eventTypeId && (
-            <p className="text-xs text-red-500">{errors.eventTypeId.message}</p>
-          )}
-        </div>
+
 
         {/* 5. Horizontal Scrollable Cards for Templates (Dynamic) */}
         <div className="space-y-2">

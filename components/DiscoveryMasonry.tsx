@@ -153,11 +153,11 @@ export default function DiscoveryMasonry() {
   };
 
   return (
-    <div className="h-screen w-full bg-white antialiased text-neutral-900 flex flex-col">
+    <div className="h-screen w-full  antialiased text-neutral-900 flex flex-col">
       {/* --- MAIN BROWSE VIEW CONTAINER --- */}
       <main className="flex-1 px-2 lg:px-8 pb-12 overflow-y-auto">
         {/* --- TOP FIXED SEARCH BAR HEADER --- */}
-        <div className="sticky top-0 z-20 px-2 bg-white pt-2 pb-2">
+        <div className="sticky top-0 z-20 px-2  pt-2 pb-2">
           <header className="flex items-center gap-4 py-5">
             <div className="relative flex flex-1 items-center">
               <Search className="absolute left-4 h-5 w-5 text-neutral-400 pointer-events-none" />

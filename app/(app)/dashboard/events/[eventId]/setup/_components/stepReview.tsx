@@ -21,7 +21,7 @@ export function StepReview({ eventId }: { eventId: string }) {
     try {
       const response = await publishEventApi(eventId);
 
-      router.push(`/events/${eventId}`);
+      router.push(`/dashboard/events/${eventId}`);
       router.refresh();
       return response;
     } catch (error) {
