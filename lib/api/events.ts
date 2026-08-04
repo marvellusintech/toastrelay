@@ -2,13 +2,14 @@ import { apiClient } from "@/lib/api";
 import {
   CreateEventPayload,
   CreateToastPayload,
+  EventCirclePermissionsPayload,
   GetEventsOptions,
   GetUserEventsOptions,
   SubmitRsvpPayload,
   TicketTierPayload,
   UpdateEventPayload,
 } from "@/types/payload";
-import { EventDetails, EventTemplate, EventType } from "@/types/response";
+import { EventCircle, EventDetails, EventTemplate, EventType } from "@/types/response";
 
 export type EventRes = {
   event: EventDetails;
@@ -87,7 +88,12 @@ export async function publishEventApi(eventId: string) {
   return response;
 }
 
-export async function deleteEventApi(eventId: string) {}
+export async function deleteEventApi(eventId: string) {
+  const response = await apiClient.delete<null>(`/events/${eventId}`, {
+    withCredentials: true,
+  });
+  return response;
+}
 
 export async function updateEventApi(
   eventId: string,
@@ -149,12 +155,9 @@ export async function getEventTemplatesApi() {
 }
 
 export async function recordEventViewApi(eventId: string) {
-  const response = await apiClient.get<EventTemplate>(
-    `/events/${eventId}/view`,
-    {
-      withCredentials: false,
-    },
-  );
+  const response = await apiClient.post<null>(`/events/${eventId}/view`, {
+    withCredentials: false,
+  });
   return response;
 }
 
@@ -171,5 +174,47 @@ export async function createToastApi(payload: CreateToastPayload) {
     data: payload,
     withCredentials: false,
   });
+  return response;
+}
+
+export async function attachCircleToEventApi(
+  eventId: string,
+  payload: EventCirclePermissionsPayload & { circleId: string },
+) {
+  const response = await apiClient.post<EventCircle>(
+    `/events/${eventId}/circles`,
+    {
+      data: payload,
+      withCredentials: true,
+    },
+  );
+  return response;
+}
+
+export async function updateEventCirclePermissionsApi(
+  eventId: string,
+  circleId: string,
+  payload: EventCirclePermissionsPayload,
+) {
+  const response = await apiClient.patch<EventCircle>(
+    `/events/${eventId}/circles/${circleId}`,
+    {
+      data: payload,
+      withCredentials: true,
+    },
+  );
+  return response;
+}
+
+export async function removeEventCircleApi(
+  eventId: string,
+  circleId: string,
+) {
+  const response = await apiClient.delete<null>(
+    `/events/${eventId}/circles/${circleId}`,
+    {
+      withCredentials: true,
+    },
+  );
   return response;
 }

@@ -27,6 +27,11 @@ export const logisticsBaseSchema = z.object({
   location: z.string().optional(),
   externalUrl: z.url("Please enter a valid URL").optional(),
   description: z.string().min(17, "Description must be at least 10 characters"),
+  format: z.enum(["PHYSICAL", "ONLINE", "HYBRID"]).default("PHYSICAL"),
+  onlineUrl: z.string().url("Please enter a valid URL").optional(),
+  allowRsvp: z.boolean().default(true),
+  allowMoments: z.boolean().default(true),
+  allowToasts: z.boolean().default(true),
 });
 
 export const brandingSchema = z.object({
@@ -81,7 +86,6 @@ export const eventWizardSchema = logisticsBaseSchema
   .merge(contributionsSchema)
   .refine(
     (data) => {
-      // Re-apply the cross-field layout validation checks here for the whole pipeline
       if (data.isExternal && !data.externalUrl) return false;
       if (!data.isExternal && !data.location) return false;
       return true;
@@ -89,6 +93,16 @@ export const eventWizardSchema = logisticsBaseSchema
     {
       message: "Location details are required based on hosting type",
       path: ["location"],
+    },
+  )
+  .refine(
+    (data) => {
+      if ((data.format === "ONLINE" || data.format === "HYBRID") && !data.onlineUrl) return false;
+      return true;
+    },
+    {
+      message: "Online URL is required for online or hybrid events",
+      path: ["onlineUrl"],
     },
   );
 

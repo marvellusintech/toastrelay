@@ -1,7 +1,9 @@
 import {
   EventStatus,
+  MomentStatus,
   PaymentIntentType,
   PaymentProvider,
+  ResourceType,
   RSVPStatus,
   SocialProvider,
 } from "./enum";
@@ -52,6 +54,7 @@ export type ChangePasswordDto = {
 export type CreateEventPayload = {
   name: string;
   isExternal: boolean;
+  currency: "NGN" | "USD";
 };
 export type UpdateEventPayload = CreateEventPayload & Partial<{
   name: string;
@@ -69,6 +72,11 @@ export type UpdateEventPayload = CreateEventPayload & Partial<{
   isPublic: boolean;
   isExternal: boolean;
   externalUrl: string;
+  format: "PHYSICAL" | "ONLINE" | "HYBRID";
+  onlineUrl: string;
+  allowRsvp: boolean;
+  allowMoments: boolean;
+  allowToasts: boolean;
 }>;
 
 export type GetEventsOptions = Partial<{
@@ -127,4 +135,146 @@ export type CreateToastPayload = {
   email?: string;
   currency?: string;
   callbackUrl?: string;
+};
+
+// ---------- AUTH ----------
+
+export type UpdateProfilePayload = {
+  firstName?: string;
+  lastName?: string;
+};
+
+export type SetPasswordPayload = {
+  password: string;
+};
+
+export type ResetPasswordPayload = {
+  token: string;
+  newPassword: string;
+};
+
+// ---------- CIRCLES ----------
+
+export type CreateCirclePayload = {
+  name: string;
+  description?: string;
+};
+
+export type AddCircleMembersPayload = {
+  userIds: string[];
+};
+
+export type LinkEventCirclePayload = {
+  eventId: string;
+  circleId: string;
+  canViewPrivateDetails?: boolean;
+  canBuyThread?: boolean;
+  rsvpOnly?: boolean;
+};
+
+// ---------- MOMENTS ----------
+
+export type CreateMomentPayload = {
+  eventId: string;
+  image: string;
+  caption?: string;
+};
+
+export type UpdateMomentStatusPayload = {
+  status: MomentStatus;
+};
+
+// ---------- THREADS ----------
+
+export type ThreadItemPayload = {
+  id?: string;
+  name: string;
+  description?: string;
+  price: number;
+  image: string;
+  category: string;
+};
+
+export type CreateThreadPayload = {
+  eventId: string;
+  accessTypeId: string;
+  allowedCircleIds?: string[];
+};
+
+export type UpsertThreadPayload = {
+  accessTypeId?: string;
+  items: ThreadItemPayload[];
+};
+
+// ---------- INTERACTIONS ----------
+
+export type InteractionToastPayload = {
+  eventId: string;
+  content: string;
+  amount?: number;
+};
+
+export type InteractionMomentPayload = {
+  eventId: string;
+  image: string;
+  caption?: string;
+};
+
+export type CheckInPayload = {
+  eventId: string;
+  userId?: string;
+  guestId?: string;
+};
+
+// ---------- EVENTS: CIRCLE DELEGATION ----------
+
+export type EventCirclePermissionsPayload = {
+  canViewPrivateDetails?: boolean;
+  canBuyThread?: boolean;
+  rsvpOnly?: boolean;
+  canCheckInTickets?: boolean;
+};
+
+// ---------- WALLET ----------
+
+export type TopUpWalletPayload = {
+  amount: number;
+  callbackUrl?: string;
+};
+
+export type ConsumeResourcePayload = {
+  resourceType: ResourceType;
+  quantity: number;
+  eventId?: string;
+};
+
+// ---------- PASS (QR) ----------
+
+export type ScanQrPayload = {
+  payload: string;
+};
+
+// ---------- EMAIL BROADCAST ----------
+
+export type SendEventEmailPayload = {
+  eventId: string;
+  subject: string;
+  content: string;
+  recipientGuestIds?: string[];
+  rsvpFilter?: RSVPStatus;
+};
+
+// ---------- PAYMENTS ----------
+
+export type PurchaseStoragePayload = {
+  eventId: string;
+  mb: number;
+  callbackUrl?: string;
+};
+
+// ---------- TICKETS ----------
+
+export type LookupGuestTicketPayload = {
+  reference: string;
+  email: string;
 };

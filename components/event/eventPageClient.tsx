@@ -14,7 +14,7 @@ export default function EventPageClient({ event }: EventPageClientProps) {
 
   const formattedDate = React.useMemo(() => {
     return startDate
-      ? new Date(startDate).toLocaleDateString(undefined, {
+      ? new Date(startDate).toLocaleDateString("en-US", {
           weekday: "long",
           year: "numeric",
           month: "long",

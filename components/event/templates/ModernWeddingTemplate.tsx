@@ -577,7 +577,7 @@ export default function ModernWeddingTemplate({
                   Event Details
                 </span>
                 <h4 className="text-lg font-serif text-stone-100">
-                  RSVP & Actions
+                  RSVP & Gifts
                 </h4>
               </div>
 

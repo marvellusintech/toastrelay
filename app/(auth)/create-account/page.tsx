@@ -252,7 +252,7 @@ if (isRegistered) {
 
             <div className="mt-4 text-center">
               <p className="text-sm text-black/40">
-                Already have a stage pass?{" "}
+                Already have an account?{" "}
                 <Link href="/login" className="font-bold text-black hover:text-turquoise-dark underline">
                   Log In
                 </Link>

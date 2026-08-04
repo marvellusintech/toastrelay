@@ -8,12 +8,14 @@ import {
   PaymentIntentType,
   PaymentProvider,
   PaymentStatus,
+  ResourceType,
   Role,
   RSVPStatus,
   ThreadItemStatus,
   TicketStatus,
   TransactionTargetType,
   TransactionType,
+  WalletTransactionType,
 } from "./enum";
 
 // minimal user info for event details page (used for host, toasts, moments, etc)
@@ -193,10 +195,23 @@ export type EventDetails = {
   templateId: null | string;
   hostId: string;
   isExternal: boolean;
-  externalUrl: null;
+  externalUrl: string | null;
+  format: "PHYSICAL" | "ONLINE" | "HYBRID";
+  onlineUrl: string | null;
+  allowRsvp: boolean;
+  allowMoments: boolean;
+  allowToasts: boolean;
+  currency: string;
   claimStatus: string;
   createdByUserId: string;
+
+  _count: EventCount;
 };
+
+export interface EventCount {
+    guests: number;
+    views:  number;
+}
 
 //////////////////////
 // TRANSACTION & PAYMENT TYPES
@@ -228,5 +243,236 @@ export type UserPayment = {
   transaction: TransactionMin | null;
 };
 
+export interface QucikData {
+  totalEvents: number;
+  ticketsSold: number;
+  totalRevenue: number;
+  totalRsvps: number;
+}
 
+export interface RevenueTrend {
+  date: string;
+  totalRevenue: number;
+  ticketRevenue: number;
+  contributionRevenue: number;
+}
 
+//////////////////////
+// CIRCLES (OWNED)
+//////////////////////
+
+export type Circle = {
+  id: string;
+  name: string;
+  description: string | null;
+  ownerId: string;
+  createdAt: string;
+  _count?: { members: number };
+  members?: Array<{
+    id: string;
+    circleId: string;
+    userId: string;
+    user: Pick<User, "id" | "firstName" | "lastName" | "email" | "photo">;
+  }>;
+};
+
+//////////////////////
+// MOMENTS (API SHAPE)
+//////////////////////
+
+export type MomentRecord = {
+  id: string;
+  eventId: string;
+  uploaderId: string;
+  image: string;
+  caption: string | null;
+  status: MomentStatus;
+  createdAt: string;
+  uploader: Pick<User, "id" | "firstName" | "lastName" | "photo">;
+};
+
+//////////////////////
+// TOASTS (API SHAPE)
+//////////////////////
+
+export type ToastRecord = {
+  id: string;
+  eventId: string;
+  authorId: string | null;
+  guestId: string | null;
+  authorName: string | null;
+  content: string;
+  amount: number | string | null;
+  paymentId: string | null;
+  createdAt: string;
+  author: Pick<User, "id" | "firstName" | "lastName" | "photo"> | null;
+};
+
+//////////////////////
+// THREADS (API SHAPE)
+//////////////////////
+
+export type ThreadAccessType = {
+  id: string;
+  name: string;
+};
+
+export type ThreadDetail = {
+  id: string;
+  eventId: string;
+  accessTypeId: string;
+  accessType: ThreadAccessType;
+  items: Array<{
+    id: string;
+    threadId: string;
+    name: string;
+    description: string | null;
+    price: number | string;
+    image: string;
+    category: string;
+    status: ThreadItemStatus;
+    createdAt: string;
+    updatedAt: string;
+  }>;
+  allowedCircles: Array<{
+    id: string;
+    threadId: string;
+    circleId: string;
+    circle: Pick<Circle, "id" | "name" | "description">;
+  }>;
+};
+
+export type EventCircle = {
+  id: string;
+  eventId: string;
+  circleId: string;
+  canViewPrivateDetails: boolean;
+  canBuyThread: boolean;
+  rsvpOnly: boolean;
+  canCheckInTickets: boolean;
+  circle?: Pick<Circle, "id" | "name" | "description">;
+};
+
+//////////////////////
+// WALLET
+//////////////////////
+
+export type WalletEntry = {
+  id: string;
+  walletId: string;
+  type: WalletTransactionType;
+  amount: number | string;
+  resourceType: ResourceType | null;
+  eventId: string | null;
+  description: string | null;
+  reference: string | null;
+  paymentId: string | null;
+  createdAt: string;
+};
+
+export type Wallet = {
+  id: string;
+  userId: string;
+  balance: number | string;
+  entries: WalletEntry[];
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type TopUpWalletResult = {
+  paymentId: string;
+  reference: string;
+  amount: number;
+  authorizationUrl: string;
+  accessCode: string;
+};
+
+export type ConsumeResourceResult = WalletEntry;
+
+//////////////////////
+// PASS (QR)
+//////////////////////
+
+export type EventPass = {
+  type: "TICKET" | "RSVP";
+  attendee: {
+    name: string;
+    detail?: string | null;
+  };
+  payload: string;
+};
+
+export type ScanCheckInResult =
+  | {
+      type: "TICKET";
+      attendee: string;
+      tier: string;
+      ticketId: string;
+      status: string;
+      checkedInAt: string;
+    }
+  | {
+      type: "RSVP";
+      attendee: string;
+      rsvpStatus: string;
+      guestId: string;
+      checkedInAt: string;
+    };
+
+//////////////////////
+// EMAIL BROADCAST
+//////////////////////
+
+export type SendEventEmailResult = {
+  eventId: string;
+  totalRecipients: number;
+  sent: number;
+  failed: number;
+  costCredits: number;
+  freeEmailsUsed: number;
+  freeEmailsRemaining: number;
+};
+
+//////////////////////
+// PAYMENTS
+//////////////////////
+
+export type PurchaseStorageResult = {
+  paymentId: string;
+  reference: string;
+  amount: number;
+  currency: string;
+  storageMb?: number;
+  costCredits?: number;
+  total?: number;
+  authorizationUrl: string;
+  accessCode: string;
+};
+
+export type InitializePaymentResult = {
+  paymentId: string;
+  reference: string;
+  amount: number;
+  currency: string;
+  quantity?: number;
+  ticketSubtotal?: number;
+  serviceFee?: number;
+  storageMb?: number;
+  costCredits?: number;
+  total?: number;
+  authorizationUrl: string;
+  accessCode: string;
+};
+
+//////////////////////
+// TICKETS: GUEST LOOKUP
+//////////////////////
+
+export type LookupGuestTicketResult = {
+  tickets: Array<{
+    ticketId: string;
+    tier: string | null;
+    status: TicketStatus;
+    qrPayload: string;
+  }>;
+};

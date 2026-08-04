@@ -1,15 +1,12 @@
-"use strict";
+"use client";
 
 import {
-  Compass,
   Home,
-  LayoutGrid,
   PlusSquare,
-  Bell,
-  MessageSquare,
-  Settings,
+  LogOut,
   LayoutDashboard,
 } from "lucide-react";
+import { usePathname } from "next/navigation";
 import {
   Sidebar,
   SidebarContent,
@@ -19,24 +16,42 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { mockCurrentUser } from "@/lib/mock_data";
 import { MobileBottomNav } from "./mobileBottomNav";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { getInitials } from "@/lib/utils/helpers";
 import { useAuthStore } from "@/lib/store/useAuthStore";
+import { useLogout } from "@/app/_queries/auth";
 
 const navigationItems = [
-  { icon: Home, label: "Home", active: true, path: "/" },
-    { icon: PlusSquare, label: "Create Event", path: "/dashboard/events/create" },
+  { icon: Home, label: "Home", path: "/" },
+  { icon: PlusSquare, label: "Create Event", path: "/dashboard/events/create" },
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
-
-  // { icon: Bell, label: "Notifications", path: "/" },
-  // { icon: MessageSquare, label: "Messages", path: "/" },
 ];
 
 export function AppSidebar() {
+  const pathname = usePathname();
   const user = useAuthStore((state) => state.user);
+  const logoutMutation = useLogout();
+
+  function isPathActive(path: string): boolean {
+    if (path === "/") return pathname === "/";
+    return pathname === path || pathname.startsWith(`${path}/`);
+  }
+
+  // Only the most specific matching route should appear active (e.g. being on
+  // /dashboard/events/create highlights "Create Event", not "Dashboard").
+  const activePath = navigationItems
+    .filter((item) => isPathActive(item.path))
+    .sort((a, b) => b.path.length - a.path.length)[0]?.path ?? null;
+
+  async function handleLogout() {
+    try {
+      await logoutMutation.mutateAsync();
+    } finally {
+      useAuthStore.getState().logout();
+    }
+  }
   return (
     <div>
       <Sidebar
@@ -72,7 +87,7 @@ export function AppSidebar() {
                   <SidebarMenuButton
                     tooltip={item.label}
                     className={`flex !h-10 !w-10 w-full items-center justify-center rounded-full transition-colors ${
-                      item.active
+                      item.path === activePath
                         ? "bg-neutral-900 text-white hover:bg-neutral-800 hover:text-white"
                         : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900"
                     }`}
@@ -93,23 +108,27 @@ export function AppSidebar() {
           <SidebarMenu className="flex flex-col items-center">
             <SidebarMenuItem>
               <SidebarMenuButton
-                tooltip="Settings"
-                className="!h-12 !w-12  text-neutral-500 hover:bg-neutral-100 rounded-xl"
+                tooltip="Log out"
+                className="!h-12 !w-12 text-neutral-500 hover:bg-destructive/10 hover:text-destructive rounded-xl"
+                onClick={handleLogout}
+                disabled={logoutMutation.isPending}
               >
-                <Settings className="!h-6 !w-6 " />
+                <LogOut className="!h-6 !w-6" />
                 <span className="group-data-[collapsible=icon]:hidden ml-3 text-sm font-medium">
-                  Settings
+                  {logoutMutation.isPending ? "Logging out..." : "Log out"}
                 </span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
 
-          <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" />
-            <AvatarFallback>
-              {getInitials(user?.firstName ?? "T", user?.lastName ?? "R")}
-            </AvatarFallback>
-          </Avatar>
+          <Link href="/dashboard/profile" aria-label="Go to profile">
+            <Avatar>
+              <AvatarImage src="https://github.com/shadcn.png" />
+              <AvatarFallback>
+                {getInitials(user?.firstName ?? "T", user?.lastName ?? "R")}
+              </AvatarFallback>
+            </Avatar>
+          </Link>
         </SidebarFooter>
       </Sidebar>
 

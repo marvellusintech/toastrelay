@@ -7,7 +7,7 @@ import { type WizardFormValues } from "@/validations/event.schema";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { DatePicker } from "@/components/DatePicker";
-import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
+import { Check, ChevronsUpDown, Loader2, Wifi, MapPin, Users, Camera } from "lucide-react";
 import {
   Command,
   CommandEmpty,
@@ -24,6 +24,7 @@ import {
 import React from "react";
 import { EventType } from "@/types/response";
 import { getEventCatgoriesApi } from "@/lib/api/events";
+import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 
 interface StepProps {
@@ -47,6 +48,9 @@ export function StepLogistics({ onNext, isSaving }: StepProps) {
   const [isLoadingMeta, setIsLoadingMeta] = React.useState(true);
 
   const isExternal = watch("isExternal");
+  const format = watch("format");
+  const allowRsvp = watch("allowRsvp");
+  const allowMoments = watch("allowMoments");
 
   // Watch date values explicitly to compute memoized Date references
   const startDateValue = watch("startDate");
@@ -71,13 +75,21 @@ export function StepLogistics({ onNext, isSaving }: StepProps) {
       "slug",
       "startDate",
       "endDate",
+      "format",
     ];
+
+    if (format === "PHYSICAL" || format === "HYBRID") {
+      fieldsToValidate.push("location");
+    }
+
+    if (format === "ONLINE" || format === "HYBRID") {
+      fieldsToValidate.push("onlineUrl");
+    }
 
     if (isExternal) {
       fieldsToValidate.push("externalUrl");
-    } else {
-      fieldsToValidate.push("location");
     }
+
     const isValid = await trigger(fieldsToValidate);
 
     if (isValid) {
@@ -116,11 +128,23 @@ export function StepLogistics({ onNext, isSaving }: StepProps) {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-xl font-bold text-zinc-900">Event Logistics</h2>
-        <p className="text-sm text-zinc-500">
-          Where and when is this happening?
-        </p>
+      {/* Header with isExternal toggle */}
+      <div className="flex items-start justify-between">
+        <div>
+          <h2 className="text-xl font-bold text-zinc-900">Event Logistics</h2>
+          <p className="text-sm text-zinc-500">
+            Where and when is this happening?
+          </p>
+        </div>
+        <div className="flex items-center gap-2 bg-zinc-50 border border-zinc-200 rounded-full px-3 py-1.5">
+          <Switch
+            checked={isExternal}
+            onCheckedChange={(checked) => setValue("isExternal", checked)}
+          />
+          <span className="text-xs font-medium text-zinc-700 whitespace-nowrap">
+            External Event
+          </span>
+        </div>
       </div>
 
       <div className="space-y-4">
@@ -297,40 +321,47 @@ export function StepLogistics({ onNext, isSaving }: StepProps) {
           </div>
         </div>
 
-        <div className="flex items-center justify-between p-4 bg-zinc-50 rounded-xl border">
-          <div>
-            <label className="text-sm font-medium text-zinc-800 block">
-              External Hosting
-            </label>
-            <span className="text-xs text-zinc-500">
-              This event is ticketing or streaming somewhere else
-            </span>
+        {/* Event Format */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-zinc-900 block">
+            Event Format
+          </label>
+          <div className="grid grid-cols-3 gap-2">
+            {(["PHYSICAL", "ONLINE", "HYBRID"] as const).map((fmt) => (
+              <button
+                key={fmt}
+                type="button"
+                onClick={() => {
+                  setValue("format", fmt);
+                  if (fmt === "ONLINE") {
+                    setValue("location", undefined);
+                  }
+                  if (fmt === "PHYSICAL") {
+                    setValue("onlineUrl", undefined);
+                  }
+                }}
+                className={`flex items-center justify-center gap-2 p-3 rounded-xl border text-sm font-medium transition-all ${
+                  format === fmt
+                    ? "border-zinc-950 bg-zinc-950 text-white shadow-sm"
+                    : "border-zinc-200 bg-zinc-50 text-zinc-600 hover:bg-zinc-100"
+                }`}
+              >
+                {fmt === "PHYSICAL" && <MapPin className="w-4 h-4" />}
+                {fmt === "ONLINE" && <Wifi className="w-4 h-4" />}
+                {fmt === "HYBRID" && (
+                  <>
+                    <MapPin className="w-3.5 h-3.5" />
+                    <Wifi className="w-3.5 h-3.5" />
+                  </>
+                )}
+                {fmt.charAt(0) + fmt.slice(1).toLowerCase()}
+              </button>
+            ))}
           </div>
-          <input
-            type="checkbox"
-            {...register("isExternal")}
-            className="h-4 w-4 rounded text-zinc-900 border-zinc-300 focus:ring-zinc-950"
-          />
         </div>
 
-        {isExternal ? (
-          <div className="animate-in fade-in slide-in-from-top-2 duration-200">
-            <label className="text-sm font-medium text-zinc-700">
-              External Platform URL
-            </label>
-            <input
-              type="url"
-              {...register("externalUrl")}
-              className="w-full mt-1 p-2.5 border rounded-xl bg-zinc-50 focus:bg-white text-sm"
-              placeholder="https://zoom.us/j/... or https://ticketlink.com"
-            />
-            {errors.externalUrl && (
-              <p className="text-xs text-red-500 mt-1">
-                {errors.externalUrl.message}
-              </p>
-            )}
-          </div>
-        ) : (
+        {/* Location & Online URL — grouped by format */}
+        {(format === "PHYSICAL" || format === "HYBRID") && (
           <div className="animate-in fade-in slide-in-from-top-2 duration-200">
             <label className="text-sm font-medium text-zinc-700">
               Physical Location / Venue
@@ -348,6 +379,86 @@ export function StepLogistics({ onNext, isSaving }: StepProps) {
             )}
           </div>
         )}
+
+        {(format === "ONLINE" || format === "HYBRID") && (
+          <div className="animate-in fade-in slide-in-from-top-2 duration-200">
+            <label className="text-sm font-medium text-zinc-700">
+              Streaming / Online URL
+            </label>
+            <input
+              type="url"
+              {...register("onlineUrl")}
+              className="w-full mt-1 p-2.5 border rounded-xl bg-zinc-50 focus:bg-white text-sm"
+              placeholder="https://zoom.us/j/... or https://youtube.com/live/..."
+            />
+            {errors.onlineUrl && (
+              <p className="text-xs text-red-500 mt-1">
+                {errors.onlineUrl.message}
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* External Platform URL */}
+        {isExternal && (
+          <div className="animate-in fade-in slide-in-from-top-2 duration-200">
+            <label className="text-sm font-medium text-zinc-700">
+              External Platform URL
+            </label>
+            <input
+              type="url"
+              {...register("externalUrl")}
+              className="w-full mt-1 p-2.5 border rounded-xl bg-zinc-50 focus:bg-white text-sm"
+              placeholder="https://zoom.us/j/... or https://ticketlink.com"
+            />
+            {errors.externalUrl && (
+              <p className="text-xs text-red-500 mt-1">
+                {errors.externalUrl.message}
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* RSVP & Moments Toggles */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="flex items-center justify-between p-4 bg-zinc-50 rounded-xl border">
+            <div className="space-y-0.5">
+              <div className="flex items-center gap-1.5">
+                <Users className="w-4 h-4 text-zinc-600" />
+                <label className="text-sm font-medium text-zinc-800">
+                  Allow RSVPs
+                </label>
+              </div>
+              <span className="text-xs text-zinc-500">
+                Guests can confirm attendance
+              </span>
+            </div>
+            <Switch
+              checked={allowRsvp}
+              onCheckedChange={(checked) => setValue("allowRsvp", checked)}
+            />
+          </div>
+
+          <div className="flex items-center justify-between p-4 bg-zinc-50 rounded-xl border">
+            <div className="space-y-0.5">
+              <div className="flex items-center gap-1.5">
+                <Camera className="w-4 h-4 text-zinc-600" />
+                <label className="text-sm font-medium text-zinc-800">
+                  Allow Moments
+                </label>
+              </div>
+              <span className="text-xs text-zinc-500">
+                Guests can upload photos &amp; clips
+              </span>
+            </div>
+            <Switch
+              checked={allowMoments}
+              onCheckedChange={(checked) => setValue("allowMoments", checked)}
+            />
+          </div>
+
+
+        </div>
       </div>
 
       <div className="flex justify-end gap-3 mt-6">

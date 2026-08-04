@@ -10,11 +10,18 @@ export enum SocialProvider {
 export enum TransactionType {
   TICKET = "TICKET",
   THREAD_CONTRIBUTION = "THREAD_CONTRIBUTION",
+  TOAST = "TOAST",
+  CREDIT_TOPUP = "CREDIT_TOPUP",
+  STORAGE = "STORAGE",
+  RESOURCE_USAGE = "RESOURCE_USAGE",
 }
 
 export enum PaymentIntentType {
   TICKET = "TICKET",
   THREAD_CONTRIBUTION = "THREAD_CONTRIBUTION",
+  TOAST = "TOAST",
+  CREDIT_TOPUP = "CREDIT_TOPUP",
+  STORAGE = "STORAGE",
 }
 
 export enum TransactionTargetType {
@@ -76,3 +83,24 @@ export enum EventStatus {
   COMPLETED = "COMPLETED",
   CANCELLED = "CANCELLED"
 }
+
+// Wallet & metered resources
+export enum WalletTransactionType {
+  CREDIT = "CREDIT",
+  DEBIT = "DEBIT",
+}
+
+export enum ResourceType {
+  EMAIL = "EMAIL",
+  SMS = "SMS",
+  STORAGE = "STORAGE",
+  TEMPLATE = "TEMPLATE",
+}
+
+
+export enum EventFormat {
+  PHYSICAL = "PHYSICAL",
+  ONLINE = "ONLINE",
+  HYBRID = "HYBRID",
+}
+

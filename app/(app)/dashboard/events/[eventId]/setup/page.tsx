@@ -4,7 +4,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, Loader2 } from "lucide-react";
-import { use, useEffect, useMemo, useState } from "react";
+import React, { use, useEffect, useMemo, useState } from "react";
 
 import {
   eventWizardSchema,
@@ -16,10 +16,9 @@ import { StepTicketing } from "./_components/stepTicketing";
 import { StepContributions } from "./_components/stepContributions";
 import { StepReview } from "./_components/stepReview";
 import { getEventByIdApi, updateEventApi } from "@/lib/api/events";
-import { CreateEventPayload } from "@/types/payload";
 import { EventDetails } from "@/types/response";
 
-const WIZARD_STEPS = [
+const ALL_WIZARD_STEPS = [
   { id: "logistics", title: "Logistics", description: "Dates & Venues" },
   { id: "branding", title: "Branding", description: "Themes & Layouts" },
   { id: "ticketing", title: "Ticketing", description: "Access Allocation" },
@@ -47,13 +46,6 @@ export default function EventSetupWizardPage({ params }: PageProps) {
   const eventId = resolvedParams.eventId;
 
   const currentStep = searchParams.get("step") || "logistics";
-
-  const currentStepIndex = WIZARD_STEPS.findIndex(
-    (step) => step.id === currentStep,
-  );
-  const progressPercentage = Math.round(
-    (currentStepIndex / (WIZARD_STEPS.length - 1)) * 100,
-  );
 
   const [eventData, setEventData] = useState<EventDetails | null>(null);
 
@@ -96,120 +88,146 @@ export default function EventSetupWizardPage({ params }: PageProps) {
     return eventData.theme;
   }, [eventData]);
 
-const methods = useForm<WizardFormValues>({
-  resolver: zodResolver(eventWizardSchema),
-  mode: "onChange",
-  values: eventData
-    ? {
-        name: eventData.name ?? "",
-        slug: eventData.slug ?? "",
-        description: eventData.description ?? "",
-        coverImage: eventData.coverImage ?? "",
-        extraMedia: eventData.extraMedia ?? [],
-        // Dates: safely parse to Date objects
-        startDate: eventData.startDate ? new Date(eventData.startDate) : new Date(),
-        endDate: eventData.endDate ? new Date(eventData.endDate) : undefined,
+  const methods = useForm<WizardFormValues>({
+    resolver: zodResolver(eventWizardSchema),
+    mode: "onChange",
+    values: eventData
+      ? {
+          name: eventData.name ?? "",
+          slug: eventData.slug ?? "",
+          description: eventData.description ?? "",
+          coverImage: eventData.coverImage ?? "",
+          extraMedia: eventData.extraMedia ?? [],
+          startDate: eventData.startDate
+            ? new Date(eventData.startDate)
+            : new Date(),
+          endDate: eventData.endDate
+            ? new Date(eventData.endDate)
+            : undefined,
+          location: eventData.location ?? "",
+          isExternal: Boolean(eventData.isExternal),
+          externalUrl: eventData.externalUrl ?? "",
+          format:
+            (eventData.format as "PHYSICAL" | "ONLINE" | "HYBRID") ??
+            "PHYSICAL",
+          onlineUrl: eventData.onlineUrl ?? "",
+          allowRsvp: Boolean(eventData.allowRsvp ?? true),
+          allowMoments: Boolean(eventData.allowMoments ?? true),
+          allowToasts: Boolean(eventData.allowToasts ?? true),
+          eventTypeId: eventData.eventTypeId ?? "",
+          templateId: eventData.templateId ?? "",
+          isCustomTheme: Boolean(eventData.isCustomTheme),
+          theme: parsedTheme || {
+            primaryColor: "#09090b",
+            backgroundColor: "#ffffff",
+            borderRadius: "md",
+          },
+          enableTicketing: Boolean(eventData.ticketEvent),
+          enableContributions: Boolean(eventData.thread),
+          ticketingData: eventData.ticketEvent
+            ? {
+                tiers:
+                  eventData.ticketEvent.tiers?.map((t) => ({
+                    name: t.name,
+                    price: t.price,
+                    capacity: t.capacity,
+                  })) ?? [],
+              }
+            : { tiers: [] },
+          contributionsData: eventData.thread
+            ? {
+                items:
+                  eventData.thread.items?.map((item) => ({
+                    name: item.name,
+                    price: item.price,
+                    category: item.category,
+                    image: item.imageUrl,
+                  })) ?? [],
+              }
+            : { items: [] },
+        }
+      : undefined,
+  });
 
-        location: eventData.location ?? "",
-        isExternal: Boolean(eventData.isExternal),
-        externalUrl: eventData.externalUrl ?? "",
+  // Live isExternal from the form — updates instantly on toggle
+  const isExternal = methods.watch("isExternal");
 
-        // IDs
-        eventTypeId: eventData.eventTypeId ?? "",
-        templateId: eventData.templateId ?? "",
-
-        // Theme & Custom Flags
-        isCustomTheme: Boolean(eventData.isCustomTheme),
-        theme: parsedTheme || {
-          primaryColor: "#09090b",
-          backgroundColor: "#ffffff",
-          borderRadius: "md",
-        },
-
-        // UI Toggles
-        enableTicketing: Boolean(eventData.ticketEvent),
-        enableContributions: Boolean(eventData.thread),
-
-        // Ticketing Payload
-        ticketingData: eventData.ticketEvent
-          ? {
-              tiers: eventData.ticketEvent.tiers?.map((t) => ({
-                name: t.name,
-                price: t.price,
-                capacity: t.capacity,
-              })) ?? [],
-            }
-          : { tiers: [] },
-
-        contributionsData: eventData.thread
-          ? {
-              items: eventData.thread.items?.map((item) => ({
-                name: item.name,
-                price: item.price,
-                category: item.category,
-                image: item.imageUrl,
-              })) ?? [],
-            }
-          : { items: [] },
-      }
-    : undefined,
-});
-const handleSaveAndAdvance = async (nextStepId?: string) => {
-  if (!eventId || eventId === "undefined") {
-    console.error("Cannot update event: eventId is missing or invalid.");
-    return;
-  }
-
-  try {
-    setIsSaving(true);
-
-    // 1. Validate current step inputs OR fetch current values
-    const values = methods.getValues();
-
-    const { 
-      ticketingData, 
-      contributionsData, 
-      enableTicketing, 
-      enableContributions, 
-      theme, 
-      ...cleanPayload 
-    } = values;
-
-    const formattedTheme =
-      typeof theme === "object" && theme !== null
-        ? JSON.stringify(theme)
-        : theme;
-
-    // 2. Strip empty strings ("") for foreign keys and optional fields so Prisma ignores them
-    const sanitizedPayload = Object.fromEntries(
-      Object.entries(cleanPayload).map(([key, value]) => [
-        key,
-        value === "" ? undefined : value,
-      ])
-    );
-
-    const payload = {
-      ...sanitizedPayload,
-      ...(formattedTheme !== undefined && { theme: formattedTheme }),
-    };
-
-    await updateEventApi(eventId, payload);
-
-    if (nextStepId) {
-      router.push(`?step=${nextStepId}`);
-    } else if (currentStepIndex < WIZARD_STEPS.length - 1) {
-      const targetStep = WIZARD_STEPS[currentStepIndex + 1].id;
-      router.push(`?step=${targetStep}`);
+  // Dynamic steps: hide ticketing/contributions for external events
+  const WIZARD_STEPS = React.useMemo(() => {
+    if (isExternal) {
+      return ALL_WIZARD_STEPS.filter(
+        (s) => s.id !== "ticketing" && s.id !== "contributions",
+      );
     }
-  } catch (error) {
-    console.error("Failed to update event progress:", error);
-  } finally {
-    setIsSaving(false);
-  }
-};
+    return ALL_WIZARD_STEPS;
+  }, [isExternal]);
+
+  const currentStepIndex = WIZARD_STEPS.findIndex(
+    (step) => step.id === currentStep,
+  );
+  const progressPercentage = Math.round(
+    (currentStepIndex / (WIZARD_STEPS.length - 1)) * 100,
+  );
+
+  // Redirect away from hidden steps when isExternal toggles
+  useEffect(() => {
+    const hiddenSteps = ["ticketing", "contributions"];
+    if (isExternal && hiddenSteps.includes(currentStep)) {
+      router.replace("?step=review");
+    }
+  }, [isExternal, currentStep, router]);
+
+  const handleSaveAndAdvance = async (nextStepId?: string) => {
+    if (!eventId || eventId === "undefined") {
+      console.error("Cannot update event: eventId is missing or invalid.");
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      const values = methods.getValues();
+
+      const {
+        ticketingData,
+        contributionsData,
+        enableTicketing,
+        enableContributions,
+        theme,
+        ...cleanPayload
+      } = values;
+
+      const formattedTheme =
+        typeof theme === "object" && theme !== null
+          ? JSON.stringify(theme)
+          : theme;
+
+      const sanitizedPayload = Object.fromEntries(
+        Object.entries(cleanPayload).map(([key, value]) => [
+          key,
+          value === "" ? undefined : value,
+        ]),
+      );
+
+      const payload = {
+        ...sanitizedPayload,
+        ...(formattedTheme !== undefined && { theme: formattedTheme }),
+      };
+
+      await updateEventApi(eventId, payload);
+
+      if (nextStepId) {
+        router.push(`?step=${nextStepId}`);
+      } else if (currentStepIndex < WIZARD_STEPS.length - 1) {
+        router.push(`?step=${WIZARD_STEPS[currentStepIndex + 1].id}`);
+      }
+    } catch (error) {
+      console.error("Failed to update event progress:", error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const handleStepJump = async (stepId: string, targetIndex: number) => {
-    // Jump backward immediately, or save before jumping forward
     if (targetIndex < currentStepIndex) {
       router.push(`?step=${stepId}`);
     } else {
@@ -220,7 +238,7 @@ const handleSaveAndAdvance = async (nextStepId?: string) => {
   return (
     <FormProvider {...methods}>
       <div className="max-w-6xl mx-auto px-4 pt-8 pb-32 space-y-8">
-        {/* Header Layout Banner */}
+        {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-zinc-100">
           <div>
             <h1 className="text-2xl font-bold font-display tracking-tight text-zinc-900">
@@ -299,7 +317,7 @@ const handleSaveAndAdvance = async (nextStepId?: string) => {
                       }`}
                     >
                       {isCompleted ? (
-                        <Check className="h-3.5 w-3.5 stroke-[3]" />
+                        <Check className="h-3.5 h-3.5 stroke-[3]" />
                       ) : (
                         <span>{idx + 1}</span>
                       )}
@@ -338,20 +356,20 @@ const handleSaveAndAdvance = async (nextStepId?: string) => {
             {currentStep === "branding" && (
               <StepBranding onNext={handleSaveAndAdvance} isSaving={isSaving} />
             )}
-            {currentStep === "ticketing" && (
+            {currentStep === "ticketing" && !isExternal && (
               <StepTicketing
                 onNext={handleSaveAndAdvance}
                 isSaving={isSaving}
                 eventId={eventId}
               />
             )}
-            {currentStep === "contributions" && (
+            {currentStep === "contributions" && !isExternal && (
               <StepContributions
                 onNext={handleSaveAndAdvance}
                 isSaving={isSaving}
               />
             )}
-            {currentStep === "review" && <StepReview eventId={eventId} />}
+            {currentStep === "review" && eventData && <StepReview eventId={eventId} eventData={eventData} />}
           </main>
         </div>
       </div>

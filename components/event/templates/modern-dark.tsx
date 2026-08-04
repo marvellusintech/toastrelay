@@ -58,7 +58,7 @@ export function ModernDarkTemplate({
           <div className="flex flex-wrap gap-6 text-xs font-semibold uppercase tracking-widest text-white/80 pt-4">
             <span className="flex items-center gap-2">
               <Calendar className="w-4 h-4" style={{ color: primaryColor }} />
-              {new Date(event.startDate).toLocaleDateString(undefined, {
+              {new Date(event.startDate).toLocaleDateString("en-US", {
                 dateStyle: "medium",
               })}
             </span>

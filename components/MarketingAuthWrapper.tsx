@@ -21,8 +21,16 @@ export function MarketingAuthWrapper({
   const user = useAuthStore((state) => state.user);
   const setAuth = useAuthStore((state) => state.setAuth);
   const logout = useAuthStore((state) => state.logout);
+  // Track whether we've hydrated on the client. During SSR `document` is
+  // undefined, so the auth store initializes as unauthenticated and would
+  // briefly flash the navbar. We wait until mount before deciding what to show.
+  const [mounted, setMounted] = useState(false);
 
   const pathname = usePathname();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     async function fetchUserSession() {
@@ -47,12 +55,12 @@ export function MarketingAuthWrapper({
   );
   return (
     <>
-      {!isAuthenticated && <Navbar />}
+      {mounted && !isAuthenticated && <Navbar />}
       <TooltipProvider delayDuration={0}>
         <SidebarProvider defaultOpen={false}>
           <div className="flex flex-1 w-full">
             {/* Sidebar stays on the left on desktop*/}
-            {isAuthenticated && !hideSidebar && <AppSidebar />}
+            {mounted && isAuthenticated && !hideSidebar && <AppSidebar />}
 
             {children}
           </div>

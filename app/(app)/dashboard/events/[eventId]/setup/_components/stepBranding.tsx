@@ -70,11 +70,12 @@ export function StepBranding({ onNext, isSaving }: StepProps) {
 
   const selectedTemplate = watch("templateId");
   const isCustomTheme = watch("isCustomTheme");
+  const isExternal = watch("isExternal");
   const currentTheme = watch("theme");
   const coverImage = watch("coverImage");
   const extraMedia = watch("extraMedia") || [];
 
-  // Fetchtemplates on mount
+  // Fetch templates on mount
   React.useEffect(() => {
     async function fetchMetadata() {
       try {
@@ -83,20 +84,21 @@ export function StepBranding({ onNext, isSaving }: StepProps) {
           getEventTemplatesApi(),
         ]);
 
-        // Safely parse API responses using unknown type narrowing
         const parsedTemplates = templatesRes as unknown;
 
-
+        let fetched: EventTemplate[] = [];
         if (Array.isArray(parsedTemplates)) {
-          setTemplates(parsedTemplates);
+          fetched = parsedTemplates;
         } else if (
           parsedTemplates &&
           typeof parsedTemplates === "object" &&
           "data" in parsedTemplates &&
           Array.isArray((parsedTemplates as { data: unknown }).data)
         ) {
-          setTemplates((parsedTemplates as { data: EventTemplate[] }).data);
+          fetched = (parsedTemplates as { data: EventTemplate[] }).data;
         }
+
+        setTemplates(fetched);
       } catch (error) {
         console.error("Failed to load event metadata:", error);
       } finally {
@@ -106,6 +108,17 @@ export function StepBranding({ onNext, isSaving }: StepProps) {
 
     fetchMetadata();
   }, []);
+
+  // For external events, auto-select the default template if none selected
+  // The first template is always the free/default one — no badge needed on it
+  const defaultTemplateId = templates[0]?.id;
+
+  React.useEffect(() => {
+    if (!isExternal || !templates.length) return;
+    if (selectedTemplate !== defaultTemplateId) {
+      setValue("templateId", defaultTemplateId, { shouldValidate: true });
+    }
+  }, [isExternal, templates, selectedTemplate, defaultTemplateId, setValue]);
 
   const isCoverVideo = React.useMemo(() => {
     if (!coverImage) return false;
@@ -122,7 +135,7 @@ export function StepBranding({ onNext, isSaving }: StepProps) {
     ]);
     await onNext();
     if (isValid) {
-      router.push("?step=ticketing");
+      router.push(isExternal ? "?step=review" : "?step=ticketing");
     }
   };
 
@@ -366,17 +379,23 @@ export function StepBranding({ onNext, isSaving }: StepProps) {
             <div className="flex gap-4 overflow-x-auto pb-3 pt-1 scrollbar-none snap-x snap-mandatory -mx-1 px-1">
               {templates.map((tpl) => {
                 const isSelected = selectedTemplate === tpl.id;
+                const isDefault = tpl.id === defaultTemplateId;
+                const isDisabled = isExternal && !isDefault;
                 return (
                   <div
                     key={tpl.id}
                     onClick={() =>
+                      !isDisabled &&
                       setValue("templateId", tpl.id, { shouldValidate: true })
                     }
                     className={cn(
-                      "relative group flex-shrink-0 w-32 h-24 rounded-2xl overflow-hidden cursor-pointer snap-start border-2 transition-all duration-200",
+                      "relative group flex-shrink-0 w-32 h-24 rounded-2xl overflow-hidden snap-start border-2 transition-all duration-200",
+                      isDisabled
+                        ? "opacity-40 cursor-not-allowed grayscale"
+                        : "cursor-pointer",
                       isSelected
                         ? "border-zinc-950 ring-2 ring-zinc-950 ring-offset-2 scale-[1.01]"
-                        : "border-transparent opacity-80 hover:opacity-100",
+                        : !isDisabled && "border-transparent opacity-80 hover:opacity-100",
                     )}
                   >
                     {tpl.preview && (
@@ -388,6 +407,11 @@ export function StepBranding({ onNext, isSaving }: StepProps) {
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
+                    {isDisabled && (
+                      <div className="absolute top-1.5 left-1.5 bg-zinc-800/80 text-white text-[7px] font-semibold uppercase tracking-wider px-1 py-px rounded">
+                        Internal only
+                      </div>
+                    )}
                     {isSelected && (
                       <div className="absolute top-2.5 right-2.5 bg-zinc-950 text-white rounded-full p-1 shadow-md">
                         <Check className="w-3.5 h-3.5" />
@@ -532,6 +556,8 @@ export function StepBranding({ onNext, isSaving }: StepProps) {
         >
           {isSaving ? (
             <Loader2 className="h-4 w-4 animate-spin" />
+          ) : isExternal ? (
+            "Continue to Review"
           ) : (
             "Continue to Tickets"
           )}
