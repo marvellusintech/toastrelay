@@ -5,7 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import { Eye, EyeOff, KeyRound } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -24,7 +24,7 @@ import {
   type ResetPasswordValues,
 } from "@/validations/auth.schema";
 
-export default function ResetPasswordPage() {
+function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
@@ -180,5 +180,26 @@ export default function ResetPasswordPage() {
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="px-4 py-20 lg:px-0">
+          <div className="mx-auto my-20 max-w-lg">
+            <Card className="p-8 text-center space-y-4">
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-black border-t-transparent mx-auto" />
+              <p className="text-sm font-medium text-black/60">
+                Loading password reset form...
+              </p>
+            </Card>
+          </div>
+        </div>
+      }
+    >
+      <ResetPasswordForm />
+    </Suspense>
   );
 }

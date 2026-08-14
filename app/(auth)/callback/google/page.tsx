@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react"; // 👈 You can remove useRef from here
+import { useEffect, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -9,19 +9,20 @@ import { useAuthStore } from "@/lib/store/useAuthStore";
 import { SocialProvider } from "@/types/enum";
 import { saveAuthToken } from "@/lib/auth-cookies";
 
-let isHandshakeTriggered = false;
-
-export default function GoogleCallbackPage() {
+function GoogleCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const setAuth = useAuthStore((state) => state.setAuth);
+  
+  // Track handshake state per component instance instead of global variable
+  const isHandshakeTriggered = useRef(false);
 
   const socialAuthMutation = useMutation({
     mutationFn: socialAuthApi,
   });
 
   useEffect(() => {
-    if (isHandshakeTriggered) return;
+    if (isHandshakeTriggered.current) return;
 
     const code = searchParams.get("code");
     const state = searchParams.get("state");
@@ -48,7 +49,7 @@ export default function GoogleCallbackPage() {
       return;
     }
 
-    isHandshakeTriggered = true;
+    isHandshakeTriggered.current = true;
 
     sessionStorage.removeItem("oauth_state");
     sessionStorage.removeItem("pkce_verifier");
@@ -69,7 +70,7 @@ export default function GoogleCallbackPage() {
         toast.success("Logged in successfully via Google!");
         router.push("/dashboard");
       } catch (err) {
-        isHandshakeTriggered = false;
+        isHandshakeTriggered.current = false;
         toast.error("Server authentication failed.");
         router.push("/login");
       }
@@ -87,5 +88,24 @@ export default function GoogleCallbackPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function GoogleCallbackPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex h-screen w-full items-center justify-center bg-white">
+          <div className="text-center space-y-3">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-black border-t-transparent mx-auto"></div>
+            <p className="text-sm font-medium text-black/70 font-mono tracking-wide">
+              Loading authentication...
+            </p>
+          </div>
+        </div>
+      }
+    >
+      <GoogleCallbackContent />
+    </Suspense>
   );
 }

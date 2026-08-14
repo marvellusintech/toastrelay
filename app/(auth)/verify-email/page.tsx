@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { motion } from "motion/react";
@@ -12,9 +12,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { verifyEmailApi } from "@/lib/api/auth";
 
-
-
-export default function VerifyEmailPage() {
+function VerifyEmailContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
@@ -116,5 +114,22 @@ export default function VerifyEmailPage() {
         </Card>
       </motion.div>
     </div>
+  );
+}
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="py-20 px-4 max-w-xl mx-auto my-20">
+          <Card className="p-8 text-center space-y-4">
+            <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto" />
+            <h3 className="text-2xl font-bold text-black">Loading...</h3>
+          </Card>
+        </div>
+      }
+    >
+      <VerifyEmailContent />
+    </Suspense>
   );
 }

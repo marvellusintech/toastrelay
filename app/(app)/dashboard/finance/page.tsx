@@ -1,20 +1,18 @@
 "use client";
 
+import { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   Loader2,
   Wallet as WalletIcon,
-  ArrowDownToLine,
   Building2,
   Coins,
-  LayoutDashboard,
 } from "lucide-react";
-import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useSearchParams } from "next/navigation";
 
 import { getBanksApi, getEarningsApi, getTransactionHistoryApi } from "@/lib/api/withdrawals";
 import { queryKeys } from "@/lib/api/query_keys";
-import type { BankInfo, TransactionHistory } from "@/types/response";
+import type { TransactionHistory } from "@/types/response";
 
 import { FinanceOverview } from "./_components/finance-overview";
 import { FinanceTopUp } from "./_components/finance-topup";
@@ -27,14 +25,12 @@ type FinanceTab = "overview" | "topup" | "withdraw" | "bank" | "history";
 const TAB_IDS: FinanceTab[] = ["overview", "topup", "withdraw", "bank", "history"];
 
 const financeTabs = [
-  // { id: "overview" as const, label: "Overview", icon: LayoutDashboard },
   { id: "topup" as const, label: "Top Up", icon: Coins },
-  // { id: "withdraw" as const, label: "Withdraw", icon: ArrowDownToLine },
   { id: "bank" as const, label: "Bank Account", icon: Building2 },
   { id: "history" as const, label: "Transaction History", icon: WalletIcon },
 ];
 
-export default function FinancePage() {
+function FinanceContent() {
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();
   const initialTab = TAB_IDS.includes(searchParams.get("tab") as FinanceTab)
@@ -53,7 +49,7 @@ export default function FinancePage() {
   const pendingBalance = earnings ? Number(earnings.pending.balance) : 0;
   const availableBalance = earnings ? Number(earnings.available.balance) : 0;
 
-  // --- Banks (kept here for tab validation/awareness if needed) ---
+  // --- Banks ---
   const { data: banksData } = useQuery({
     queryKey: queryKeys.withdrawals.banks(),
     queryFn: () => getBanksApi(),
@@ -145,5 +141,19 @@ export default function FinancePage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function FinancePage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="mx-auto flex min-h-[50vh] w-full max-w-5xl items-center justify-center px-6 py-8">
+          <Loader2 className="h-8 w-8 animate-spin text-muted" />
+        </main>
+      }
+    >
+      <FinanceContent />
+    </Suspense>
   );
 }
