@@ -150,6 +150,7 @@ export type EventTemplate = {
   name: string;
   description: string | null;
   preview: string | null;
+  priceCredits: number;
 
   theme: {
     primaryColor?: string;
@@ -465,7 +466,93 @@ export type InitializePaymentResult = {
 };
 
 //////////////////////
+// WITHDRAWALS & EARNINGS
+//////////////////////
+
+export type BankInfo = {
+  code: string;
+  name: string;
+  slug: string;
+  type: string;
+  isActive: boolean;
+};
+
+export type HostBankAccount = {
+  userId: string;
+  bankCode: string;
+  bankName: string;
+  accountNumber: string;
+  accountName: string;
+  recipientCode: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type EarningsWallet = {
+  pending: {
+    balance: number | string;
+    entries: EarningsEntry[];
+  };
+  available: {
+    balance: number | string;
+    entries: EarningsEntry[];
+  };
+  withdrawals: EarningsEntry[];
+};
+
+export type EarningsEntry = {
+  id: string;
+  walletId: string;
+  type: string;
+  status: string;
+  amount: number | string;
+  description: string | null;
+  eventId: string | null;
+  paymentId: string | null;
+  settledAt: string | null;
+  createdAt: string;
+};
+
+export type WithdrawalRecord = {
+  id: string;
+  userId: string;
+  amount: number | string;
+  status: "PENDING" | "PROCESSING" | "SUCCESS" | "FAILED";
+  transferCode: string | null;
+  transferReference: string | null;
+  failureReason: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type WithdrawalResult = {
+  withdrawalId: string;
+  amount: number;
+  reference: string;
+  transferCode: string;
+};
+
+export type TransactionHistoryItem = {
+  id: string;
+  type: string;
+  status: string;
+  amount: number | string;
+  description: string | null;
+  eventId: string | null;
+  settledAt: string | null;
+  date: string;
+  category: "earnings" | "withdrawal";
+};
+
+export type TransactionHistory = {
+  pending: TransactionHistoryItem[];
+  available: TransactionHistoryItem[];
+  withdrawn: TransactionHistoryItem[];
+};
+
+//////////////////////
 // TICKETS: GUEST LOOKUP
+//////////////////////
 //////////////////////
 
 export type LookupGuestTicketResult = {
@@ -476,3 +563,61 @@ export type LookupGuestTicketResult = {
     qrPayload: string;
   }>;
 };
+
+export type UserPass = {
+  id: string;
+  type: "TICKET" | "RSVP";
+  status?: string;
+  checkedInAt?: Date | string;
+  event: {
+    id: string;
+    name: string;
+    slug: string;
+    startDate: Date | string;
+    endDate?: Date | string;
+    location?: string;
+    coverImage?: string;
+  };
+  tier?: {
+    id: string;
+    name: string;
+    price: number;
+  } | null;
+  attendee: {
+    name: string;
+    detail: string;
+  };
+  checkinCode?: string;
+  qrToken?: string;
+  qrImageUrl?: string;
+  payload: string;
+  createdAt?: Date | string;
+};
+
+
+
+export interface SettlementStatus {
+    settlement:       Settlement;
+    earningsTracking: EarningsTracking;
+}
+
+export interface EarningsTracking {
+    pendingAmount:  number;
+    maturedAmount:  number;
+    nextExpectedAt: null;
+    notice:         string;
+}
+
+export interface Settlement {
+    provider:                      string;
+    mode:                          string;
+    status:                        string;
+    expectedSettlementWindowHours: number;
+    destination:                   Destination;
+}
+
+export interface Destination {
+    bankName:      string;
+    accountNumber: string;
+    accountName:   string;
+}

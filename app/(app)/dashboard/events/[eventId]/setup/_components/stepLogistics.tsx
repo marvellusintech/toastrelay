@@ -2,7 +2,6 @@
 "use client";
 
 import { Controller, FieldPath, useFormContext } from "react-hook-form";
-import { useRouter } from "next/navigation";
 import { type WizardFormValues } from "@/validations/event.schema";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -33,7 +32,6 @@ interface StepProps {
 }
 
 export function StepLogistics({ onNext, isSaving }: StepProps) {
-  const router = useRouter();
   const {
     register,
     watch,
@@ -94,7 +92,6 @@ export function StepLogistics({ onNext, isSaving }: StepProps) {
 
     if (isValid) {
       await onNext();
-      router.push("?step=branding");
     }
   };
 

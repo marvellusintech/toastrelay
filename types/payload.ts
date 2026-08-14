@@ -118,6 +118,8 @@ export type InitializePaymentPayload = {
   provider: PaymentProvider;
   intentType: PaymentIntentType;
   intentId?: string;
+  quantity?: number;
+  callbackUrl?: string;
 
   email?: string;
   eventId?: string;
@@ -272,9 +274,27 @@ export type PurchaseStoragePayload = {
   callbackUrl?: string;
 };
 
+// ---------- WITHDRAWALS ----------
+
+export type SaveBankAccountPayload = {
+  bankCode: string;
+  bankName: string;
+  accountNumber: string;
+  accountName: string;
+};
+
+export type RequestWithdrawalPayload = {
+  amount: number;
+};
+
 // ---------- TICKETS ----------
 
 export type LookupGuestTicketPayload = {
   reference: string;
   email: string;
+};
+
+export type ResolveAccountPayload = {
+  accountNumber: string;
+  bankCode: string;
 };

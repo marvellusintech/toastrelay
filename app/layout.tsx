@@ -23,10 +23,16 @@ const inter = Inter({
   subsets: ["latin"],
   variable: "--font-body",
 });
+
 export const metadata: Metadata = {
   title: "ToastRelay",
   description:
     "The frontend for event stages, guest presence, toasts, moments, and passes.",
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
+  },
 };
 
 export default function RootLayout({
@@ -42,14 +48,12 @@ export default function RootLayout({
         "font-sans",
         inter.variable,
         syncopate.variable,
-        inter.variable,
         spaceGrotesk.variable,
       )}
     >
-      <body className="min-h-full  bg-background text-foreground">
-
-     <AuthEventListener>
-        <Providers>{children}</Providers>
+      <body className="min-h-full bg-background text-foreground">
+        <AuthEventListener>
+          <Providers>{children}</Providers>
         </AuthEventListener>
         <Script
           src="https://accounts.google.com/gsi/client"

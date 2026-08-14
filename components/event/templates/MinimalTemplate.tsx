@@ -26,6 +26,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { RSVPStatus } from "@/types/enum";
 import { submitRsvpApi, createToastApi } from "@/lib/api/events";
+import TicketPurchaseModal from "@/components/event/TicketPurchaseModal";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -187,6 +188,8 @@ export default function MinimalTemplate({
   const [isToastModalOpen, setIsToastModalOpen] = useState(false);
   const [isToastSubmitted, setIsToastSubmitted] = useState(false);
   const [toastApiError, setToastApiError] = useState<string | null>(null);
+  const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
+  const [isTicketSuccess, setIsTicketSuccess] = useState(false);
 
   const asideRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -217,17 +220,22 @@ export default function MinimalTemplate({
     const toastParam = searchParams.get("toast");
     const referenceParam =
       searchParams.get("reference") || searchParams.get("trxref");
-    if (toastParam === "success" || referenceParam) {
+    if (toastParam === "success") {
       setIsToastModalOpen(true);
       setIsToastSubmitted(true);
-      const updatedParams = new URLSearchParams(searchParams.toString());
-      updatedParams.delete("toast");
-      updatedParams.delete("reference");
-      updatedParams.delete("trxref");
-      const newQuery = updatedParams.toString();
-      const newUrl = newQuery ? `${pathname}?${newQuery}` : pathname;
-      window.history.replaceState(null, "", newUrl);
+    } else if (referenceParam) {
+      // Returned from a ticket payment redirect.
+      setIsTicketSuccess(true);
+      setIsTicketModalOpen(true);
     }
+
+    const updatedParams = new URLSearchParams(searchParams.toString());
+    updatedParams.delete("toast");
+    updatedParams.delete("reference");
+    updatedParams.delete("trxref");
+    const newQuery = updatedParams.toString();
+    const newUrl = newQuery ? `${pathname}?${newQuery}` : pathname;
+    window.history.replaceState(null, "", newUrl);
   }, [searchParams, pathname]);
 
   const {
@@ -754,8 +762,8 @@ export default function MinimalTemplate({
                             <div>
                               <p className="font-medium text-zinc-900">{tier.name}</p>
                               <p className="text-xs text-zinc-400">
-                                {tier.remaining > 0
-                                  ? `${tier.remaining} left`
+                                {tier.capacity - tier.sold > 0
+                                  ? `${Math.max(tier.capacity - tier.sold, 0)} left`
                                   : "Sold out"}
                               </p>
                             </div>
@@ -803,6 +811,7 @@ export default function MinimalTemplate({
                     variant="secondary"
                       className="w-full font-semibold text-white h-11"
                       style={primaryButtonStyle}
+                      onClick={() => setIsTicketModalOpen(true)}
                     >
                       <Ticket className="w-4 h-4 mr-2" /> Register Now
                     </Button>
@@ -1167,7 +1176,19 @@ export default function MinimalTemplate({
           </div>
         </div>
       )}
+      {/* Ticket Purchase Modal */}
+      {ticketEvent && ticketEvent.tiers.length > 0 && (
+        <TicketPurchaseModal
+          open={isTicketModalOpen}
+          onOpenChange={setIsTicketModalOpen}
+          tiers={ticketEvent.tiers}
+          currency={currency}
+          eventId={eventId}
+          eventName={name}
+          slug={event.slug}
+          success={isTicketSuccess}
+        />
+      )}
     </div>
   );
 }
-

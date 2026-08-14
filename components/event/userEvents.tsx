@@ -18,6 +18,7 @@ import {
 import { getUserEventsApi, deleteEventApi } from "@/lib/api/events"; 
 import { EventDetails } from "@/types/response";
 import { getFileUrl } from "@/lib/utils/getFileUrl";
+import { Button } from "../ui/button";
 
 export interface UserEvent {
   id: string;
@@ -63,8 +64,14 @@ export const UserEvents: React.FC = () => {
 
   // Sentinel ref for infinite scrolling
   const observerTarget = useRef<HTMLDivElement>(null);
+  const isFetchingRef = useRef(false);
 
   const fetchEvents = useCallback(async (pageToFetch: number) => {
+    if (isFetchingRef.current) return;
+
+    isFetchingRef.current = true;
+    setError(null);
+
     try {
       if (pageToFetch === 1) setLoading(true);
       else setIsFetchingMore(true);
@@ -77,42 +84,41 @@ export const UserEvents: React.FC = () => {
           pageToFetch === 1 ? data.events : [...prev, ...data.events]
         );
         if (data.pagination) setTotalPages(data.pagination.totalPages);
+        setPage(pageToFetch);
+      } else {
+        setError("No event data was returned.");
+        setTotalPages((currentTotalPages) =>
+          Math.min(currentTotalPages, pageToFetch - 1)
+        );
       }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Failed to load events.");
+      // A visible sentinel would immediately retry a failed page otherwise.
+      setTotalPages((currentTotalPages) =>
+        Math.min(currentTotalPages, pageToFetch - 1)
+      );
     } finally {
+      isFetchingRef.current = false;
       setLoading(false);
       setIsFetchingMore(false);
     }
   }, []);
 
   useEffect(() => {
-    async function loadInitial() {
-      try {
-        const res = await getUserEventsApi({ page: 1, limit: 12 });
-        if (res.data) {
-          setEvents(res.data.events);
-          if (res.data.pagination) setTotalPages(res.data.pagination.totalPages);
-        }
-      } catch (err: unknown) {
-        setError(err instanceof Error ? err.message : "Failed to load events.");
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadInitial();
-  }, []);
+    const timer = setTimeout(() => void fetchEvents(1), 0);
+    return () => clearTimeout(timer);
+  }, [fetchEvents]);
 
   // Observer for Infinite Scrolling
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && page < totalPages && !isFetchingMore) {
-          setPage((prevPage) => {
-            const nextPage = prevPage + 1;
-            fetchEvents(nextPage);
-            return nextPage;
-          });
+        if (
+          entries[0].isIntersecting &&
+          page < totalPages &&
+          !isFetchingRef.current
+        ) {
+          void fetchEvents(page + 1);
         }
       },
       { threshold: 0.1 }
@@ -123,7 +129,7 @@ export const UserEvents: React.FC = () => {
     }
 
     return () => observer.disconnect();
-  }, [page, totalPages, isFetchingMore, fetchEvents]);
+  }, [page, totalPages, fetchEvents]);
 
   const handleDelete = async (eventId: string) => {
     if (!confirm("Are you sure you want to delete this event?")) return;
@@ -171,15 +177,16 @@ export const UserEvents: React.FC = () => {
         <h3 className="text-base font-bold text-neutral-900 mb-1">
           No events created yet
         </h3>
-        <p className="text-xs text-neutral-500 max-w-xs mx-auto mb-5">
+        <p className="text-xs text-neutral-500 max-w-xs mx-auto mb-6">
           Get started by creating your first celebration or gathering thread.
         </p>
-        <button
+        <Button
           onClick={() => router.push("/dashboard/create")}
-          className="bg-turquoise text-neutral-950 font-bold text-xs px-5 py-2.5 rounded-full hover:bg-turquoise-dark transition"
+          variant="secondary"
+          size="sm"
         >
           Create Event
-        </button>
+        </Button>
       </div>
     );
   }

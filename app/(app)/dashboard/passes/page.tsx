@@ -1,116 +1,188 @@
 "use client";
 
-import { Loader2, Ticket, RefreshCw } from "lucide-react";
-import Link from "next/link";
-import { useQuery } from "@tanstack/react-query";
+import * as React from "react";
+import { Loader2, Ticket, RefreshCw, Calendar, Clock, ArrowRight } from "lucide-react";
 
-import { getUserEventsApi } from "@/lib/api/events";
-import { useMyPass } from "@/app/_queries/pass";
-import { QrCode } from "@/components/ui/qr-code";
+import { useAllMyPasses } from "@/app/_queries/pass";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { queryKeys } from "@/lib/api/query_keys";
+import { UserPass } from "@/types/response";
+import { EventPassModal } from "@/components/event/EventPassModal";
+import { isVideoUrl } from "@/lib/utils/media";
+import { getFileUrl } from "@/lib/utils/getFileUrl";
 
-function PassCard({ eventId }: { eventId: string }) {
-  const { data, isLoading, isError } = useMyPass(eventId);
+function formatShortDate(date: Date | string) {
+  return new Date(date).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
 
-  if (isLoading) {
+function formatTime(date: Date | string) {
+  return new Date(date).toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+}
+
+function EventThumb({ src, alt }: { src: string; alt: string }) {
+  const url = getFileUrl(src);
+  if (isVideoUrl(src)) {
     return (
-      <Card className="flex h-56 items-center justify-center px-6 py-8">
-        <Loader2 className="h-6 w-6 animate-spin text-muted" />
-      </Card>
+      <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-muted">
+        <video
+          src={url}
+          preload="metadata"
+          muted
+          playsInline
+          className="h-full w-full object-cover"
+        />
+      </div>
     );
   }
-
-  if (isError || !data?.data) {
-    return (
-      <Card className="flex h-56 flex-col items-center justify-center gap-3 px-6 py-8 text-center text-sm text-muted-foreground">
-        <p>No pass yet for this event.</p>
-        <p className="text-xs">
-          RSVP or buy a ticket to get your QR pass.
-        </p>
-      </Card>
-    );
-  }
-
-  const pass = data.data;
 
   return (
-    <Card className="flex flex-col items-center px-6 py-8 text-center">
-      <span className="rounded-full bg-muted px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-        {pass.type === "TICKET" ? "Ticket pass" : "Guest pass"}
-      </span>
+    <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-muted">
+      <img
+        src={url}
+        alt={alt}
+        className="h-full w-full object-cover"
+        loading="lazy"
+      />
+    </div>
+  );
+}
 
-      <div className="my-5 rounded-2xl border border-line bg-white p-4">
-        <QrCode value={pass.payload} size={168} />
+function PassRow({ pass, onClick }: { pass: UserPass; onClick: () => void }) {
+  const isCheckedIn = pass.status === "USED" || Boolean(pass.checkedInAt);
+
+  return (
+    <button
+      onClick={onClick}
+      className="group flex w-full items-center gap-4 rounded-xl border border-line bg-white p-4 text-left transition hover:border-turquoise/40 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-turquoise"
+    >
+      {pass.event.coverImage ? (
+        <EventThumb src={pass.event.coverImage} alt={pass.event.name} />
+      ) : (
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-turquoise/10">
+          <Ticket className="h-5 w-5 text-turquoise" />
+        </div>
+      )}
+
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2">
+          <h3 className="truncate text-sm font-bold text-foreground">
+            {pass.event.name}
+          </h3>
+          {isCheckedIn && (
+            <span className="shrink-0 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-600">
+              Checked in
+            </span>
+          )}
+        </div>
+        <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[11px] text-muted-foreground">
+          <span className="flex items-center gap-1">
+            <Calendar className="h-3 w-3" />
+            {formatShortDate(pass.event.startDate)}
+          </span>
+          <span className="flex items-center gap-1">
+            <Clock className="h-3 w-3" />
+            {formatTime(pass.event.startDate)}
+          </span>
+          {pass.attendee.detail && (
+            <>
+              <span className="text-line">·</span>
+              <span>{pass.attendee.detail}</span>
+            </>
+          )}
+        </div>
       </div>
 
-      <h3 className="text-base font-bold text-foreground">{pass.attendee.name}</h3>
-      {pass.attendee.detail && (
-        <p className="mt-1 text-xs text-muted-foreground">{pass.attendee.detail}</p>
-      )}
-      <p className="mt-3 text-[10px] text-muted-foreground">
-        Show this code at the door to check in.
-      </p>
-    </Card>
+      <div className="shrink-0 rounded-full border border-line p-2 text-muted-foreground transition group-hover:border-turquoise group-hover:text-turquoise">
+        <ArrowRight className="h-4 w-4" />
+      </div>
+    </button>
   );
 }
 
 export default function PassesPage() {
-  const { data, isLoading, isError, refetch, isRefetching } = useQuery({
-    queryKey: queryKeys.events.list({ role: "guest", limit: 50 }),
-    queryFn: () => getUserEventsApi({ role: "guest", limit: 50 }),
-  });
+  const { data, isLoading, isError, refetch, isRefetching } = useAllMyPasses();
+  const [selectedPass, setSelectedPass] = React.useState<UserPass | null>(null);
 
-  const guestEvents = data?.data?.events ?? [];
+  const passes = data?.data ?? [];
 
   return (
-    <main className="bg-[#FAF9F6]">
-      <div className="mx-auto w-full max-w-5xl px-6 py-8 sm:px-8 lg:px-10">
+    <main className="bg-[#FAF9F6] min-h-screen">
+      <div className="mx-auto w-full max-w-3xl px-6 py-8 sm:px-8 lg:px-10">
         <div className="flex flex-col gap-4 border-b border-line pb-8 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="mt-2 text-4xl font-black font-display md:text-2xl">
+            <h1 className="mt-2 text-3xl font-black font-display md:text-4xl">
               My passes
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              Your QR passes for events you&apos;ve RSVP&apos;d to or bought tickets for.
+              Tap a pass to view your QR code and check-in details.
             </p>
           </div>
-          <Link href="/dashboard" className="shrink-0">
-            <Button variant="secondary" size="sm">Back to dashboard</Button>
-          </Link>
+          <div className="flex items-center gap-3 shrink-0">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => refetch()}
+              disabled={isRefetching}
+            >
+              <RefreshCw className={`h-4 w-4 mr-1.5 ${isRefetching ? "animate-spin" : ""}`} />
+              Refresh
+            </Button>
+          </div>
         </div>
 
-        <div className="py-8">
+        <div className="py-6">
           {isLoading ? (
             <div className="flex items-center justify-center py-20">
-              <Loader2 className="h-6 w-6 animate-spin text-muted" />
+              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
             </div>
           ) : isError ? (
             <div className="flex flex-col items-center gap-3 py-16 text-center text-sm text-muted-foreground">
               <p>Unable to load your passes.</p>
               <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isRefetching}>
-                <RefreshCw className="h-4 w-4" />
+                <RefreshCw className="h-4 w-4 mr-1.5" />
                 Retry
               </Button>
             </div>
-          ) : guestEvents.length === 0 ? (
+          ) : passes.length === 0 ? (
             <div className="flex flex-col items-center gap-3 py-20 text-center">
-              <Ticket className="h-8 w-8 text-muted" />
-              <p className="text-sm font-semibold text-foreground">No passes yet</p>
+              <Ticket className="h-10 w-10 text-muted-foreground/50" />
+              <p className="text-base font-semibold text-foreground">No passes yet</p>
               <p className="max-w-sm text-xs text-muted-foreground">
                 When you RSVP to an event or buy a ticket, your QR pass will appear here.
               </p>
             </div>
           ) : (
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {guestEvents.map((event) => (
-                <PassCard key={event.id} eventId={event.id} />
+            <div className="flex flex-col gap-3">
+              {passes.map((pass) => (
+                <PassRow
+                  key={pass.id}
+                  pass={pass}
+                  onClick={() => setSelectedPass(pass)}
+                />
               ))}
             </div>
           )}
         </div>
       </div>
+
+      {selectedPass && (
+        <EventPassModal
+          open={Boolean(selectedPass)}
+          onOpenChange={(open) => {
+            if (!open) setSelectedPass(null);
+          }}
+          eventId={selectedPass.event.id}
+          eventName={selectedPass.event.name}
+          preloadedPass={selectedPass}
+        />
+      )}
     </main>
   );
 }

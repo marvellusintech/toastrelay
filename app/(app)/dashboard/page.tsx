@@ -1,4 +1,4 @@
-import { Plus } from "lucide-react";
+import { Plus, CircleUserRound } from "lucide-react";
 import Link from "next/link";
 
 import { UserEvents } from "@/components/event/userEvents";
@@ -48,20 +48,28 @@ export default async function DashboardPage({
         {/* ── Quick access: circles & passes ─── */}
         <QuickAccess />
 
-        <div className="mt-6 mb-8 flex gap-2 overflow-x-auto border-b border-line">
-          {tabs.map((tab) => (
-            <Link
-              key={tab.value}
-              href={`/dashboard?tab=${tab.value}`}
-              className={`shrink-0 border-b-2 px-1 pb-2 text-sm font-bold uppercase tracking- transition ${
-                activeTab === tab.value
-                  ? "border-turquoise text-foreground"
-                  : "border-transparent text-neutral-400 hover:text-foreground"
-              }`}
-            >
-              {tab.label}
-            </Link>
-          ))}
+        <div className="mt-6 mb-8 flex items-center justify-between gap-2 border-b border-line">
+          <div className="flex gap-2 overflow-x-auto">
+            {tabs.map((tab) => (
+              <Link
+                key={tab.value}
+                href={`/dashboard?tab=${tab.value}`}
+                className={`shrink-0 border-b-2 px-1 pb-2 text-sm font-bold uppercase tracking- transition ${
+                  activeTab === tab.value
+                    ? "border-turquoise text-foreground"
+                    : "border-transparent text-neutral-400 hover:text-foreground"
+                }`}
+              >
+                {tab.label}
+              </Link>
+            ))}
+          </div>
+          <Link href="/dashboard/circles" className="shrink-0">
+            <Button variant="outline" size="sm" className="gap-1.5">
+              <CircleUserRound className="h-3.5 w-3.5" />
+              Circles
+            </Button>
+          </Link>
         </div>
 
         {activeTab === "analytics" ? (

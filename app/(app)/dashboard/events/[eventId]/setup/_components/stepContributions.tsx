@@ -26,7 +26,6 @@ export function StepContributions({ onNext, isSaving }: StepProps) {
 
   const handleSubmit = async () => {
     await onNext();
-    router.push("?step=review");
   };
 
   return (

@@ -360,21 +360,14 @@ export function EventDetailsPage({ event }: EventDetailsPageProps) {
           </Button>
 
           <div className="flex items-center gap-3">
-            <span
-              className={cn(
-                "rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider",
-                statusStyle.class,
-              )}
-            >
-              {statusStyle.label}
-            </span>
+
             <Button asChild variant="outline" size="sm">
               <Link href={`/dashboard/events/${event.id}/check-in`}>
                 <ScanLine className="h-4 w-4" />
                 Scan check-in
               </Link>
             </Button>
-            <Button variant="outline" asChild size="sm">
+            <Button variant="secondary" asChild size="sm">
               <Link
                 href={`/dashboard/events/${event.id}/setup?step=logistics`}
               >
@@ -429,6 +422,15 @@ export function EventDetailsPage({ event }: EventDetailsPageProps) {
                   </>
                 )}
               </span>
+
+                          <span
+              className={cn(
+                "rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider",
+                statusStyle.class,
+              )}
+            >
+              {statusStyle.label}
+            </span>
             </div>
 
             {event.eventType?.label && (
@@ -877,6 +879,7 @@ export function EventDetailsPage({ event }: EventDetailsPageProps) {
                           tier.capacity > 0
                             ? Math.round((tier.sold / tier.capacity) * 100)
                             : 0;
+                        const remaining = Math.max(tier.capacity - tier.sold, 0);
 
                         return (
                           <Card key={tier.id} size="sm" className="px-5 py-4">
@@ -904,7 +907,7 @@ export function EventDetailsPage({ event }: EventDetailsPageProps) {
                               />
                             </div>
                             <p className="mt-1 text-right text-[11px] text-muted-foreground">
-                              {tier.remaining} remaining
+                              {remaining} remaining
                             </p>
                           </Card>
                         );

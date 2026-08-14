@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { RichTextEditor } from "@/components/richTextEditor";
 import { getFileUrl } from "@/lib/utils/getFileUrl";
+import { useWallet } from "@/app/_queries/wallet";
 
 import {
   Popover,
@@ -36,11 +37,12 @@ import {
   X,
   Film,
   AlertCircle,
+  Coins,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-import { getEventCatgoriesApi, getEventTemplatesApi } from "@/lib/api/events";
-import { EventTemplate, EventType } from "@/types/response";
+import { getEventTemplatesApi } from "@/lib/api/events";
+import { EventTemplate } from "@/types/response";
 // import { type EventCategory, type EventTemplate } from "@/types/response";
 
 const MAX_EXTRA_MEDIA = 10;
@@ -52,6 +54,8 @@ interface StepProps {
 
 export function StepBranding({ onNext, isSaving }: StepProps) {
   const router = useRouter();
+  const { data: walletData, isLoading: walletLoading } = useWallet();
+  const creditsBalance = walletData?.data ? Number(walletData.data.balance) : 0;
 
   const [uploadError, setUploadError] = React.useState<string | null>(null);
 
@@ -133,9 +137,8 @@ export function StepBranding({ onNext, isSaving }: StepProps) {
       "description",
       "coverImage",
     ]);
-    await onNext();
     if (isValid) {
-      router.push(isExternal ? "?step=review" : "?step=ticketing");
+      await onNext();
     }
   };
 
@@ -368,7 +371,20 @@ export function StepBranding({ onNext, isSaving }: StepProps) {
             <label className="text-sm font-medium text-zinc-900">
               Layout Template
             </label>
-            <span className="text-xs text-zinc-400">Scroll to view all</span>
+            <div className="flex items-center gap-3">
+              <span
+                className={cn(
+                  "inline-flex items-center gap-1.5 text-xs font-semibold",
+                  walletLoading ? "text-zinc-400" : "text-zinc-700",
+                )}
+              >
+                <Coins className="w-3.5 h-3.5 text-amber-500" />
+                {walletLoading
+                  ? "Loading credits…"
+                  : `${creditsBalance.toLocaleString()} credits`}
+              </span>
+              <span className="text-xs text-zinc-400">Scroll to view all</span>
+            </div>
           </div>
 
           {isLoadingMeta ? (
@@ -381,6 +397,8 @@ export function StepBranding({ onNext, isSaving }: StepProps) {
                 const isSelected = selectedTemplate === tpl.id;
                 const isDefault = tpl.id === defaultTemplateId;
                 const isDisabled = isExternal && !isDefault;
+                const isPremium = (tpl.priceCredits || 0) > 0;
+                const cannotAfford = isPremium && creditsBalance < tpl.priceCredits;
                 return (
                   <div
                     key={tpl.id}
@@ -418,6 +436,17 @@ export function StepBranding({ onNext, isSaving }: StepProps) {
                       </div>
                     )}
 
+                    {isPremium && (
+                      <div
+                        className={cn(
+                          "absolute top-1.5 right-1.5 text-white text-[8px] font-bold uppercase tracking-wider px-1.5 py-px rounded-full",
+                          cannotAfford ? "bg-rose-500" : "bg-amber-500",
+                        )}
+                      >
+                        {cannotAfford ? "Insufficient" : `${tpl.priceCredits} credits`}
+                      </div>
+                    )}
+
                     <div className="absolute bottom-0 inset-x-0 p-3">
                       <p className="text-sm font-bold text-white leading-tight">
                         {tpl.name}
@@ -428,6 +457,30 @@ export function StepBranding({ onNext, isSaving }: StepProps) {
               })}
             </div>
           )}
+          {selectedTemplate &&
+            templates.some(
+              (tpl) =>
+                tpl.id === selectedTemplate &&
+                (tpl.priceCredits || 0) > 0 &&
+                creditsBalance < (tpl.priceCredits || 0),
+            ) && (
+              <div className="flex items-center justify-between gap-3 p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800">
+                <p className="text-xs leading-relaxed">
+                  This premium template costs credits. Your current balance
+                  isn&apos;t enough — top up your wallet to use it.
+                </p>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  className="shrink-0 gap-1.5"
+                  onClick={() => router.push("/dashboard/finance")}
+                >
+                  <Coins className="w-3.5 h-3.5" />
+                  Top up
+                </Button>
+              </div>
+            )}
           {errors.templateId && (
             <p className="text-xs text-red-500">{errors.templateId.message}</p>
           )}

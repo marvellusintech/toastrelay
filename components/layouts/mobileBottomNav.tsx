@@ -48,7 +48,7 @@ export function MobileBottomNav({ items }: BottomNavProps) {
           );
         })}
 
-                  <Link href="/dashboard/profile" aria-label="Go to profile">
+                  <Link href="/dashboard/settings" aria-label="Go to profile">
             <Avatar>
               <AvatarImage src="https://github.com/shadcn.png" />
               <AvatarFallback>

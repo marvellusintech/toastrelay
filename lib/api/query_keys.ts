@@ -44,8 +44,18 @@ export const queryKeys = {
     root: ["wallet"] as const,
     mine: () => [...queryKeys.wallet.root, "mine"] as const,
   },
+  withdrawals: {
+    root: ["withdrawals"] as const,
+    earnings: () => [...queryKeys.withdrawals.root, "earnings"] as const,
+    banks: () => [...queryKeys.withdrawals.root, "banks"] as const,
+    savedBankAccount: () =>
+      [...queryKeys.withdrawals.root, "bank-account"] as const,
+    history: () => [...queryKeys.withdrawals.root, "history"] as const,
+    transactions: () => [...queryKeys.withdrawals.root, "transactions"] as const,
+  },
   pass: {
     root: ["pass"] as const,
+    all: () => [...queryKeys.pass.root, "all"] as const,
     byEvent: (eventId: string) => [...queryKeys.pass.root, eventId] as const,
   },
 };

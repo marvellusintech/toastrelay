@@ -2,9 +2,16 @@
 
 import { useMutation, useQuery } from "@tanstack/react-query";
 
-import { getMyPassApi, scanCheckInApi } from "@/lib/api/pass";
+import { getAllMyPassesApi, getMyPassApi, scanCheckInApi } from "@/lib/api/pass";
 import { queryKeys } from "@/lib/api/query_keys";
 import type { ScanQrPayload } from "@/types/payload";
+
+export function useAllMyPasses() {
+  return useQuery({
+    queryKey: queryKeys.pass.all(),
+    queryFn: () => getAllMyPassesApi(),
+  });
+}
 
 export function useMyPass(eventId?: string) {
   return useQuery({

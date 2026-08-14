@@ -1,10 +1,11 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { FormProvider, useForm } from "react-hook-form";
+import { FormProvider, useForm, type FieldPath } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, Loader2 } from "lucide-react";
-import React, { use, useEffect, useMemo, useState } from "react";
+import React, { Suspense, use, useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 
 import {
   eventWizardSchema,
@@ -30,6 +31,20 @@ const ALL_WIZARD_STEPS = [
   { id: "review", title: "Review & Launch", description: "Final Checks" },
 ] as const;
 
+const STEP_VALIDATION: Record<string, FieldPath<WizardFormValues>[]> = {
+  logistics: [
+    "name",
+    "slug",
+    "startDate",
+    "endDate",
+    "format",
+  ],
+  branding: ["eventTypeId", "templateId", "description", "coverImage"],
+  ticketing: ["ticketingData.tiers"],
+  contributions: ["contributionsData.items"],
+  review: [],
+};
+
 interface PageProps {
   params: Promise<{
     eventId: string;
@@ -37,6 +52,22 @@ interface PageProps {
 }
 
 export default function EventSetupWizardPage({ params }: PageProps) {
+  return (
+    <Suspense fallback={<SetupWizardLoading />}>
+      <EventSetupWizard params={params} />
+    </Suspense>
+  );
+}
+
+function SetupWizardLoading() {
+  return (
+    <div className="flex min-h-[50vh] items-center justify-center">
+      <Loader2 className="h-6 w-6 animate-spin text-muted" />
+    </div>
+  );
+}
+
+function EventSetupWizard({ params }: PageProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
@@ -88,10 +119,10 @@ export default function EventSetupWizardPage({ params }: PageProps) {
     return eventData.theme;
   }, [eventData]);
 
-  const methods = useForm<WizardFormValues>({
-    resolver: zodResolver(eventWizardSchema),
-    mode: "onChange",
-    values: eventData
+  // Memoize so react-hook-form's `values` reference stays stable across
+  // renders. An inline literal is recreated every render, which RHF's
+  // internal sync effect treats as a change → infinite reset/render loop.
+  const wizardValues = useMemo(() => eventData
       ? {
           name: eventData.name ?? "",
           slug: eventData.slug ?? "",
@@ -147,6 +178,13 @@ export default function EventSetupWizardPage({ params }: PageProps) {
             : { items: [] },
         }
       : undefined,
+    [eventData, parsedTheme],
+  );
+
+  const methods = useForm<WizardFormValues>({
+    resolver: zodResolver(eventWizardSchema),
+    mode: "onChange",
+    values: wizardValues,
   });
 
   // Live isExternal from the form — updates instantly on toggle
@@ -183,10 +221,30 @@ export default function EventSetupWizardPage({ params }: PageProps) {
       return;
     }
 
+    // Gate navigation on the current step's required fields. This covers the
+    // "Continue", "Skip to Launch", and forward sidebar-jump buttons so no
+    // path can advance with an incorrect or incomplete form.
+    const values = methods.getValues();
+    let stepFields = STEP_VALIDATION[currentStep] ?? [];
+    if (currentStep === "logistics") {
+      if (values.format === "PHYSICAL" || values.format === "HYBRID") {
+        stepFields = [...stepFields, "location"];
+      }
+      if (values.format === "ONLINE" || values.format === "HYBRID") {
+        stepFields = [...stepFields, "onlineUrl"];
+      }
+      if (values.isExternal) {
+        stepFields = [...stepFields, "externalUrl"];
+      }
+    }
+    const isValid = await methods.trigger(stepFields);
+    if (!isValid) {
+      toast.error("Please fix the highlighted errors before continuing.");
+      return;
+    }
+
     try {
       setIsSaving(true);
-      const values = methods.getValues();
-
       const {
         ticketingData,
         contributionsData,
@@ -215,11 +273,8 @@ export default function EventSetupWizardPage({ params }: PageProps) {
 
       await updateEventApi(eventId, payload);
 
-      if (nextStepId) {
-        router.push(`?step=${nextStepId}`);
-      } else if (currentStepIndex < WIZARD_STEPS.length - 1) {
-        router.push(`?step=${WIZARD_STEPS[currentStepIndex + 1].id}`);
-      }
+      const target = nextStepId ?? WIZARD_STEPS[currentStepIndex + 1]?.id;
+      if (target) router.push(`?step=${target}`);
     } catch (error) {
       console.error("Failed to update event progress:", error);
     } finally {

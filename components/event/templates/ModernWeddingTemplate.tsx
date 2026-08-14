@@ -22,6 +22,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { RSVPStatus } from "@/types/enum";
 import { submitRsvpApi, createToastApi } from "@/lib/api/events";
+import TicketPurchaseModal from "@/components/event/TicketPurchaseModal";
 
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -137,6 +138,9 @@ export default function ModernWeddingTemplate({
     host,
     isCustomTheme = false,
     theme,
+    ticketEvent,
+    currency,
+    isExternal = false,
   } = event;
 
   const searchParams = useSearchParams();
@@ -146,6 +150,7 @@ export default function ModernWeddingTemplate({
   const [isRsvpModalOpen, setIsRsvpModalOpen] = useState(false);
   const [isRsvpSubmitted, setIsRsvpSubmitted] = useState(false);
   const [rsvpApiError, setRsvpApiError] = useState<string | null>(null);
+  const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
 
   // Toast States
   const [isToastModalOpen, setIsToastModalOpen] = useState(false);
@@ -633,13 +638,65 @@ export default function ModernWeddingTemplate({
                 )}
               </div>
 
+              {/* Ticket Availability */}
+              {!isExternal && (
+                <div className="border-t border-stone-800/60 pt-4 space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Ticket className="w-4 h-4 text-rose-400 shrink-0" />
+                    <span className="text-xs font-semibold text-stone-200 uppercase tracking-widest">
+                      Tickets
+                    </span>
+                  </div>
+                  {ticketEvent && ticketEvent.tiers.length > 0 ? (
+                    <div className="space-y-2">
+                      {ticketEvent.tiers.map((tier) => {
+                        const isFreeTier = Number(tier.price) === 0;
+                        const symbol = currency === "USD" ? "$" : "₦";
+                        return (
+                          <div
+                            key={tier.id}
+                            className="flex items-center justify-between text-sm"
+                          >
+                            <div className="min-w-0">
+                              <p className="font-medium text-stone-200">
+                                {tier.name}
+                              </p>
+                              <p className="text-xs text-stone-400">
+                                {tier.capacity - tier.sold > 0
+                                  ? `${Math.max(tier.capacity - tier.sold, 0)} left`
+                                  : "Sold out"}
+                              </p>
+                            </div>
+                            <span className="font-bold text-stone-100">
+                              {isFreeTier
+                                ? "Free"
+                                : `${symbol}${tier.price.toLocaleString()}`}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-stone-400">
+                      This event is free to attend.
+                    </p>
+                  )}
+                </div>
+              )}
+
               <div className="space-y-3 pt-2">
                 <Button
-                  onClick={() => setIsRsvpModalOpen(true)}
+                  onClick={() => {
+                    if (ticketEvent && ticketEvent.tiers.length > 0) {
+                      setIsTicketModalOpen(true);
+                    } else {
+                      setIsRsvpModalOpen(true);
+                    }
+                  }}
                   style={primaryButtonStyle}
                   className="w-full font-sans font-medium bg-rose-600 text-white hover:bg-rose-500 h-11 rounded-lg transition-colors shadow-lg shadow-rose-950/40"
                 >
-                  <Ticket className="w-4 h-4 mr-2" /> RSVP Now
+                  <Ticket className="w-4 h-4 mr-2" /> {ticketEvent && ticketEvent.tiers.length > 0 ? "Get Tickets" : "RSVP Now"}
                 </Button>
 
                 <Button
@@ -1047,6 +1104,18 @@ export default function ModernWeddingTemplate({
             )}
           </div>
         </div>
+      )}
+      {/* Ticket Purchase Modal */}
+      {ticketEvent && ticketEvent.tiers.length > 0 && (
+        <TicketPurchaseModal
+          open={isTicketModalOpen}
+          onOpenChange={setIsTicketModalOpen}
+          tiers={ticketEvent.tiers}
+          currency={currency}
+          eventId={eventId}
+          eventName={name}
+          slug={event.slug}
+        />
       )}
     </div>
   );

@@ -42,7 +42,6 @@ export function StepTicketing({ onNext, isSaving, eventId }: StepProps) {
 
       toast.success("Ticket updated successfully");
       await onNext();
-      router.push("?step=contributions");
       return res
     } catch (error) {
       toast.error(

@@ -46,13 +46,15 @@ export default function DiscoveryMasonry() {
 
   // Pagination & Data States
   const [events, setEvents] = useState<EventDetails[]>([]);
-  const [page, setPage] = useState<number>(1);
+  const [page, setPage] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   const observerTarget = useRef<HTMLDivElement | null>(null);
   const scrollContainerRef = useRef<HTMLElement | null>(null);
+  const isFetchingRef = useRef(false);
+  const requestIdRef = useRef(0);
   const [scrolled, setScrolled] = useState(false);
 
   // Hide the category pills once the user scrolls the discovery feed.
@@ -77,8 +79,16 @@ export default function DiscoveryMasonry() {
       category: string,
       isNewSearch: boolean = false,
     ) => {
+      if (isFetchingRef.current && !isNewSearch) return;
+
+      const requestId = ++requestIdRef.current;
+      isFetchingRef.current = true;
       setLoading(true);
-      if (isNewSearch) setError(null);
+      if (isNewSearch) {
+        setError(null);
+        setHasMore(true);
+        setPage(0);
+      }
 
       try {
         const queryParams: GetEventsOptions = {
@@ -96,6 +106,8 @@ export default function DiscoveryMasonry() {
         }
 
         const response = await getEventsApi(queryParams);
+        if (requestId !== requestIdRef.current) return;
+
         if (response.data) {
           const fetchedEvents = response.data.events || [];
           const pagination = response.data.pagination;
@@ -104,11 +116,14 @@ export default function DiscoveryMasonry() {
             isNewSearch ? fetchedEvents : [...prev, ...fetchedEvents],
           );
           setHasMore(pagination?.hasMore ?? false);
+          setPage(targetPage);
         } else {
           setHasMore(false);
           if (isNewSearch) setEvents([]);
         }
       } catch (err: unknown) {
+        if (requestId !== requestIdRef.current) return;
+
         let errorMessage = "Failed to load events.";
         if (err instanceof Error) errorMessage = err.message;
 
@@ -122,11 +137,16 @@ export default function DiscoveryMasonry() {
 
         if (errorMessage === "No event found" || responseData?.status === 404) {
           if (isNewSearch) setEvents([]);
-          setHasMore(false);
         } else {
           setError(errorMessage);
         }
+
+        // Stop the observer from requesting the same failed page in a loop.
+        setHasMore(false);
       } finally {
+        if (requestId !== requestIdRef.current) return;
+
+        isFetchingRef.current = false;
         setLoading(false);
       }
     },
@@ -148,12 +168,8 @@ export default function DiscoveryMasonry() {
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !loading) {
-          setPage((prevPage) => {
-            const nextPage = prevPage + 1;
-            void fetchEvents(nextPage, debouncedQuery, activeCategory, false);
-            return nextPage;
-          });
+        if (entries[0].isIntersecting && hasMore && !isFetchingRef.current) {
+          void fetchEvents(page + 1, debouncedQuery, activeCategory, false);
         }
       },
       { threshold: 0.2 },
@@ -164,7 +180,7 @@ export default function DiscoveryMasonry() {
     return () => {
       observer.unobserve(target);
     };
-  }, [hasMore, loading, debouncedQuery, activeCategory, fetchEvents]);
+  }, [hasMore, page, debouncedQuery, activeCategory, fetchEvents]);
 
   const handleCardClick = (slug: string) => {
     router.push(`/events/${slug}`);
@@ -383,7 +399,19 @@ export default function DiscoveryMasonry() {
 
         {/* Error Banner */}
         {error && (
-          <div className="text-center text-red-500 my-4 text-sm">{error}</div>
+          <div className="my-4 flex flex-col items-center gap-2 text-center text-sm text-red-500">
+            <p>{error}</p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() =>
+                void fetchEvents(1, debouncedQuery, activeCategory, true)
+              }
+              disabled={loading}
+            >
+              Retry
+            </Button>
+          </div>
         )}
 
         {/* Infinite Scroll Loader */}

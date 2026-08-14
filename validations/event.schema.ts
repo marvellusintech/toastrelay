@@ -87,7 +87,15 @@ export const eventWizardSchema = logisticsBaseSchema
   .refine(
     (data) => {
       if (data.isExternal && !data.externalUrl) return false;
-      if (!data.isExternal && !data.location) return false;
+      // Physical/Hybrid events show the location field, so it's required for
+      // those. Pure ONLINE events don't render a location input.
+      if (
+        !data.isExternal &&
+        data.format !== "ONLINE" &&
+        !data.location
+      ) {
+        return false;
+      }
       return true;
     },
     {

@@ -96,7 +96,7 @@ function RevenueAnalyticsCard({
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
               {item.label}
             </p>
-            <p className="mt-1 text-2xl font-black font-display text-foreground">
+            <p className="mt-1 text-2xl font-bold font-body text-foreground">
               {formatCurrency(item.value)}
             </p>
           </div>
