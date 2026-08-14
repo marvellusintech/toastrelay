@@ -9,13 +9,19 @@ interface SocialAuthButtonsProps {
   disabled?: boolean;
 }
 
-const GOOGLE_CLIENT_ID = "881744326884-uiegsm2ljmq146fhu4ves7n2kd7qdop3.apps.googleusercontent.com";
+const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 const GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
 
 export function SocialAuthButtons({ mode, disabled }: SocialAuthButtonsProps) {
   const handleGoogleRedirect = async () => {
     try {
-      const googleRedirectUri = `http://localhost:3000/callback/google`;
+      if (!GOOGLE_CLIENT_ID) {
+        console.error("NEXT_PUBLIC_GOOGLE_CLIENT_ID is not defined.");
+        return;
+      }
+
+   
+      const googleRedirectUri = `${window.location.origin}/callback/google`;
 
       // 1. Generate security state and PKCE verifier/challenge
       const state = crypto.randomUUID();
