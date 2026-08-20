@@ -126,8 +126,8 @@ export function Footer() {
   const [subscribed, setSubscribed] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const hideFooter = /^\/events\/[^/]+$/.test(pathname);
-  if (hideFooter) return null;
+  // const hideFooter = /^\/events\/[^/]+$/.test(pathname);
+  // if (hideFooter) return null;
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();

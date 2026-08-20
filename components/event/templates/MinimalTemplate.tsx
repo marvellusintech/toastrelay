@@ -367,7 +367,7 @@ export default function MinimalTemplate({
 
   return (
     <div
-      className="min-h-screen px-4 xl:px-0 bg-white text-zinc-900 font-sans"
+      className="min-h-screen pb-10 lg:pb-20 px-4 xl:px-0 bg-white text-zinc-900 font-sans"
       style={customStyles}
     >
       <div className=" xl:px-20 pt-10">
@@ -676,10 +676,10 @@ export default function MinimalTemplate({
                 ref={cardRef}
                 style={
                   isFixed && fixedWidth
-                    ? { position: "fixed", top: "32px", width: `${fixedWidth}px`, zIndex: 30 }
+                    ? { position: "fixed", top: "32px", width: `${fixedWidth}px`,  }
                     : { position: "relative" }
                 }
-                className={`p-6 border bg-zinc-50 space-y-6 sticky top-6 ${borderRadiusClass}`}
+                className={`p-6 z-1 border bg-zinc-50 space-y-6 sticky top-6 ${borderRadiusClass}`}
               >
                 {/* Date & Time */}
                 {formattedDate && (
