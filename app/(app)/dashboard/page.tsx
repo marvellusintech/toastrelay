@@ -64,12 +64,12 @@ export default async function DashboardPage({
               </Link>
             ))}
           </div>
-          <Link href="/dashboard/circles" className="shrink-0">
+          {/* <Link href="/dashboard/circles" className="shrink-0">
             <Button variant="outline" size="sm" className="gap-1.5">
               <CircleUserRound className="h-3.5 w-3.5" />
               Circles
             </Button>
-          </Link>
+          </Link> */}
         </div>
 
         {activeTab === "analytics" ? (
