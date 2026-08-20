@@ -13,7 +13,7 @@ import Link from "next/link";
 export default function LandingPage() {
   const router = useRouter();
   return (
-    <main className="pt-16 lg:pt-0">
+    <main className="pt-20 lg:pt-0">
       <AnimatePresence mode="wait">
         <motion.div
           initial={{ opacity: 0, y: 10, scale: 0.95 }}
