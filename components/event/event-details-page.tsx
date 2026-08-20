@@ -93,13 +93,7 @@ function MediaEl({
     );
   }
 
-  return (
-    <img
-      src={src}
-      alt={alt}
-      className="h-full w-full object-cover"
-    />
-  );
+  return <img src={src} alt={alt} className="h-full w-full object-cover" />;
 }
 
 // ─── Empty State ──────────────────────────────────────────────────
@@ -292,7 +286,10 @@ function AnalyticsCard({ event }: { event: EventDetails }) {
         </p>
         <div className="grid h-48 items-end gap-3 sm:grid-cols-4">
           {weekData.map((d) => (
-            <div key={d.label} className="flex h-full flex-col justify-end gap-2">
+            <div
+              key={d.label}
+              className="flex h-full flex-col justify-end gap-2"
+            >
               <div
                 className="w-full rounded-md bg-turquoise transition-all"
                 style={{ height: `${(d.value / maxVal) * 100}%` }}
@@ -315,7 +312,9 @@ export function EventDetailsPage({ event }: EventDetailsPageProps) {
   const [lightboxOpen, setLightboxOpen] = React.useState(false);
   const [lightboxIdx, setLightboxIdx] = React.useState(0);
   const [activeTab, setActiveTab] = React.useState("toasts");
-  const [parentTab, setParentTab] = React.useState<"details" | "pulse">("details");
+  const [parentTab, setParentTab] = React.useState<"details" | "pulse">(
+    "details",
+  );
 
   const allMedia = React.useMemo(() => {
     const media: string[] = [];
@@ -351,16 +350,16 @@ export function EventDetailsPage({ event }: EventDetailsPageProps) {
       <div className="">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-8 lg:px-10">
           <Button
-            onClick={() => router.back()}
+            onClick={() => router.push("/dashboard")}
             size="sm"
             variant="ghost"
+            className="px-0 mb-8"
           >
             <ChevronLeft className="h-4 w-4" />
             Back
           </Button>
 
           <div className="flex items-center gap-3">
-
             <Button asChild variant="outline" size="sm">
               <Link href={`/dashboard/events/${event.id}/check-in`}>
                 <ScanLine className="h-4 w-4" />
@@ -368,694 +367,696 @@ export function EventDetailsPage({ event }: EventDetailsPageProps) {
               </Link>
             </Button>
             <Button variant="secondary" asChild size="sm">
-              <Link
-                href={`/dashboard/events/${event.id}/setup?step=logistics`}
-              >
+              <Link href={`/dashboard/events/${event.id}/setup?step=logistics`}>
                 Edit
               </Link>
             </Button>
           </div>
         </div>
-
       </div>
 
-        {/* ── Event Header (always visible) ─────────────────── */}
-        <div className="mx-auto max-w-7xl px-6 pt-8 lg:px-10">
-            {/* Event name — no card, no border */}
-            <h1 className="text-3xl font-black font-display uppercase tracking-tight sm:text-4xl md:text-5xl">
-              {event.name}
-            </h1>
+      {/* ── Event Header (always visible) ─────────────────── */}
+      <div className="mx-auto max-w-7xl px-6 pt-8 lg:px-10">
+        {/* Event name — no card, no border */}
+        <h1 className="text-3xl font-black font-display uppercase tracking-tight sm:text-4xl md:text-5xl">
+          {event.name}
+        </h1>
 
-            <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
-              {event.startDate && (
-                <span className="inline-flex items-center gap-1.5">
-                  <CalendarDays className="h-4 w-4 text-turquoise" />
-                  {new Date(event.startDate).toLocaleDateString("en-US", {
-                    weekday: "short",
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                  {event.endDate &&
-                    ` — ${new Date(event.endDate).toLocaleDateString("en-US", {
-                      weekday: "short",
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}`}
-                </span>
-              )}
-              {event.location && (
-                <span className="inline-flex items-center gap-1.5">
-                  <MapPin className="h-4 w-4 text-turquoise" />
-                  {event.location}
-                </span>
-              )}
-              <span className="inline-flex items-center gap-1.5">
-                {event.isPublic ? (
-                  <>
-                    <Globe className="h-4 w-4 text-turquoise" /> Public
-                  </>
-                ) : (
-                  <>
-                    <Lock className="h-4 w-4 text-turquoise" /> Private
-                  </>
-                )}
-              </span>
-
-                          <span
-              className={cn(
-                "rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider",
-                statusStyle.class,
-              )}
-            >
-              {statusStyle.label}
+        <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
+          {event.startDate && (
+            <span className="inline-flex items-center gap-1.5">
+              <CalendarDays className="h-4 w-4 text-turquoise" />
+              {new Date(event.startDate).toLocaleDateString("en-US", {
+                weekday: "short",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+              {event.endDate &&
+                ` — ${new Date(event.endDate).toLocaleDateString("en-US", {
+                  weekday: "short",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}`}
             </span>
-            </div>
-
-            {event.eventType?.label && (
-              <span className="mt-4 inline-block rounded-full bg-primary/10 px-4 py-1 text-[10px] font-bold uppercase tracking-widest text-primary">
-                {event.eventType.label}
-              </span>
+          )}
+          {event.location && (
+            <span className="inline-flex items-center gap-1.5">
+              <MapPin className="h-4 w-4 text-turquoise" />
+              {event.location}
+            </span>
+          )}
+          <span className="inline-flex items-center gap-1.5">
+            {event.isPublic ? (
+              <>
+                <Globe className="h-4 w-4 text-turquoise" /> Public
+              </>
+            ) : (
+              <>
+                <Lock className="h-4 w-4 text-turquoise" /> Private
+              </>
             )}
+          </span>
 
-            {/* Description — below name, proper spacing */}
-            {event.description && (
-              <div className="mt-6 border-t border-line pt-6">
-                <div
-                  className="text-sm leading-relaxed text-muted-foreground prose prose-neutral"
-                  dangerouslySetInnerHTML={{ __html: event.description }}
-                />
-              </div>
+          <span
+            className={cn(
+              "rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider",
+              statusStyle.class,
             )}
+          >
+            {statusStyle.label}
+          </span>
         </div>
 
-        {/* ── Parent Tabs ─────────────────────────── */}
-        <div className="mx-auto max-w-7xl px-6 pt-8 lg:px-10">
-          <div className="inline-flex items-center gap-1 rounded-full border border-line bg-white p-1 shadow-sm">
-            {(["details", "pulse"] as const).map((p) => {
-              const isActive = parentTab === p;
-              return (
-                <button
-                  key={p}
-                  onClick={() => setParentTab(p)}
-                  className={cn(
-                    "rounded-full px-5 py-2 text-sm font-semibold transition",
-                    isActive
-                      ? "bg-foreground text-background"
-                      : "text-muted-foreground hover:text-foreground",
-                  )}
-                >
-                  {p === "details" ? "Event Details" : "Event Pulse"}
-                </button>
-              );
-            })}
+        {event.eventType?.label && (
+          <span className="mt-4 inline-block rounded-full bg-primary/10 px-4 py-1 text-[10px] font-bold uppercase tracking-widest text-primary">
+            {event.eventType.label}
+          </span>
+        )}
+
+        {/* Description — below name, proper spacing */}
+        {event.description && (
+          <div className="mt-6 border-t border-line pt-6">
+            <div
+              className="text-sm leading-relaxed text-muted-foreground prose prose-neutral"
+              dangerouslySetInnerHTML={{ __html: event.description }}
+            />
           </div>
-        </div>
+        )}
+      </div>
 
-         {/* ── Media + Content ────────────────────── */}
+      {/* ── Parent Tabs ─────────────────────────── */}
+      <div className="mx-auto max-w-7xl px-6 pt-8 lg:px-10">
+        <div className="inline-flex items-center gap-1 rounded-full border border-line bg-white p-1 shadow-sm">
+          {(["details", "pulse"] as const).map((p) => {
+            const isActive = parentTab === p;
+            return (
+              <button
+                key={p}
+                onClick={() => setParentTab(p)}
+                className={cn(
+                  "rounded-full px-5 py-2 text-sm font-semibold transition",
+                  isActive
+                    ? "bg-foreground text-background"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                {p === "details" ? "Event Details" : "Event Pulse"}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ── Media + Content ────────────────────── */}
       <div className="mx-auto max-w-7xl pt-10 px-6 pb-24 lg:px-10">
         {parentTab === "details" && (
           <>
+            {/* ── Event Details Grid ─────────────────── */}
+            <Card className="mb-6 px-6 py-6">
+              <div className="flex items-center gap-3 mb-2">
+                <FileText className="h-5 w-5 text-turquoise" />
+                <h2 className="text-xl font-semibold">Details</h2>
+              </div>
 
-                {/* ── Event Details Grid ─────────────────── */}
-        <Card className="mb-6 px-6 py-6">
-          <div className="flex items-center gap-3 mb-2">
-            <FileText className="h-5 w-5 text-turquoise" />
-            <h2 className="text-xl font-semibold">Details</h2>
-          </div>
-
-          <div className="grid gap-x-10 gap-y-1 sm:grid-cols-2 lg:grid-cols-3">
-            {/* Dates */}
-            <DetailRow
-              icon={CalendarDays}
-              label="Start date"
-              value={
-                event.startDate
-                  ? new Date(event.startDate).toLocaleDateString("en-US", {
+              <div className="grid gap-x-10 gap-y-1 sm:grid-cols-2 lg:grid-cols-3">
+                {/* Dates */}
+                <DetailRow
+                  icon={CalendarDays}
+                  label="Start date"
+                  value={
+                    event.startDate
+                      ? new Date(event.startDate).toLocaleDateString("en-US", {
+                          weekday: "short",
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
+                      : "Not set"
+                  }
+                />
+                {event.endDate && (
+                  <DetailRow
+                    icon={CalendarDays}
+                    label="End date"
+                    value={new Date(event.endDate).toLocaleDateString("en-US", {
                       weekday: "short",
                       year: "numeric",
                       month: "long",
                       day: "numeric",
                       hour: "2-digit",
                       minute: "2-digit",
-                    })
-                  : "Not set"
-              }
-            />
-            {event.endDate && (
-              <DetailRow
-                icon={CalendarDays}
-                label="End date"
-                value={new Date(event.endDate).toLocaleDateString("en-US", {
-                  weekday: "short",
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              />
-            )}
-            <DetailRow
-              icon={MapPin}
-              label="Location"
-              value={event.location || "Not set"}
-            />
-            <DetailRow
-              icon={event.isPublic ? Globe : Lock}
-              label="Visibility"
-              value={event.isPublic ? "Public" : "Private"}
-            />
-            <DetailRow
-              icon={Tag}
-              label="Event type"
-              value={event.eventType?.label ?? event.eventType?.name ?? "Not set"}
-            />
-            <DetailRow
-              icon={Hash}
-              label="Slug"
-              value={event.slug}
-            />
-            {event.isExternal && event.externalUrl && (
-              <DetailRow
-                icon={ExternalLink}
-                label="External URL"
-                value={event.externalUrl}
-                href={event.externalUrl}
-              />
-            )}
-            <DetailRow
-              icon={Palette}
-              label="Template"
-              value={event.templateId || "Default"}
-            />
-          </div>
+                    })}
+                  />
+                )}
+                <DetailRow
+                  icon={MapPin}
+                  label="Location"
+                  value={event.location || "Not set"}
+                />
+                <DetailRow
+                  icon={event.isPublic ? Globe : Lock}
+                  label="Visibility"
+                  value={event.isPublic ? "Public" : "Private"}
+                />
+                <DetailRow
+                  icon={Tag}
+                  label="Event type"
+                  value={
+                    event.eventType?.label ?? event.eventType?.name ?? "Not set"
+                  }
+                />
+                <DetailRow icon={Hash} label="Slug" value={event.slug} />
+                {event.isExternal && event.externalUrl && (
+                  <DetailRow
+                    icon={ExternalLink}
+                    label="External URL"
+                    value={event.externalUrl}
+                    href={event.externalUrl}
+                  />
+                )}
+                <DetailRow
+                  icon={Palette}
+                  label="Template"
+                  value={event.templateId || "Default"}
+                />
+              </div>
 
-          {/* ── Circles ─────────────────────── */}
-          {event.circles && event.circles.length > 0 && (
-            <>
-              <Separator className="my-6" />
-              <div>
-                <div className="flex items-center gap-3 mb-4">
-                  <ShieldCheck className="h-5 w-5 text-turquoise" />
-                  <h3 className="text-sm font-bold text-foreground">
-                    Circles ({event.circles.length})
-                  </h3>
-                </div>
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {event.circles.map((circle) => (
-                    <div
-                      key={circle.id}
-                      className="rounded-xl border border-line bg-panel p-4"
-                    >
-                      <p className="text-sm font-semibold text-foreground">
-                        {circle.name}
-                      </p>
-                      {circle.description && (
-                        <p className="mt-1 text-xs text-muted-foreground">
-                          {circle.description}
+              {/* ── Circles ─────────────────────── */}
+              {event.circles && event.circles.length > 0 && (
+                <>
+                  <Separator className="my-6" />
+                  <div>
+                    <div className="flex items-center gap-3 mb-4">
+                      <ShieldCheck className="h-5 w-5 text-turquoise" />
+                      <h3 className="text-sm font-bold text-foreground">
+                        Circles ({event.circles.length})
+                      </h3>
+                    </div>
+                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                      {event.circles.map((circle) => (
+                        <div
+                          key={circle.id}
+                          className="rounded-xl border border-line bg-panel p-4"
+                        >
+                          <p className="text-sm font-semibold text-foreground">
+                            {circle.name}
+                          </p>
+                          {circle.description && (
+                            <p className="mt-1 text-xs text-muted-foreground">
+                              {circle.description}
+                            </p>
+                          )}
+                          <div className="mt-2 flex flex-wrap gap-2">
+                            {circle.canViewPrivateDetails && (
+                              <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">
+                                Private details
+                              </span>
+                            )}
+                            {circle.canBuyAsoEbi && (
+                              <span className="rounded-full bg-coral/10 px-2 py-0.5 text-[10px] font-semibold text-coral">
+                                Can buy
+                              </span>
+                            )}
+                            {circle.rsvpOnly && (
+                              <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-700">
+                                RSVP only
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* ── Public URL ──────────────────── */}
+              {event.status !== "DRAFT" && event.slug && (
+                <>
+                  <Separator className="my-6" />
+                  <div className="flex items-center justify-between rounded-xl bg-primary/5 px-5 py-4">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <LinkIcon className="h-5 w-5 shrink-0 text-primary" />
+                      <div className="min-w-0">
+                        <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                          Public event page
                         </p>
-                      )}
-                      <div className="mt-2 flex flex-wrap gap-2">
-                        {circle.canViewPrivateDetails && (
-                          <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">
-                            Private details
-                          </span>
-                        )}
-                        {circle.canBuyAsoEbi && (
-                          <span className="rounded-full bg-coral/10 px-2 py-0.5 text-[10px] font-semibold text-coral">
-                            Can buy
-                          </span>
-                        )}
-                        {circle.rsvpOnly && (
-                          <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-700">
-                            RSVP only
-                          </span>
-                        )}
+                        <a
+                          href={publicUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          suppressHydrationWarning
+                          className="mt-0.5 inline-flex max-w-full items-center gap-1 overflow-x-auto whitespace-nowrap text-sm font-medium text-turquoise underline underline-offset-2 hover:text-turquoise-dark [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+                        >
+                          {publicUrl}
+                          <ExternalLink className="h-3 w-3 shrink-0" />
+                        </a>
                       </div>
                     </div>
+                  </div>
+                </>
+              )}
+            </Card>
+
+            {/* ── Cover + Media ───────────────────────── */}
+            <div className="w-full lg:w-[55%] lg:sticky lg:top-20 lg:self-start">
+              {/* Cover — prominent, by itself */}
+              {event.coverImage && (
+                <div className="relative h-64 overflow-hidden rounded-xl lg:rounded-4xl bg-muted shadow-sm sm:h-80 lg:h-[400px]">
+                  <button
+                    onClick={() => openLightbox(0)}
+                    className="block h-full w-full"
+                  >
+                    <MediaEl url={event.coverImage} alt={event.name} cover />
+                  </button>
+                </div>
+              )}
+
+              {/* Extra media grid — below cover */}
+              {event.extraMedia && event.extraMedia.length > 0 && (
+                <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                  {event.extraMedia.map((url, i) => (
+                    <button
+                      key={i}
+                      onClick={() => openLightbox(i + 1)}
+                      className="group relative aspect-[4/3] overflow-hidden rounded-xl bg-muted shadow-sm transition hover:shadow-md"
+                    >
+                      <MediaEl url={url} alt={`Media ${i + 1}`} />
+                      <div className="absolute inset-0 bg-black/0 transition group-hover:bg-black/10" />
+                    </button>
                   ))}
                 </div>
-              </div>
-            </>
-          )}
-
-          {/* ── Public URL ──────────────────── */}
-          {event.status !== "DRAFT" && event.slug && (
-            <>
-              <Separator className="my-6" />
-<div className="flex items-center justify-between rounded-xl bg-primary/5 px-5 py-4">
-  <div className="flex items-center gap-3 min-w-0">
-    <LinkIcon className="h-5 w-5 shrink-0 text-primary" />
-    <div className="min-w-0">
-      <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-        Public event page
-      </p>
-      <a
-        href={publicUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        suppressHydrationWarning
-        className="mt-0.5 inline-flex max-w-full items-center gap-1 overflow-x-auto whitespace-nowrap text-sm font-medium text-turquoise underline underline-offset-2 hover:text-turquoise-dark [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
-      >
-        {publicUrl}
-        <ExternalLink className="h-3 w-3 shrink-0" />
-      </a>
-    </div>
-  </div>
-</div>
-            </>
-          )}
-        </Card>
-
-        {/* ── Cover + Media ───────────────────────── */}
-          <div className="w-full lg:w-[55%] lg:sticky lg:top-20 lg:self-start">
-            {/* Cover — prominent, by itself */}
-            {event.coverImage && (
-              <div className="relative h-64 overflow-hidden rounded-xl lg:rounded-4xl bg-muted shadow-sm sm:h-80 lg:h-[400px]">
-                <button
-                  onClick={() => openLightbox(0)}
-                  className="block h-full w-full"
-                >
-                  <MediaEl url={event.coverImage} alt={event.name} cover />
-                </button>
-              </div>
-            )}
-
-            {/* Extra media grid — below cover */}
-            {event.extraMedia && event.extraMedia.length > 0 && (
-              <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
-                {event.extraMedia.map((url, i) => (
-                  <button
-                    key={i}
-                    onClick={() => openLightbox(i + 1)}
-                    className="group relative aspect-[4/3] overflow-hidden rounded-xl bg-muted shadow-sm transition hover:shadow-md"
-                  >
-                    <MediaEl url={url} alt={`Media ${i + 1}`} />
-                    <div className="absolute inset-0 bg-black/0 transition group-hover:bg-black/10" />
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-  
-
+              )}
+            </div>
           </>
         )}
 
         {parentTab === "pulse" && (
           <>
+            {/* ── Analytics ─────────────────────────── */}
+            <div>
+              <AnalyticsCard event={event} />
+            </div>
 
-        {/* ── Analytics ─────────────────────────── */}
-        <div >
-          <AnalyticsCard event={event} />
-        </div>
-
-        {/* ── Tabs ──────────────────────────────── */}
-        <div className="mt-10">
-          <div className="flex gap-6 overflow-x-auto border-b border-line">
-            {TABS.map((tab) => (
-              <button
-                key={tab.value}
-                onClick={() => setActiveTab(tab.value)}
-                className={cn(
-                  "flex items-center gap-2 border-b-2 pb-3 text-[11px] font-bold uppercase tracking-wider transition shrink-0",
-                  activeTab === tab.value
-                    ? "border-turquoise text-foreground"
-                    : "border-transparent text-muted-foreground hover:text-foreground",
-                )}
-              >
-                <tab.icon className="h-3.5 w-3.5" />
-                {tab.label}
-              </button>
-            ))}
-          </div>
-
-          <div className="mt-6">
-            {/* ── Toasts ─────────────────── */}
-            {activeTab === "toasts" && (
-              <>
-                {!event.toasts?.length ? (
-                  <EmptyState
-                    icon={MessageSquareHeart}
-                    title="No toasts yet"
-                    description="Guests haven't left messages yet."
-                  />
-                ) : (
-                  <div className="mx-auto max-w-2xl space-y-6">
-                    {event.toasts.map((toast) => (
-                      <div key={toast.id} className="flex items-start gap-3">
-                        <Avatar size="sm" className="mt-0.5 shrink-0">
-                          <AvatarFallback className="text-[10px]">
-                            {getInitials(
-                              toast.author?.firstName,
-                              toast.author?.lastName,
-                            )}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-baseline gap-2">
-                            <span className="text-sm font-semibold text-foreground">
-                              {toast.author?.firstName ?? "Guest"}{" "}
-                              {toast.author?.lastName ?? ""}
-                            </span>
-                            <span className="text-[11px] text-muted-foreground">
-                              <span suppressHydrationWarning>{formatDate(toast.createdAt, "relative")}</span>
-                            </span>
-                          </div>
-                          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                            {toast.content}
-                          </p>
-                          {toast.amount != null && toast.amount > 0 && (
-                            <span className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-coral">
-                              <Heart className="h-3 w-3" />
-                              {formatCurrency(toast.amount)}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </>
-            )}
-
-            {/* ── Guests ─────────────────── */}
-            {activeTab === "guests" && (
-              <>
-                {!event.guests?.length ? (
-                  <EmptyState
-                    icon={Users}
-                    title="No guests yet"
-                    description="Invite guests to your event."
-                  />
-                ) : (
-                  <div className="mx-auto max-w-2xl divide-y divide-line">
-                    {event.guests.map((guest) => (
-                      <div
-                        key={guest.id}
-                        className="flex items-center justify-between py-3"
-                      >
-                        <div className="flex items-center gap-3 min-w-0">
-                          <Avatar size="sm">
-                            <AvatarFallback className="text-[10px]">
-                              {getInitials(guest.name)}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="min-w-0">
-                            <p className="text-sm font-semibold text-foreground truncate">
-                              {guest.name}
-                            </p>
-                            {guest.email && (
-                              <p className="text-xs text-muted-foreground truncate">
-                                {guest.email}
-                              </p>
-                            )}
-                            {guest.phone && (
-                              <p className="text-xs text-muted-foreground">
-                                {guest.phone}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 shrink-0">
-                          {guest.category?.label && (
-                            <span className="hidden rounded-full bg-muted px-3 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground sm:inline-block">
-                              {guest.category.label}
-                            </span>
-                          )}
-                          <span
-                            className={cn(
-                              "inline-block rounded-full px-3 py-0.5 text-[11px] font-bold",
-                              RSVP_STYLES[guest.rsvpStatus]?.class ??
-                                RSVP_STYLES.PENDING.class,
-                            )}
-                          >
-                            {RSVP_STYLES[guest.rsvpStatus]?.label ??
-                              guest.rsvpStatus}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </>
-            )}
-
-            {/* ── Moments ────────────────── */}
-            {activeTab === "moments" && (
-              <>
-                {!event.moments?.length ? (
-                  <EmptyState
-                    icon={Camera}
-                    title="No moments yet"
-                    description="Photos shared by guests will appear here."
-                  />
-                ) : (
-                  <div className="columns-2 gap-3 sm:columns-3">
-                    {event.moments.map((moment) => (
-                      <button
-                        key={moment.id}
-                        className="group relative mb-3 block w-full overflow-hidden rounded-xl bg-muted"
-                      >
-                        <MediaEl
-                          url={moment.imageUrl}
-                          alt={moment.caption ?? "Moment"}
-                        />
-                        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/50 to-transparent p-4 opacity-0 transition group-hover:opacity-100">
-                          {moment.caption && (
-                            <p className="truncate text-sm text-white">
-                              {moment.caption}
-                            </p>
-                          )}
-                          <p className="text-xs text-white/70">
-                            {moment.uploader?.firstName ?? "Someone"}{" "}
-                            {moment.uploader?.lastName ?? ""}
-                          </p>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </>
-            )}
-
-            {/* ── Tickets / Pass ─────────── */}
-            {activeTab === "pass" && (
-              <>
-                {!event.ticketEvent?.tiers?.length ? (
-                  <EmptyState
-                    icon={Ticket}
-                    title="No ticketing configured"
-                    description="Ticket tiers haven't been set up for this event."
-                  />
-                ) : (
-                  <div className="mx-auto max-w-xl space-y-8">
-                    <div className="flex items-center justify-center gap-10 text-sm">
-                      <div className="text-center">
-                        <p className="text-3xl font-black font-display text-foreground">
-                          {event.ticketEvent.totalSold}
-                        </p>
-                        <p className="mt-1 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-                          Sold
-                        </p>
-                      </div>
-                      <div className="h-10 w-px bg-line" />
-                      <div className="text-center">
-                        <p className="text-3xl font-black font-sans text-gold">
-                          {formatCurrency(event.ticketEvent.revenue)}
-                        </p>
-                        <p className="mt-1 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-                          Revenue
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="space-y-3">
-                      {event.ticketEvent.tiers.map((tier) => {
-                        const progress =
-                          tier.capacity > 0
-                            ? Math.round((tier.sold / tier.capacity) * 100)
-                            : 0;
-                        const remaining = Math.max(tier.capacity - tier.sold, 0);
-
-                        return (
-                          <Card key={tier.id} size="sm" className="px-5 py-4">
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <h4 className="text-sm font-semibold text-foreground">
-                                  {tier.name}
-                                </h4>
-                                <p className="mt-0.5 text-xs text-muted-foreground">
-                                  {tier.sold} / {tier.capacity} sold
-                                </p>
-                              </div>
-                              <p className="text-lg font-black font-display text-foreground">
-                                {tier.price === 0
-                                  ? "Free"
-                                  : formatCurrency(tier.price)}
-                              </p>
-                            </div>
-                            <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                              <div
-                                className="h-full rounded-full bg-turquoise transition-all"
-                                style={{
-                                  width: `${Math.min(progress, 100)}%`,
-                                }}
-                              />
-                            </div>
-                            <p className="mt-1 text-right text-[11px] text-muted-foreground">
-                              {remaining} remaining
-                            </p>
-                          </Card>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </>
-            )}
-
-            {/* ── Thread ─────────────────── */}
-            {activeTab === "thread" && (
-              <>
-                {!event.thread ? (
-                  <EmptyState
-                    icon={Gift}
-                    title="No thread configured"
-                    description="A collaborative gifting thread hasn't been set up for this event."
-                  />
-                ) : (
-                  <div className="mx-auto max-w-2xl space-y-6">
-                    {event.thread.accessType && (
-                      <p className="text-center text-xs text-muted-foreground">
-                        Access: {event.thread.accessType.name}
-                        {event.thread.allowedCircles?.length > 0 &&
-                          ` · Circles: ${event.thread.allowedCircles.map((c) => c.name).join(", ")}`}
-                      </p>
+            {/* ── Tabs ──────────────────────────────── */}
+            <div className="mt-10">
+              <div className="flex gap-6 overflow-x-auto border-b border-line">
+                {TABS.map((tab) => (
+                  <button
+                    key={tab.value}
+                    onClick={() => setActiveTab(tab.value)}
+                    className={cn(
+                      "flex items-center gap-2 border-b-2 pb-3 text-[11px] font-bold uppercase tracking-wider transition shrink-0",
+                      activeTab === tab.value
+                        ? "border-turquoise text-foreground"
+                        : "border-transparent text-muted-foreground hover:text-foreground",
                     )}
+                  >
+                    <tab.icon className="h-3.5 w-3.5" />
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
 
-                    {!event.thread.items?.length ? (
+              <div className="mt-6">
+                {/* ── Toasts ─────────────────── */}
+                {activeTab === "toasts" && (
+                  <>
+                    {!event.toasts?.length ? (
                       <EmptyState
-                        icon={Gift}
-                        title="No thread items"
-                        description="No gift items have been added to this thread."
+                        icon={MessageSquareHeart}
+                        title="No toasts yet"
+                        description="Guests haven't left messages yet."
                       />
                     ) : (
-                      <div className="grid gap-4 sm:grid-cols-2">
-                        {event.thread.items.map((item) => {
-                          const isSoldOut =
-                            item.status === ThreadItemStatus.SOLD_OUT;
-
-                          return (
-                            <Card
-                              key={item.id}
-                              size="sm"
-                              className={cn(
-                                "overflow-hidden",
-                                isSoldOut && "opacity-50",
-                              )}
-                            >
-                              {item.imageUrl && (
-                                <div className="aspect-[4/3] overflow-hidden bg-muted">
-                                  <MediaEl
-                                    url={item.imageUrl}
-                                    alt={item.name}
-                                  />
-                                </div>
-                              )}
-                              <div className="p-4">
-                                <div className="flex items-start justify-between gap-2">
-                                  <h4 className="text-sm font-semibold text-foreground">
-                                    {item.name}
-                                  </h4>
-                                  <span className="shrink-0 rounded-full bg-muted px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                                    {item.category}
-                                  </span>
-                                </div>
-                                {item.description && (
-                                  <p className="mt-1 text-xs leading-relaxed text-muted-foreground line-clamp-2">
-                                    {item.description}
-                                  </p>
+                      <div className="mx-auto max-w-2xl space-y-6">
+                        {event.toasts.map((toast) => (
+                          <div
+                            key={toast.id}
+                            className="flex items-start gap-3"
+                          >
+                            <Avatar size="sm" className="mt-0.5 shrink-0">
+                              <AvatarFallback className="text-[10px]">
+                                {getInitials(
+                                  toast.author?.firstName,
+                                  toast.author?.lastName,
                                 )}
-                                <div className="mt-3 flex items-center justify-between">
-                                  <span className="text-sm font-black font-display text-foreground">
-                                    {formatCurrency(item.price)}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-baseline gap-2">
+                                <span className="text-sm font-semibold text-foreground">
+                                  {toast.author?.firstName ?? "Guest"}{" "}
+                                  {toast.author?.lastName ?? ""}
+                                </span>
+                                <span className="text-[11px] text-muted-foreground">
+                                  <span suppressHydrationWarning>
+                                    {formatDate(toast.createdAt, "relative")}
                                   </span>
-                                  <span className="text-xs text-muted-foreground">
-                                    {(item.participants?.length ?? 0) > 0
-                                      ? `${item.participants!.length} contributor${item.participants!.length !== 1 ? "s" : ""}`
-                                      : "Open"}
-                                  </span>
-                                </div>
+                                </span>
                               </div>
-                            </Card>
-                          );
-                        })}
+                              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                                {toast.content}
+                              </p>
+                              {toast.amount != null && toast.amount > 0 && (
+                                <span className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-coral">
+                                  <Heart className="h-3 w-3" />
+                                  {formatCurrency(toast.amount)}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     )}
-                  </div>
+                  </>
                 )}
-              </>
-            )}
 
-            {/* ── Check-ins ──────────────── */}
-            {activeTab === "check-ins" && (
-              <>
-                {!event.attendance?.length ? (
-                  <EmptyState
-                    icon={Users}
-                    title="No check-ins recorded"
-                    description="Checked-in guests will appear here once the event starts."
-                  />
-                ) : (
-                  <div className="mx-auto max-w-xl">
-                    <p className="mb-4 text-center text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                      {event.attendanceCount} checked in
-                    </p>
-                    <div className="divide-y divide-line">
-                      {event.attendance.map((a) => {
-                        const name = a.user
-                          ? `${a.user.firstName} ${a.user.lastName}`
-                          : a.guest?.name ?? "Unknown";
-
-                        return (
+                {/* ── Guests ─────────────────── */}
+                {activeTab === "guests" && (
+                  <>
+                    {!event.guests?.length ? (
+                      <EmptyState
+                        icon={Users}
+                        title="No guests yet"
+                        description="Invite guests to your event."
+                      />
+                    ) : (
+                      <div className="mx-auto max-w-2xl divide-y divide-line">
+                        {event.guests.map((guest) => (
                           <div
-                            key={a.id}
+                            key={guest.id}
                             className="flex items-center justify-between py-3"
                           >
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-3 min-w-0">
                               <Avatar size="sm">
                                 <AvatarFallback className="text-[10px]">
-                                  {getInitials(
-                                    a.user?.firstName,
-                                    a.user?.lastName,
-                                  ) ?? name.charAt(0)}
+                                  {getInitials(guest.name)}
                                 </AvatarFallback>
                               </Avatar>
-                              <span className="text-sm font-semibold text-foreground">
-                                {name}
+                              <div className="min-w-0">
+                                <p className="text-sm font-semibold text-foreground truncate">
+                                  {guest.name}
+                                </p>
+                                {guest.email && (
+                                  <p className="text-xs text-muted-foreground truncate">
+                                    {guest.email}
+                                  </p>
+                                )}
+                                {guest.phone && (
+                                  <p className="text-xs text-muted-foreground">
+                                    {guest.phone}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2 shrink-0">
+                              {guest.category?.label && (
+                                <span className="hidden rounded-full bg-muted px-3 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground sm:inline-block">
+                                  {guest.category.label}
+                                </span>
+                              )}
+                              <span
+                                className={cn(
+                                  "inline-block rounded-full px-3 py-0.5 text-[11px] font-bold",
+                                  RSVP_STYLES[guest.rsvpStatus]?.class ??
+                                    RSVP_STYLES.PENDING.class,
+                                )}
+                              >
+                                {RSVP_STYLES[guest.rsvpStatus]?.label ??
+                                  guest.rsvpStatus}
                               </span>
                             </div>
-                            <span className="text-xs text-muted-foreground">
-                              <span suppressHydrationWarning>{formatDate(a.checkedInAt, "relative")}</span>
-                            </span>
                           </div>
-                        );
-                      })}
-                    </div>
-                  </div>
+                        ))}
+                      </div>
+                    )}
+                  </>
                 )}
-              </>
-            )}
-          </div>
-        </div>
 
+                {/* ── Moments ────────────────── */}
+                {activeTab === "moments" && (
+                  <>
+                    {!event.moments?.length ? (
+                      <EmptyState
+                        icon={Camera}
+                        title="No moments yet"
+                        description="Photos shared by guests will appear here."
+                      />
+                    ) : (
+                      <div className="columns-2 gap-3 sm:columns-3">
+                        {event.moments.map((moment) => (
+                          <button
+                            key={moment.id}
+                            className="group relative mb-3 block w-full overflow-hidden rounded-xl bg-muted"
+                          >
+                            <MediaEl
+                              url={moment.imageUrl}
+                              alt={moment.caption ?? "Moment"}
+                            />
+                            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/50 to-transparent p-4 opacity-0 transition group-hover:opacity-100">
+                              {moment.caption && (
+                                <p className="truncate text-sm text-white">
+                                  {moment.caption}
+                                </p>
+                              )}
+                              <p className="text-xs text-white/70">
+                                {moment.uploader?.firstName ?? "Someone"}{" "}
+                                {moment.uploader?.lastName ?? ""}
+                              </p>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {/* ── Tickets / Pass ─────────── */}
+                {activeTab === "pass" && (
+                  <>
+                    {!event.ticketEvent?.tiers?.length ? (
+                      <EmptyState
+                        icon={Ticket}
+                        title="No ticketing configured"
+                        description="Ticket tiers haven't been set up for this event."
+                      />
+                    ) : (
+                      <div className="mx-auto max-w-xl space-y-8">
+                        <div className="flex items-center justify-center gap-10 text-sm">
+                          <div className="text-center">
+                            <p className="text-3xl font-black font-display text-foreground">
+                              {event.ticketEvent.totalSold}
+                            </p>
+                            <p className="mt-1 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                              Sold
+                            </p>
+                          </div>
+                          <div className="h-10 w-px bg-line" />
+                          <div className="text-center">
+                            <p className="text-3xl font-black font-sans text-gold">
+                              {formatCurrency(event.ticketEvent.revenue)}
+                            </p>
+                            <p className="mt-1 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                              Revenue
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="space-y-3">
+                          {event.ticketEvent.tiers.map((tier) => {
+                            const progress =
+                              tier.capacity > 0
+                                ? Math.round((tier.sold / tier.capacity) * 100)
+                                : 0;
+                            const remaining = Math.max(
+                              tier.capacity - tier.sold,
+                              0,
+                            );
+
+                            return (
+                              <Card
+                                key={tier.id}
+                                size="sm"
+                                className="px-5 py-4"
+                              >
+                                <div className="flex items-center justify-between">
+                                  <div>
+                                    <h4 className="text-sm font-semibold text-foreground">
+                                      {tier.name}
+                                    </h4>
+                                    <p className="mt-0.5 text-xs text-muted-foreground">
+                                      {tier.sold} / {tier.capacity} sold
+                                    </p>
+                                  </div>
+                                  <p className="text-lg font-black font-display text-foreground">
+                                    {tier.price === 0
+                                      ? "Free"
+                                      : formatCurrency(tier.price)}
+                                  </p>
+                                </div>
+                                <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                                  <div
+                                    className="h-full rounded-full bg-turquoise transition-all"
+                                    style={{
+                                      width: `${Math.min(progress, 100)}%`,
+                                    }}
+                                  />
+                                </div>
+                                <p className="mt-1 text-right text-[11px] text-muted-foreground">
+                                  {remaining} remaining
+                                </p>
+                              </Card>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {/* ── Thread ─────────────────── */}
+                {activeTab === "thread" && (
+                  <>
+                    {!event.thread ? (
+                      <EmptyState
+                        icon={Gift}
+                        title="No thread configured"
+                        description="A collaborative gifting thread hasn't been set up for this event."
+                      />
+                    ) : (
+                      <div className="mx-auto max-w-2xl space-y-6">
+                        {event.thread.accessType && (
+                          <p className="text-center text-xs text-muted-foreground">
+                            Access: {event.thread.accessType.name}
+                            {event.thread.allowedCircles?.length > 0 &&
+                              ` · Circles: ${event.thread.allowedCircles.map((c) => c.name).join(", ")}`}
+                          </p>
+                        )}
+
+                        {!event.thread.items?.length ? (
+                          <EmptyState
+                            icon={Gift}
+                            title="No thread items"
+                            description="No gift items have been added to this thread."
+                          />
+                        ) : (
+                          <div className="grid gap-4 sm:grid-cols-2">
+                            {event.thread.items.map((item) => {
+                              const isSoldOut =
+                                item.status === ThreadItemStatus.SOLD_OUT;
+
+                              return (
+                                <Card
+                                  key={item.id}
+                                  size="sm"
+                                  className={cn(
+                                    "overflow-hidden",
+                                    isSoldOut && "opacity-50",
+                                  )}
+                                >
+                                  {item.imageUrl && (
+                                    <div className="aspect-[4/3] overflow-hidden bg-muted">
+                                      <MediaEl
+                                        url={item.imageUrl}
+                                        alt={item.name}
+                                      />
+                                    </div>
+                                  )}
+                                  <div className="p-4">
+                                    <div className="flex items-start justify-between gap-2">
+                                      <h4 className="text-sm font-semibold text-foreground">
+                                        {item.name}
+                                      </h4>
+                                      <span className="shrink-0 rounded-full bg-muted px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                                        {item.category}
+                                      </span>
+                                    </div>
+                                    {item.description && (
+                                      <p className="mt-1 text-xs leading-relaxed text-muted-foreground line-clamp-2">
+                                        {item.description}
+                                      </p>
+                                    )}
+                                    <div className="mt-3 flex items-center justify-between">
+                                      <span className="text-sm font-black font-display text-foreground">
+                                        {formatCurrency(item.price)}
+                                      </span>
+                                      <span className="text-xs text-muted-foreground">
+                                        {(item.participants?.length ?? 0) > 0
+                                          ? `${item.participants!.length} contributor${item.participants!.length !== 1 ? "s" : ""}`
+                                          : "Open"}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </Card>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {/* ── Check-ins ──────────────── */}
+                {activeTab === "check-ins" && (
+                  <>
+                    {!event.attendance?.length ? (
+                      <EmptyState
+                        icon={Users}
+                        title="No check-ins recorded"
+                        description="Checked-in guests will appear here once the event starts."
+                      />
+                    ) : (
+                      <div className="mx-auto max-w-xl">
+                        <p className="mb-4 text-center text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                          {event.attendanceCount} checked in
+                        </p>
+                        <div className="divide-y divide-line">
+                          {event.attendance.map((a) => {
+                            const name = a.user
+                              ? `${a.user.firstName} ${a.user.lastName}`
+                              : (a.guest?.name ?? "Unknown");
+
+                            return (
+                              <div
+                                key={a.id}
+                                className="flex items-center justify-between py-3"
+                              >
+                                <div className="flex items-center gap-3">
+                                  <Avatar size="sm">
+                                    <AvatarFallback className="text-[10px]">
+                                      {getInitials(
+                                        a.user?.firstName,
+                                        a.user?.lastName,
+                                      ) ?? name.charAt(0)}
+                                    </AvatarFallback>
+                                  </Avatar>
+                                  <span className="text-sm font-semibold text-foreground">
+                                    {name}
+                                  </span>
+                                </div>
+                                <span className="text-xs text-muted-foreground">
+                                  <span suppressHydrationWarning>
+                                    {formatDate(a.checkedInAt, "relative")}
+                                  </span>
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
           </>
         )}
-
       </div>
 
       {/* ── Lightbox ────────────────────────────── */}

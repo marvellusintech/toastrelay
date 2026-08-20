@@ -596,28 +596,36 @@ export type UserPass = {
 
 
 
-export interface SettlementStatus {
-    settlement:       Settlement;
-    earningsTracking: EarningsTracking;
+export interface Destination {
+  configured?: boolean;
+  bankName: string | null;
+  accountNumberMasked?: string | null;
+  accountNumber?: string;
+  accountName?: string;
+  status?: "CONFIGURED" | "SETUP_REQUIRED" | string;
 }
 
 export interface EarningsTracking {
-    pendingAmount:  number;
-    maturedAmount:  number;
-    nextExpectedAt: null;
-    notice:         string;
+  pendingBalance?: number;
+  availableBalance?: number;
+  earliestPendingMaturityDate?: string | null;
+  settlementSchedule?: string;
+  settlementWindowHours?: number;
+  pendingAmount?: number;
+  maturedAmount?: number;
+  nextExpectedAt?: null | string;
+  notice?: string;
 }
 
-export interface Settlement {
-    provider:                      string;
-    mode:                          string;
-    status:                        string;
+export interface SettlementStatus {
+  destination?: Destination;
+  earningsTracking: EarningsTracking;
+  note?: string;
+  settlement?: {
+    provider: string;
+    mode: string;
+    status: string;
     expectedSettlementWindowHours: number;
-    destination:                   Destination;
-}
-
-export interface Destination {
-    bankName:      string;
-    accountNumber: string;
-    accountName:   string;
+    destination: Destination;
+  };
 }

@@ -15,6 +15,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
+import { Badge } from "./ui/badge";
 import { EventDetails } from "@/types/response";
 import { getEventsApi } from "@/lib/api/events";
 import { GetEventsOptions } from "@/types/payload";
@@ -24,9 +25,9 @@ import Link from "next/link";
 const CATEGORIES = [
   "All",
   "Today",
-  "Vendors",
   "Festivals",
   "Weddings",
+    "Vendors",
   "Concerts",
 ];
 
@@ -206,14 +207,13 @@ export default function DiscoveryMasonry() {
                 placeholder="Search events, themes, or organizers..."
                 className="w-full rounded-full bg-[#EBF0F3] py-3 pl-12 pr-4 text-[15px] font-normal outline-none transition focus:bg-[#E2E8F0] placeholder:text-neutral-500"
               />
-             
             </div>
-             <Link href="/dashboard/events/create">
-                <Button variant="secondary">
-                  Create event
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </Link>
+            <Link href="/dashboard/events/create">
+              <Button variant="secondary">
+                Create event
+                <Plus className="h-4 w-4" />
+              </Button>
+            </Link>
           </header>
 
           {/* --- SUB-NAVIGATION CATEGORY PILLS --- */}
@@ -230,13 +230,26 @@ export default function DiscoveryMasonry() {
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
                 className={cn(
-                  "rounded-full px-4 py-2 text-sm font-semibold transition whitespace-nowrap",
+                  "inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition whitespace-nowrap",
                   activeCategory === cat
                     ? "bg-neutral-900 text-white"
                     : "bg-transparent text-neutral-800 hover:bg-neutral-100",
                 )}
               >
-                {cat}
+                <span>{cat}</span>
+                {cat === "Vendors" && (
+                  <Badge
+                    variant="secondary"
+                    className={cn(
+                      "text-[10px] px-1.5 py-0.5 font-medium leading-none pointer-events-none",
+                      activeCategory === cat
+                        ? "bg-neutral-800 text-neutral-200 border-neutral-700"
+                        : "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 border-amber-200 dark:border-amber-800",
+                    )}
+                  >
+                    Coming Soon
+                  </Badge>
+                )}
               </button>
             ))}
           </section>

@@ -8,6 +8,7 @@ import { ContainerScroll } from "@/components/ui/container-scroll-animation";
 import { ArrowRight } from "lucide-react";
 import { Pricing } from "@/components/pricing";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function LandingPage() {
   const router = useRouter();
@@ -88,11 +89,7 @@ export default function LandingPage() {
 
                 <div className="pt-4 flex flex-wrap gap-4">
                   <Button
-                    onClick={() =>
-                      document
-                        .getElementById("live-stages-anchor")
-                        ?.scrollIntoView({ behavior: "smooth" })
-                    }
+                    onClick={() => router.push("/discovery")}
                     variant="secondary"
                   >
                     Explore Live Events <ArrowRight className="w-4 h-4" />
@@ -240,7 +237,12 @@ export default function LandingPage() {
 
               <div>
                 {" "}
-                <Button variant="default">Create Event</Button>
+                <Button
+                  variant="default"
+                  onClick={() => router.push("/dashboard/events/create")}
+                >
+                  Create Event
+                </Button>
               </div>
             </div>
           </div>
@@ -266,16 +268,8 @@ export default function LandingPage() {
           </p>
 
           <div className="pt-">
-            <Button
-            // onClick={() => {
-            //   if (user || isDemoMode) {
-            //     setView('create-event');
-            //   } else {
-            //     document.getElementById('auth-section')?.scrollIntoView({ behavior: 'smooth' });
-            //   }
-            // }}
-            >
-              Create an Event
+            <Button>
+              <Link href="/dashboard/events/create">Create an Event</Link>
             </Button>
           </div>
         </div>

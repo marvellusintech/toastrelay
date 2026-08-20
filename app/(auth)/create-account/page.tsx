@@ -28,6 +28,7 @@ import { useAuthStore } from "@/lib/store/useAuthStore";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { SocialAuthButtons } from "@/components/SocialAuthButtons";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function CreateAccount() {
   const router = useRouter();
@@ -48,6 +49,7 @@ export default function CreateAccount() {
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   const [isRegistered, setIsRegistered] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState("");
@@ -255,12 +257,42 @@ export default function CreateAccount() {
                 />
               </FieldGroup>
 
+              <div className="flex items-start space-x-2 mt-4">
+                <Checkbox
+                  id="agree-terms"
+                  checked={termsAccepted}
+                  onCheckedChange={(checked) => setTermsAccepted(checked === true)}
+                  className="mt-0.5"
+                />
+                <label
+                  htmlFor="agree-terms"
+                  className="text-sm text-black/70 cursor-pointer select-none leading-snug"
+                >
+                  I agree to ToastRelay’s{" "}
+                  <Link
+                    href="/terms"
+                    target="_blank"
+                    className="font-bold text-black hover:text-turquoise-dark underline"
+                  >
+                    Terms of Use
+                  </Link>{" "}
+                  and{" "}
+                  <Link
+                    href="/privacy"
+                    target="_blank"
+                    className="font-bold text-black hover:text-turquoise-dark underline"
+                  >
+                    Privacy Policy
+                  </Link>
+                </label>
+              </div>
+
               <Button
                 type="submit"
                 form="create-account-form"
                 className="mt-8 w-full"
                 variant={"secondary"}
-                disabled={form.formState.isSubmitting || isPending}
+                disabled={!termsAccepted || form.formState.isSubmitting || isPending}
               >
                 {isPending ? "Creating account..." : "Create account"}
               </Button>

@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2, ArrowDownToLine, Wallet as WalletIcon, AlertTriangle, Building2 } from "lucide-react";
+import { Loader2, ArrowDownToLine, Wallet as WalletIcon, AlertTriangle, Building2, CheckCircle2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -21,7 +21,7 @@ import {
 const withdrawalSchema = z.object({
   amount: z
     .number({ message: "Amount is required" })
-    .min(2000, "Minimum withdrawal is ₦2,000"),
+    .min(100, "Minimum withdrawal is ₦100"),
 });
 
 type WithdrawalValues = z.infer<typeof withdrawalSchema>;
@@ -32,34 +32,47 @@ interface FinanceWithdrawProps {
 
 export function FinanceWithdraw({ availableBalance }: FinanceWithdrawProps) {
   const queryClient = useQueryClient();
+
   const { data: savedBankAccountData, isLoading: isSavedBankAccountLoading } =
     useQuery({
       queryKey: queryKeys.withdrawals.savedBankAccount(),
       queryFn: getSavedBankAccountApi,
     });
+
   const savedBankAccount = savedBankAccountData?.data;
 
   const withdrawalForm = useForm<WithdrawalValues>({
     resolver: zodResolver(withdrawalSchema),
-    defaultValues: { amount: 2000 },
+    defaultValues: {
+      amount: 100,
+    },
   });
 
   const withdrawalMutation = useMutation({
     mutationFn: requestWithdrawalApi,
-    onSuccess: () => {
+    onSuccess: (res) => {
+      toast.success(res.message || "Withdrawal request submitted successfully");
+      withdrawalForm.reset({ amount: 100 });
       queryClient.invalidateQueries({ queryKey: queryKeys.withdrawals.earnings() });
       queryClient.invalidateQueries({ queryKey: queryKeys.withdrawals.transactions() });
-      toast.success("Withdrawal initiated! Processing...");
-      withdrawalForm.reset();
+      queryClient.invalidateQueries({ queryKey: queryKeys.withdrawals.settlementStatus() });
     },
-    onError: (error: Error) => {
-      toast.error(error.message || "Failed to initiate withdrawal");
+    onError: (err: Error) => {
+      toast.error(err.message || "Failed to submit withdrawal request");
     },
   });
 
   function onWithdrawSubmit(values: WithdrawalValues) {
     if (!savedBankAccount) {
       toast.error("Save a bank account before requesting a withdrawal");
+      return;
+    }
+
+    if (values.amount > availableBalance) {
+      withdrawalForm.setError("amount", {
+        type: "manual",
+        message: `Amount exceeds available balance (${formatCurrency(availableBalance)})`,
+      });
       return;
     }
 
@@ -72,7 +85,7 @@ export function FinanceWithdraw({ availableBalance }: FinanceWithdrawProps) {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-              Available for withdrawal
+              Available Wallet
             </p>
             <p className="mt-1 text-2xl font-bold font-body text-foreground">
               {formatCurrency(availableBalance)}
@@ -83,78 +96,83 @@ export function FinanceWithdraw({ availableBalance }: FinanceWithdrawProps) {
       </Card>
 
       <Card className="px-6 py-6">
-        <h2 className="text-base font-bold text-foreground mb-1">Withdraw Earnings</h2>
+        <h2 className="text-base font-bold text-foreground mb-1">Request Manual Withdrawal</h2>
         <p className="text-sm text-muted-foreground mb-6">
-          Transfer your earnings to your saved bank account. Minimum ₦2,000.
+          Request a transfer from your Available balance to your saved bank account. Minimum withdrawal is ₦100.
         </p>
 
         <div className="mb-6 border-y border-border py-4">
           <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             <Building2 className="h-4 w-4" />
-            Withdrawal account
+            Payout Account Destination
           </div>
 
           {isSavedBankAccountLoading ? (
-            <div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Loading saved account...
+            <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+              Loading payout account details...
             </div>
           ) : savedBankAccount ? (
-            <div className="mt-3 space-y-1 text-sm">
-              <p className="font-semibold text-foreground">
-                {savedBankAccount.bankName}
-              </p>
-              <p className="text-muted-foreground">
-                {savedBankAccount.accountName} · {savedBankAccount.accountNumber}
+            <div className="mt-3 rounded-xl border border-zinc-200 bg-zinc-50 p-4">
+              <div className="flex items-center gap-2 text-xs font-semibold text-emerald-700">
+                <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                <span>Account Verified & Configured for Manual Payouts</span>
+              </div>
+              <p className="mt-2 text-sm font-bold text-zinc-900">{savedBankAccount.accountName}</p>
+              <p className="text-xs text-zinc-600">
+                {savedBankAccount.bankName} •••••{savedBankAccount.accountNumber.slice(-4)}
               </p>
             </div>
           ) : (
-            <div className="mt-3 flex items-start gap-2 text-sm text-amber-700">
-              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
-              <p>Save a bank account in the Bank Account tab before withdrawing.</p>
+            <div className="mt-3 flex items-start gap-2 text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-xl p-4">
+              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+              <div>
+                <p className="font-semibold">No Bank Account Configured</p>
+                <p className="text-xs text-amber-700 mt-0.5">
+                  Please configure your bank details under the <strong>Bank Account</strong> tab before requesting a withdrawal.
+                </p>
+              </div>
             </div>
           )}
         </div>
 
         <form onSubmit={withdrawalForm.handleSubmit(onWithdrawSubmit)} className="space-y-4">
           <Field>
-            <FieldLabel>Amount (₦)</FieldLabel>
+            <FieldLabel htmlFor="amount">Withdrawal Amount (₦)</FieldLabel>
             <Input
+              id="amount"
               type="number"
-              min={2000}
-              inputMode="numeric"
-              {...withdrawalForm.register("amount", { valueAsNumber: true })}
+              min={100}
               placeholder="e.g. 5000"
+              {...withdrawalForm.register("amount", { valueAsNumber: true })}
             />
             {withdrawalForm.formState.errors.amount && (
-              <FieldError errors={[withdrawalForm.formState.errors.amount]} />
+              <FieldError>{withdrawalForm.formState.errors.amount.message}</FieldError>
             )}
           </Field>
 
           <Button
             type="submit"
+            className="w-full sm:w-auto"
             disabled={
               withdrawalMutation.isPending ||
-              isSavedBankAccountLoading ||
               !savedBankAccount ||
-              availableBalance < 2000
+              availableBalance < 100
             }
-            className="w-full gap-1.5"
           >
             {withdrawalMutation.isPending ? (
-              <><Loader2 className="h-4 w-4 animate-spin" /> Processing...</>
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Processing Request...
+              </>
             ) : (
-              <><ArrowDownToLine className="h-4 w-4" /> Withdraw</>
+              <>
+                <ArrowDownToLine className="mr-2 h-4 w-4" />
+                Submit Withdrawal Request
+              </>
             )}
           </Button>
         </form>
-
-        {availableBalance < 2000 && (
-          <div className="mt-4 flex items-start gap-2 p-2 rounded-lg bg-amber-50 border border-amber-200 text-xs text-amber-700">
-            <AlertTriangle className="h-3.5 w-3.5 shrink-0 mt-0.5" />
-            <span>You need at least ₦2,000 to withdraw.</span>
-          </div>
-        )}
       </Card>
     </>
   );

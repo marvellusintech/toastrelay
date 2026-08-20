@@ -7,10 +7,18 @@ import {
   Wallet as WalletIcon,
   Building2,
   Coins,
+  ChevronLeft,
+  LayoutDashboard,
+  ArrowDownToLine,
+  History,
 } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-
-import { getBanksApi, getEarningsApi, getTransactionHistoryApi } from "@/lib/api/withdrawals";
+import { useRouter } from "next/navigation";
+import {
+  getBanksApi,
+  getEarningsApi,
+  getTransactionHistoryApi,
+} from "@/lib/api/withdrawals";
 import { queryKeys } from "@/lib/api/query_keys";
 import type { TransactionHistory } from "@/types/response";
 
@@ -19,23 +27,34 @@ import { FinanceTopUp } from "./_components/finance-topup";
 import { FinanceWithdraw } from "./_components/finance-withdraw";
 import { FinanceBankAccount } from "./_components/finance-bank-account";
 import { FinanceTransactionHistory } from "./_components/finance-transaction-history";
+import { Button } from "@/components/ui/button";
 
 type FinanceTab = "overview" | "topup" | "withdraw" | "bank" | "history";
 
-const TAB_IDS: FinanceTab[] = ["overview", "topup", "withdraw", "bank", "history"];
+const TAB_IDS: FinanceTab[] = [
+  "overview",
+  "topup",
+  "withdraw",
+  "bank",
+  "history",
+];
 
 const financeTabs = [
+  { id: "overview" as const, label: "Overview", icon: LayoutDashboard },
   { id: "topup" as const, label: "Top Up", icon: Coins },
   { id: "bank" as const, label: "Bank Account", icon: Building2 },
-  { id: "history" as const, label: "Transaction History", icon: WalletIcon },
+  { id: "withdraw" as const, label: "Withdraw", icon: ArrowDownToLine },
+  { id: "history" as const, label: "Transaction History", icon: History },
 ];
 
 function FinanceContent() {
+  const router = useRouter();
+
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();
   const initialTab = TAB_IDS.includes(searchParams.get("tab") as FinanceTab)
     ? (searchParams.get("tab") as FinanceTab)
-    : "topup";
+    : "overview";
   const [activeTab, setActiveTab] = useState<FinanceTab>(initialTab);
 
   const [bankAccountSuccess, setBankAccountSuccess] = useState(false);
@@ -61,10 +80,16 @@ function FinanceContent() {
     queryKey: queryKeys.withdrawals.transactions(),
     queryFn: () => getTransactionHistoryApi(),
   });
-  const txHistory: TransactionHistory = txData?.data ?? { pending: [], available: [], withdrawn: [] };
-  const allTransactions = [...txHistory.pending, ...txHistory.available, ...txHistory.withdrawn].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-  );
+  const txHistory: TransactionHistory = txData?.data ?? {
+    pending: [],
+    available: [],
+    withdrawn: [],
+  };
+  const allTransactions = [
+    ...txHistory.pending,
+    ...txHistory.available,
+    ...txHistory.withdrawn,
+  ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   if (earningsLoading) {
     return (
@@ -77,6 +102,16 @@ function FinanceContent() {
   return (
     <main className="bg-[#FAF9F6]">
       <div className="mx-auto w-full max-w-5xl px-6 py-8 sm:px-8 lg:px-10">
+        <Button
+          onClick={() => router.push("/dashboard")}
+          size="sm"
+          variant="ghost"
+          className="px-0 mb-8"
+        >
+          <ChevronLeft className="h-4 w-4" />
+          Back
+        </Button>
+
         <div className="mb-8 lg:mb-16">
           <h1 className="mt-2 text-4xl font-black font-display md:text-2xl">
             Finance
@@ -128,14 +163,19 @@ function FinanceContent() {
               <FinanceBankAccount
                 bankAccountSuccess={bankAccountSuccess}
                 onSaved={() => {
-                  queryClient.invalidateQueries({ queryKey: queryKeys.withdrawals.earnings() });
+                  queryClient.invalidateQueries({
+                    queryKey: queryKeys.withdrawals.earnings(),
+                  });
                   setBankAccountSuccess(true);
                 }}
               />
             )}
 
             {activeTab === "history" && (
-              <FinanceTransactionHistory transactions={allTransactions} isLoading={txLoading} />
+              <FinanceTransactionHistory
+                transactions={allTransactions}
+                isLoading={txLoading}
+              />
             )}
           </div>
         </div>

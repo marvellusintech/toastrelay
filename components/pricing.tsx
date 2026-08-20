@@ -1,65 +1,94 @@
-import { Check, Sparkles } from "lucide-react";
+import { Check } from "lucide-react";
 import { motion } from "motion/react";
 import { Button } from "./ui/button";
+import Link from "next/link";
 
 export function Pricing() {
+  const freeFeatures = [
+    "Unlimited events",
+    "Customizable Event Pages",
+    "RSVP & guest management",
+    "Event discovery",
+    "50 MB storage included",
+    "100 emails included",
+    "Event management tools",
+    "Basic analytics",
+  ];
+
+  const payAsYouUse = [
+    ["Storage", "From ₦300 / GB / month"],
+    ["Email", "₦4 / email"],
+    // ["SMS", "₦2 / SMS"],
+    ["Tickets", "5% + ₦100 / ticket"],
+    ["Toasts", "3%"],
+    ["Contributions", "2%"],
+  ];
+
+  const customFeatures = [
+    "Custom event requirements",
+    "Custom domain assistance",
+    "Special event setups",
+    "Custom integrations",
+    "Large or complex events",
+    "Dedicated support",
+  ];
+
   return (
-    <div className="px-4 md:px-24 border-b bg-[#FAF9F6] ">
-      {/* Pricing Section */}
-      <div className="py-24 md:py-32  px-6  relative overflow-hidden">
-        <div className="max-w-7xl mx-auto relative z-10 text-center space-y-24">
+    <div className="px-4 md:px-24 border-b bg-[#FAF9F6]">
+      <div className="py-24 md:py-32 px-6 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto relative z-10 text-center space-y-20">
+          {/* Header */}
           <div className="space-y-4 max-w-2xl mx-auto">
             <span className="inline-flex items-center text-xs font-bold uppercase tracking-[0.3em] text-primary-600 bg-primary/5 px-4 py-1.5 rounded-full font-display">
               Simple Pricing
             </span>
+
             <h2 className="text-5xl font-bold tracking-tight font-display uppercase text-black leading-none">
-              Plans Built for <br /> Celebrations
+              Built for Celebrations
             </h2>
-            <p className=" md:text-lg text-black/50 font-body max-w-lg mx-auto leading-relaxed mt-2">
-              No monthly fees. Pay only for what you host. Always free for
-              intimate events & casual gatherings.
+
+            <p className="md:text-lg text-black/50 font-body max-w-xl mx-auto leading-relaxed mt-2">
+              Create for free. Pay only when you need more
             </p>
           </div>
 
-          {/* Pricing Cards Grid */}
-          <div className=" grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {/* Plan 1: Casual Stage */}
+          {/* Pricing Cards */}
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {/* Free */}
             <motion.div
               whileHover={{ y: -4 }}
-              className="cursor-pointer bg-white border border-black/5 p-8 rounded-[2.5rem] flex flex-col justify-between text-left space-y-8 relative shadow-sm"
+              className="bg-white border border-black/5 p-8 rounded-[2.5rem] flex flex-col justify-between text-left space-y-8 relative shadow-sm"
             >
               <div className="space-y-6">
                 <div className="space-y-2">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-black/40">
-                    Intimate Meetups
+                    Start here
                   </span>
+
                   <h3 className="text-2xl font-black font-display uppercase text-black">
-                    Casual Stage
+                    Free
                   </h3>
                 </div>
+
                 <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-black font-display text-black">
-                    $0
+                  <span className="text-4xl font-bold font-body text-black">
+                    ₦0
                   </span>
+
                   <span className="text-xs text-black/40 font-mono">
-                    / free forever
+                    / forever
                   </span>
                 </div>
+
                 <p className="text-xs text-black/50 leading-relaxed font-body">
-                  Best for small family dinners, casual neighborhood cleanups,
-                  or cozy apartment watch parties.
+                  Everything you need to create, customize, and manage your
+                  event without a subscription.
                 </p>
 
                 <div className="border-t border-black/5 pt-6 space-y-3.5 text-xs">
-                  {[
-                    "Live customizable Stage link",
-                    "Up to 50 guests RSVP capacity",
-                    "Interactive live Toast feed",
-                    "Basic registry linking & cash pool",
-                    "Universal mobile checklist",
-                  ].map((feat, idx) => (
+                  {freeFeatures.map((feat) => (
                     <div
-                      key={idx}
+                      key={feat}
                       className="flex items-center gap-2.5 text-black/70"
                     >
                       <Check className="w-4 h-4 text-primary shrink-0" />
@@ -69,125 +98,102 @@ export function Pricing() {
                 </div>
               </div>
 
-              <Button
-              variant={"secondary"}
-                // onClick={() => {
-                //   if (user || isDemoMode) {
-                //     setView('create-event');
-                //   } else {
-                //     document.getElementById('auth-section')?.scrollIntoView({ behavior: 'smooth' });
-                //   }
-                // }}
-                >
-                Launch Free Stage
-              </Button>
+              <Button variant="secondary"><Link href="/dashboard/events/create">Get started</Link></Button>
             </motion.div>
 
-            {/* Plan 2: Premium Stage */}
+            {/* Pay As You Use */}
             <motion.div
               whileHover={{ y: -4 }}
-              className="cursor-pointer bg-white border-2 border-primary shadow-xl shadow-primary/5 p-8 rounded-[2.5rem] flex flex-col justify-between text-left space-y-8 relative"
+              className="bg-white border-2 border-primary shadow-xl shadow-primary/5 p-8 rounded-[2.5rem] flex flex-col justify-between text-left space-y-8 relative"
             >
-              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-primary text-black text-[9px] font-black uppercase tracking-[0.2em] px-4 py-1.5 rounded-full shadow-md z-10">
+              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-primary t text-[9px] font-black uppercase tracking-[0.2em] px-4 py-1.5 rounded-full shadow-md z-10">
                 Most Popular
               </div>
 
               <div className="space-y-6">
                 <div className="space-y-2">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-primary-600">
-                    Elite Celebrations
+                    Pay as You Use
                   </span>
-                  <h3 className="text-2xl font-black font-display uppercase text-black">
-                    Premium Stage
-                  </h3>
+
+                  {/* <h3 className="text-2xl font-black font-display uppercase text-black">
+                    Pay as You Use
+                  </h3> */}
                 </div>
+
                 <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-black font-display text-black">
-                    $29
+                  <span className="text-4xl font-bold font-body text-black">
+                    Usage-based
                   </span>
-                  <span className="text-xs text-black/40 ">/ single event</span>
                 </div>
+
                 <p className="text-xs text-black/50 leading-relaxed font-body">
-                  The absolute perfect standard for classic weddings, high-end
-                  gallery openings, formal anniversary galas, or concerts.
+                  Add resources and use paid event features only when your event
+                  needs them.
                 </p>
 
                 <div className="border-t border-black/5 pt-6 space-y-3.5 text-xs">
-                  {[
-                    "Everything in Casual Stage plan",
-                    "Up to 500 guests capacity",
-                    "Bespoke designs & brand accent colors",
-                    "Interactive seating plan & circular tables",
-                    "Guest group circular permissions",
-                    "Fully secure registry with 0% Toast fee",
-                    "Export RSVP database instantly (CSV)",
-                    "Fast priority success support",
-                  ].map((feat, idx) => (
+                  {payAsYouUse.map(([name, price]) => (
                     <div
-                      key={idx}
-                      className="flex items-center gap-2.5 text-black/70"
+                      key={name}
+                      className="flex items-center justify-between gap-4 text-black/70"
                     >
-                      <Check className="w-4 h-4 text-primary-500 shrink-0" />
-                      <span className="font-">{feat}</span>
+                      <span>{name}</span>
+
+                      <span className="font-semibold text-black whitespace-nowrap">
+                        {price}
+                      </span>
                     </div>
                   ))}
                 </div>
+
+                <div className="border-t border-black/5 pt-5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-black/50">Credit value</span>
+
+                    <span className="text-sm font-bold text-black">
+                      1 credit = ₦1
+                    </span>
+                  </div>
+                </div>
               </div>
 
-              <Button
-              variant={"secondary"}
-                // onClick={() => {
-                //   if (user || isDemoMode) {
-                //     setView('create-event');
-                //   } else {
-                //     document.getElementById('auth-section')?.scrollIntoView({ behavior: 'smooth' });
-                //   }
-                // }}
-               >
-                Get Premium Stage
+              <Button variant="secondary" asChild>
+                <Link href="/dashboard/events/create">Create an Event</Link>
               </Button>
             </motion.div>
 
-            {/* Plan 3: Elite Circle */}
+            {/* Custom */}
             <motion.div
               whileHover={{ y: -4 }}
-              className="cursor-pointer bg-white border border-black/5 p-8 rounded-[2.5rem] flex flex-col justify-between text-left space-y-8 relative shadow-sm"
+              className="bg-white border border-black/5 p-8 rounded-[2.5rem] flex flex-col justify-between text-left space-y-8 relative shadow-sm"
             >
               <div className="space-y-6">
                 <div className="space-y-2">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-black/40">
-                    Agencies & Festivals
+                    Tailored to you
                   </span>
-                  <h3 className="text-2xl font-black font-display uppercase text-black">
-                    Elite Circle
-                  </h3>
+
+                  {/* <h3 className="text-2xl font-black font-display uppercase text-black">
+                    Custom
+                  </h3> */}
                 </div>
+
                 <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-black font-display text-black">
-                    
-                  </span>
-                  <span className="text-xs text-black/40 font-mono">
-                    / single event
+                  <span className="text-4xl font-bold font-body text-black">
+                    Let&apos;s talk
                   </span>
                 </div>
+
                 <p className="text-xs text-black/50 leading-relaxed font-body">
-                  Crafted for multi-day conferences, ticketed summer music
-                  festivals, or wedding planner agencies managing multiple
-                  clients.
+                  Planning something that needs more than the standard
+                  ToastRelay experience? Talk to our team.
                 </p>
 
                 <div className="border-t border-black/5 pt-6 space-y-3.5 text-xs">
-                  {[
-                    "Everything in Premium Stage plan",
-                    "Unlimited guests RSVP & ticketing",
-                    "Professional QR Code scanner staff mode",
-                    "Tailored custom domain setup",
-                    "Access controls & private stage gates",
-                    "Direct WhatsApp RSVP bot integrations",
-                    "Dedicated event manager advisor",
-                  ].map((feat, idx) => (
+                  {customFeatures.map((feat) => (
                     <div
-                      key={idx}
+                      key={feat}
                       className="flex items-center gap-2.5 text-black/70"
                     >
                       <Check className="w-4 h-4 text-primary shrink-0" />
@@ -197,18 +203,21 @@ export function Pricing() {
                 </div>
               </div>
 
-              <Button
-              variant={"secondary"}
-                onClick={() => {
-                  alert(
-                    "Thank you! Our Elite Success Team has been notified. We will reach you via email.",
-                  );
-                }}
-              >
-                Bespoke Consultation
+              <Button variant="secondary" asChild>
+                <a href="mailto:support@toastrelay.com?subject=Tailored%20Event%20Requirements">
+                  Talk to Us
+                </a>
               </Button>
             </motion.div>
           </div>
+
+          {/* Footer Note */}
+          {/* <div className="max-w-2xl mx-auto -mt-8">
+            <p className="text-xs text-black/40 font-body leading-relaxed">
+              No monthly subscription. Create your event for free and only pay
+              for additional resources or paid features when you use them.
+            </p>
+          </div> */}
         </div>
       </div>
     </div>

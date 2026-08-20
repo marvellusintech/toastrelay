@@ -52,6 +52,7 @@ export const queryKeys = {
       [...queryKeys.withdrawals.root, "bank-account"] as const,
     history: () => [...queryKeys.withdrawals.root, "history"] as const,
     transactions: () => [...queryKeys.withdrawals.root, "transactions"] as const,
+    settlementStatus: () => [...queryKeys.withdrawals.root, "settlement-status"] as const,
   },
   pass: {
     root: ["pass"] as const,

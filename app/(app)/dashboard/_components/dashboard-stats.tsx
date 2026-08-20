@@ -45,11 +45,11 @@ export function DashboardStats() {
   const earnings = earningsData?.data;
   const settlementStatus = settlementStatusData?.data;
   const pendingBalance = settlementStatus
-    ? Number(settlementStatus.earningsTracking.pendingAmount)
-    : 0;
+    ? Number(settlementStatus.earningsTracking.pendingBalance ?? settlementStatus.earningsTracking.pendingAmount ?? earnings?.pending?.balance ?? 0)
+    : Number(earnings?.pending?.balance ?? 0);
   const availableBalance = settlementStatus
-    ? Number(settlementStatus.earningsTracking.maturedAmount)
-    : 0;
+    ? Number(settlementStatus.earningsTracking.availableBalance ?? settlementStatus.earningsTracking.maturedAmount ?? earnings?.available?.balance ?? 0)
+    : Number(earnings?.available?.balance ?? 0);
 
   const containerClass =
     "flex gap-4 overflow-x-auto py-8 snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden sm:grid sm:grid-cols-2 sm:overflow-visible sm:[scrollbar-width:auto] lg:grid-cols-4";
@@ -71,7 +71,7 @@ export function DashboardStats() {
     <section className={containerClass}>
       {/* Wallet Balance Tile */}
       <Link
-        href="/dashboard/finance?tab=bank"
+        href="/dashboard/finance?tab=withdrawals"
         className="w-[240px] shrink-0 sm:shrink sm:w-auto group"
       >
         <Card className="h-full gap-0 px-4 pt-4 pb-4 bg-neutral-900 border-neutral-800 transition group-hover:shadow-sm group-hover:border-neutral-700 flex flex-col">
@@ -115,7 +115,7 @@ export function DashboardStats() {
           </div>
           <div className="mt-auto flex justify-end">
             <p className="text-xs text-neutral-400 font-semibold group-hover:text-[var(--primary)] transition-colors">
-             Manage bank account →
+             Withdrawal
             </p>
           </div>
         </Card>

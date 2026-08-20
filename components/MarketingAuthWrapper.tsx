@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Navbar } from "./layouts/navbar";
+import { Footer } from "./layouts/footer";
 import { TooltipProvider } from "./ui/tooltip";
 import { SidebarProvider } from "./ui/sidebar";
 import { AppSidebar } from "./layouts/appSidebar";
@@ -58,11 +59,16 @@ export function MarketingAuthWrapper({
       {mounted && !isAuthenticated && <Navbar />}
       <TooltipProvider delayDuration={0}>
         <SidebarProvider defaultOpen={false}>
-          <div className="flex flex-1 w-full">
-            {/* Sidebar stays on the left on desktop*/}
-            {mounted && isAuthenticated && !hideSidebar && <AppSidebar />}
+          <div className="flex flex-1 w-full flex-col min-h-screen">
+            <div className="flex flex-1 w-full">
+              {/* Sidebar stays on the left on desktop*/}
+              {mounted && isAuthenticated && !hideSidebar && <AppSidebar />}
 
-            {children}
+              <div className="flex-1 flex flex-col w-full min-w-0">
+                {children}
+              </div>
+            </div>
+            {mounted && !isAuthenticated && <Footer />}
           </div>
         </SidebarProvider>
       </TooltipProvider>
