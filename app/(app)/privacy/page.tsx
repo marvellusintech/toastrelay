@@ -15,7 +15,7 @@ const privacyData: PrivacySection[] = [
     content: (
       <>
         <p className="mb-4">
-          Depending on how you use ToastRelay, we may collect the following information:
+          Depending on how you use Toastrelay, we may collect the following information:
         </p>
 
         <h4 className="font-semibold text-gray-900 mb-2">1.1 Account Information</h4>
@@ -53,12 +53,12 @@ const privacyData: PrivacySection[] = [
           <li>Guest information and event preferences</li>
         </ul>
         <p className="mb-6">
-          Organizers are responsible for ensuring that any additional information they request through ToastRelay is appropriate and lawful.
+          Organizers are responsible for ensuring that any additional information they request through Toastrelay is appropriate and lawful.
         </p>
 
         <h4 className="font-semibold text-gray-900 mb-2">1.4 Payment Information</h4>
         <p className="mb-2">
-          When you make a payment through ToastRelay, payment information may be processed by third-party providers (such as Paystack). ToastRelay does not generally store your complete payment card details. We may receive details such as:
+          When you make a payment through Toastrelay, payment information may be processed by third-party providers (such as Paystack). Toastrelay does not generally store your complete payment card details. We may receive details such as:
         </p>
         <ul className="list-disc pl-5 space-y-1 mb-6">
           <li>Transaction reference, amount paid, and currency</li>
@@ -76,7 +76,7 @@ const privacyData: PrivacySection[] = [
 
         <h4 className="font-semibold text-gray-900 mb-2">1.6 Content You Upload</h4>
         <p className="mb-2">
-          ToastRelay allows you to upload photos, videos, documents, profile images, and messages. You are responsible for ensuring you have the necessary rights to upload this content.
+          Toastrelay allows you to upload photos, videos, documents, profile images, and messages. You are responsible for ensuring you have the necessary rights to upload this content.
         </p>
 
         <h4 className="font-semibold text-gray-900 mb-2 pt-4">1.7 Technical Information</h4>
@@ -96,7 +96,7 @@ const privacyData: PrivacySection[] = [
       <>
         <p className="mb-4">We use personal information to:</p>
         <ul className="list-disc pl-5 space-y-2 mb-4">
-          <li>Create and manage user accounts and provide ToastRelay services</li>
+          <li>Create and manage user accounts and provide Toastrelay services</li>
           <li>Process RSVPs, registrations, ticket sales, contributions, and payouts</li>
           <li>Send transaction details, updates, and event-related communications</li>
           <li>Provide customer support, troubleshoot, and maintain security</li>
@@ -130,7 +130,7 @@ const privacyData: PrivacySection[] = [
     title: '5. Service Providers',
     content: (
       <p>
-        We rely on trusted third-party providers (such as Paystack for payment processing, along with cloud storage, email delivery, hosting, analytics, and security services) to operate ToastRelay securely.
+        We rely on trusted third-party providers (such as Paystack for payment processing, along with cloud storage, email delivery, hosting, analytics, and security services) to operate Toastrelay securely.
       </p>
     ),
   },
@@ -139,7 +139,7 @@ const privacyData: PrivacySection[] = [
     title: '6. Payments',
     content: (
       <p>
-        Payments are processed by third-party providers and are subject to their terms. Transaction details are used to confirm purchases, issue tickets, handle payouts, process refunds, and prevent fraud. ToastRelay may delay or review suspicious transactions.
+        Payments are processed by third-party providers and are subject to their terms. Transaction details are used to confirm purchases, issue tickets, handle payouts, process refunds, and prevent fraud. Toastrelay may delay or review suspicious transactions.
       </p>
     ),
   },
@@ -201,7 +201,7 @@ const privacyData: PrivacySection[] = [
     title: '12. Children\'s Privacy',
     content: (
       <p>
-        ToastRelay is not intended for children without required parental/guardian consent. If you believe a child has unlawfully provided us with personal data, please contact us immediately.
+        Toastrelay is not intended for children without required parental/guardian consent. If you believe a child has unlawfully provided us with personal data, please contact us immediately.
       </p>
     ),
   },
@@ -229,10 +229,10 @@ const privacyData: PrivacySection[] = [
     content: (
       <>
         <p className="mb-4">
-          Our platform may contain links to external sites. ToastRelay is not responsible for the privacy practices, security, or content of third-party websites.
+          Our platform may contain links to external sites. Toastrelay is not responsible for the privacy practices, security, or content of third-party websites.
         </p>
         <p>
-          When you interact with an external event, ToastRelay may redirect you to a website or service operated by the event organizer or another third party. Information you provide after leaving ToastRelay is subject to that third party&apos;s privacy policy and terms. ToastRelay does not control how third parties collect or process information on their websites.
+          When you interact with an external event, Toastrelay may redirect you to a website or service operated by the event organizer or another third party. Information you provide after leaving Toastrelay is subject to that third party&apos;s privacy policy and terms. Toastrelay does not control how third parties collect or process information on their websites.
         </p>
       </>
     ),
@@ -242,7 +242,7 @@ const privacyData: PrivacySection[] = [
     title: '16. Changes to This Privacy Policy',
     content: (
       <p>
-        We may update this Privacy Policy from time to time. Continued use of ToastRelay following an update indicates acknowledgment of the revised policy.
+        We may update this Privacy Policy from time to time. Continued use of Toastrelay following an update indicates acknowledgment of the revised policy.
       </p>
     ),
   },
@@ -251,7 +251,7 @@ const privacyData: PrivacySection[] = [
     title: '17. Contact Us',
     content: (
       <div className="space-y-1">
-        <p>ToastRelay is operated by:</p>
+        <p>Toastrelay is operated by:</p>
         <p className="font-semibold text-gray-900">BRYME PLATFORMS LTD</p>
         <p>Nigeria</p>
         <p className="pt-2">For privacy inquiries or requests:</p>
@@ -343,10 +343,10 @@ export default function PrivacyPolicy() {
             {/* Document Intro Text */}
             <div className="space-y-4 text-sm leading-relaxed text-gray-600 mb-10">
               <p>
-                ToastRelay is operated by BRYME PLATFORMS LTD (&quot;ToastRelay&quot;, &quot;we&quot;, &quot;us&quot;, or &quot;our&quot;). ToastRelay provides tools for creating, managing, discovering, and participating in events, including event pages, RSVPs, ticketing, contributions, guest management, event galleries, messaging, and related services.
+                Toastrelay is operated by BRYME PLATFORMS LTD (&quot;Toastrelay&quot;, &quot;we&quot;, &quot;us&quot;, or &quot;our&quot;). Toastrelay provides tools for creating, managing, discovering, and participating in events, including event pages, RSVPs, ticketing, contributions, guest management, event galleries, messaging, and related services.
               </p>
               <p>
-                This Privacy Policy explains how we collect, use, store, disclose, and protect personal information when you use ToastRelay. By using ToastRelay, you acknowledge that you have read and understood this Privacy Policy.
+                This Privacy Policy explains how we collect, use, store, disclose, and protect personal information when you use Toastrelay. By using Toastrelay, you acknowledge that you have read and understood this Privacy Policy.
               </p>
             </div>
 

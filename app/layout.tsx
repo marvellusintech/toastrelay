@@ -25,7 +25,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "ToastRelay",
+  title: "Toastrelay",
   description:
     "The frontend for event stages, guest presence, toasts, moments, and passes.",
   icons: {

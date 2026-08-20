@@ -86,7 +86,7 @@ export default function LandingPage() {
                 </h2>
                 <div className="space-y-4">
                   <p className="text-base text-black/60 leading-relaxed font-body">
-                    Not every event starts on ToastRelay. <br />
+                    Not every event starts on Toastrelay. <br />
                     Some are created here. <br />
                     Others are discovered here.
                   </p>
@@ -229,7 +229,7 @@ export default function LandingPage() {
                 <div className="space-y-4">
                   <p className="text-lg text-black font-semibold font-body leading-tight">
                     Most platforms help you manage events. <br />
-                    ToastRelay helps events exist.
+                    Toastrelay helps events exist.
                   </p>
                   <p className="text-base text-black/60 leading-relaxed font-body">
                     Whether you are hosting a wedding, organizing a conference,

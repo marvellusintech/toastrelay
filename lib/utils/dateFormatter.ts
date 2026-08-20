@@ -4,7 +4,7 @@
 type FormatStyle = 'display' | 'short' | 'relative';
 
 /**
- * Formats a date string, number, or Date object into beautiful layouts matching ToastRelay's design requirements.
+ * Formats a date string, number, or Date object into beautiful layouts matching Toastrelay's design requirements.
  */
 export function formatDate(
   dateInput: Date | string | number | undefined | null,

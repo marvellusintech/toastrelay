@@ -177,7 +177,7 @@ export default function Login() {
             </form>
 
             <p className="mt-5 text-center text-sm text-black/40">
-              New to ToastRelay?{" "}
+              New to Toastrelay?{" "}
               <Link
                 href="/create-account"
                 className="font-bold text-black underline hover:text-turquoise-dark"

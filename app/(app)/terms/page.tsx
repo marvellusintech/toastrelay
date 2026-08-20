@@ -12,11 +12,11 @@ const termsData: TermSection[] = [
   {
     id: 'sec-1',
     number: '1',
-    title: '1. About ToastRelay',
+    title: '1. About Toastrelay',
     content: (
       <>
         <p className="mb-4">
-          ToastRelay provides technology that allows users and event organizers to:
+          Toastrelay provides technology that allows users and event organizers to:
         </p>
         <ul className="list-disc pl-5 space-y-2 mb-4">
           <li>Create event pages</li>
@@ -30,8 +30,8 @@ const termsData: TermSection[] = [
           <li>Manage event-related activities</li>
         </ul>
         <p>
-          ToastRelay provides the technology and infrastructure for these activities.
-          Unless expressly stated otherwise, ToastRelay is not the organizer, promoter, venue, performer, speaker, vendor, or producer of events listed on the platform.
+          Toastrelay provides the technology and infrastructure for these activities.
+          Unless expressly stated otherwise, Toastrelay is not the organizer, promoter, venue, performer, speaker, vendor, or producer of events listed on the platform.
         </p>
       </>
     ),
@@ -43,7 +43,7 @@ const termsData: TermSection[] = [
     content: (
       <>
         <p className="mb-4">
-          Some ToastRelay features require an account. You agree to:
+          Some Toastrelay features require an account. You agree to:
         </p>
         <ul className="list-disc pl-5 space-y-2 mb-4">
           <li>Provide accurate information</li>
@@ -54,7 +54,7 @@ const termsData: TermSection[] = [
           <li>Not create accounts for fraudulent or deceptive purposes</li>
         </ul>
         <p>
-          You are responsible for activity occurring through your account unless the activity resulted from a security failure attributable to ToastRelay.
+          You are responsible for activity occurring through your account unless the activity resulted from a security failure attributable to Toastrelay.
         </p>
       </>
     ),
@@ -66,7 +66,7 @@ const termsData: TermSection[] = [
     content: (
       <>
         <p className="mb-4">
-          If you create or manage an event on ToastRelay, you are responsible for your event. You are responsible for:
+          If you create or manage an event on Toastrelay, you are responsible for your event. You are responsible for:
         </p>
         <ul className="list-disc pl-5 space-y-2 mb-4">
           <li>The accuracy of your event information</li>
@@ -94,9 +94,9 @@ const termsData: TermSection[] = [
     title: '4. Event Discovery',
     content: (
       <p>
-        ToastRelay may make eligible events discoverable through search, discovery pages, recommendations, categories, or other areas of the platform.
+        Toastrelay may make eligible events discoverable through search, discovery pages, recommendations, categories, or other areas of the platform.
         By publishing an event, you understand that information you designate as public may be displayed to other users.
-        ToastRelay may determine how events are ranked, displayed, recommended, or promoted.
+        Toastrelay may determine how events are ranked, displayed, recommended, or promoted.
         We do not guarantee that any event will receive a particular amount of visibility, traffic, registrations, or ticket sales.
       </p>
     ),
@@ -120,7 +120,7 @@ const termsData: TermSection[] = [
           <li>Event information</li>
         </ul>
         <p>
-          A ticket purchased through ToastRelay represents a transaction associated with the relevant event.
+          A ticket purchased through Toastrelay represents a transaction associated with the relevant event.
           Unless expressly stated otherwise, the event organizer is responsible for fulfilling the ticket holder&apos;s right to attend the event.
         </p>
       </>
@@ -133,8 +133,8 @@ const termsData: TermSection[] = [
     content: (
       <p>
         Payments may be processed through third-party payment providers, including Paystack.
-        By making or receiving a payment through ToastRelay, you agree that applicable payment-provider terms may also apply.
-        ToastRelay may charge platform fees, transaction fees, storage fees, or other fees disclosed at the time of purchase or activation.
+        By making or receiving a payment through Toastrelay, you agree that applicable payment-provider terms may also apply.
+        Toastrelay may charge platform fees, transaction fees, storage fees, or other fees disclosed at the time of purchase or activation.
         Applicable fees may be paid by the attendee, organizer, or another party depending on the configuration of the transaction.
       </p>
     ),
@@ -146,7 +146,7 @@ const termsData: TermSection[] = [
     content: (
       <>
         <p className="mb-4">
-          Where ToastRelay facilitates payouts to event organizers, payouts are subject to:
+          Where Toastrelay facilitates payouts to event organizers, payouts are subject to:
         </p>
         <ul className="list-disc pl-5 space-y-2 mb-4">
           <li>Successful payment processing</li>
@@ -154,10 +154,10 @@ const termsData: TermSection[] = [
           <li>Account verification</li>
           <li>Fraud and risk checks</li>
           <li>Applicable laws and regulations</li>
-          <li>ToastRelay&apos;s payout procedures</li>
+          <li>Toastrelay&apos;s payout procedures</li>
         </ul>
         <p className="mb-4">
-          ToastRelay may delay, restrict, or suspend payouts where reasonably necessary to investigate:
+          Toastrelay may delay, restrict, or suspend payouts where reasonably necessary to investigate:
         </p>
         <ul className="list-disc pl-5 space-y-2 mb-4">
           <li>Fraud</li>
@@ -170,7 +170,7 @@ const termsData: TermSection[] = [
           <li>Material complaints relating to an event</li>
         </ul>
         <p>
-          A payout restriction does not necessarily mean that ToastRelay has determined that an organizer has committed wrongdoing.
+          A payout restriction does not necessarily mean that Toastrelay has determined that an organizer has committed wrongdoing.
         </p>
       </>
     ),
@@ -182,10 +182,10 @@ const termsData: TermSection[] = [
     content: (
       <p>
         Refunds may be subject to the refund policy applicable to the event and the circumstances of the transaction.
-        Event organizers are generally responsible for their event&apos;s cancellation and refund obligations, except where ToastRelay expressly assumes responsibility.
-        ToastRelay may assist with refunds, disputes, or payment issues where appropriate.
+        Event organizers are generally responsible for their event&apos;s cancellation and refund obligations, except where Toastrelay expressly assumes responsibility.
+        Toastrelay may assist with refunds, disputes, or payment issues where appropriate.
         Where a refund is approved, the timing of the refund may depend on the payment provider and the original payment method.
-        ToastRelay reserves the right to establish or update refund procedures for particular events, transaction types, or circumstances.
+        Toastrelay reserves the right to establish or update refund procedures for particular events, transaction types, or circumstances.
       </p>
     ),
   },
@@ -195,10 +195,10 @@ const termsData: TermSection[] = [
     title: '9. Contributions',
     content: (
       <p>
-        ToastRelay may allow users to make contributions or gifts associated with an event.
+        Toastrelay may allow users to make contributions or gifts associated with an event.
         Contributions are intended for the purpose communicated by the event organizer.
         Organizers must not use contribution features to facilitate fraud, money laundering, illegal activity, or deceptive fundraising.
-        ToastRelay may review, restrict, suspend, or cancel contribution activity where reasonably necessary for security, compliance, or fraud prevention.
+        Toastrelay may review, restrict, suspend, or cancel contribution activity where reasonably necessary for security, compliance, or fraud prevention.
       </p>
     ),
   },
@@ -209,8 +209,8 @@ const termsData: TermSection[] = [
     content: (
       <>
         <p className="mb-4">
-          Certain ToastRelay services may be free while others may require payment.
-          Before you are charged, ToastRelay will communicate the applicable fee where reasonably practicable. Fees may include:
+          Certain Toastrelay services may be free while others may require payment.
+          Before you are charged, Toastrelay will communicate the applicable fee where reasonably practicable. Fees may include:
         </p>
         <ul className="list-disc pl-5 space-y-2 mb-4">
           <li>Ticketing or transaction fees</li>
@@ -220,7 +220,7 @@ const termsData: TermSection[] = [
         </ul>
         <p>
           Unless otherwise stated, fees already incurred may be non-refundable.
-          ToastRelay may change its pricing from time to time. Changes to pricing will not retroactively alter fees already incurred.
+          Toastrelay may change its pricing from time to time. Changes to pricing will not retroactively alter fees already incurred.
         </p>
       </>
     ),
@@ -231,10 +231,10 @@ const termsData: TermSection[] = [
     title: '11. Storage and Uploaded Content',
     content: (
       <p>
-        ToastRelay may provide storage for event images, videos, documents, and other content.
+        Toastrelay may provide storage for event images, videos, documents, and other content.
         Storage availability and limits may depend on your plan or purchased storage allocation.
         Where storage is offered on a recurring basis, continued access may require an active payment arrangement.
-        If storage expires or is cancelled, ToastRelay may restrict access to stored content and may eventually delete content after an applicable retention period.
+        If storage expires or is cancelled, Toastrelay may restrict access to stored content and may eventually delete content after an applicable retention period.
         You are responsible for maintaining your own backups of important content.
       </p>
     ),
@@ -246,8 +246,8 @@ const termsData: TermSection[] = [
     content: (
       <>
         <p className="mb-4">
-          You retain ownership of content that you upload to ToastRelay, subject to the rights necessary for ToastRelay to operate the service.
-          By uploading content, you grant ToastRelay a limited, non-exclusive, worldwide, royalty-free license to host, store, reproduce, process, display, transmit, and otherwise use that content solely as reasonably necessary to provide, maintain, secure, and improve the services.
+          You retain ownership of content that you upload to Toastrelay, subject to the rights necessary for Toastrelay to operate the service.
+          By uploading content, you grant Toastrelay a limited, non-exclusive, worldwide, royalty-free license to host, store, reproduce, process, display, transmit, and otherwise use that content solely as reasonably necessary to provide, maintain, secure, and improve the services.
         </p>
         <p className="mb-4">You represent that:</p>
         <ul className="list-disc pl-5 space-y-2 mb-4">
@@ -257,7 +257,7 @@ const termsData: TermSection[] = [
           <li>The content is not unlawful</li>
           <li>The content does not contain malicious code</li>
         </ul>
-        <p>ToastRelay may remove content that violates these Terms or applicable law.</p>
+        <p>Toastrelay may remove content that violates these Terms or applicable law.</p>
       </>
     ),
   },
@@ -267,7 +267,7 @@ const termsData: TermSection[] = [
     title: '13. Prohibited Activities',
     content: (
       <>
-        <p className="mb-4">You must not use ToastRelay to:</p>
+        <p className="mb-4">You must not use Toastrelay to:</p>
         <ul className="list-disc pl-5 space-y-2 mb-4">
           <li>Commit fraud</li>
           <li>Scam or deceive users</li>
@@ -280,14 +280,14 @@ const termsData: TermSection[] = [
           <li>Collect personal information unlawfully</li>
           <li>Abuse or harass other users</li>
           <li>Upload malware</li>
-          <li>Attempt unauthorized access to ToastRelay</li>
+          <li>Attempt unauthorized access to Toastrelay</li>
           <li>Interfere with platform security</li>
           <li>Scrape or systematically collect data without authorization</li>
           <li>Circumvent platform restrictions</li>
           <li>Abuse payment systems</li>
-          <li>Use ToastRelay for activities that violate applicable laws</li>
+          <li>Use Toastrelay for activities that violate applicable laws</li>
         </ul>
-        <p>ToastRelay may suspend or terminate accounts and events involved in prohibited activity.</p>
+        <p>Toastrelay may suspend or terminate accounts and events involved in prohibited activity.</p>
       </>
     ),
   },
@@ -304,7 +304,7 @@ const termsData: TermSection[] = [
           <li>Following event rules</li>
           <li>Following venue requirements</li>
           <li>Respecting organizers and other attendees</li>
-          <li>Not misusing event information obtained through ToastRelay</li>
+          <li>Not misusing event information obtained through Toastrelay</li>
         </ul>
         <p>
           A ticket does not necessarily guarantee entry where the organizer or venue has lawful and clearly communicated entry requirements.
@@ -319,19 +319,19 @@ const termsData: TermSection[] = [
     content: (
       <>
         <p className="mb-4">
-          ToastRelay and its software, branding, design, interfaces, trademarks, logos, text, graphics, and other original materials are owned by or licensed to BRYME PLATFORMS LTD.
+          Toastrelay and its software, branding, design, interfaces, trademarks, logos, text, graphics, and other original materials are owned by or licensed to BRYME PLATFORMS LTD.
         </p>
         <p className="mb-4">Except where expressly permitted, you may not:</p>
         <ul className="list-disc pl-5 space-y-2 mb-4">
-          <li>Copy ToastRelay&apos;s software</li>
+          <li>Copy Toastrelay&apos;s software</li>
           <li>Reproduce its proprietary design</li>
           <li>Modify or create derivative versions</li>
           <li>Reverse engineer the platform</li>
-          <li>Sell or redistribute ToastRelay&apos;s proprietary materials</li>
-          <li>Use ToastRelay branding without permission</li>
+          <li>Sell or redistribute Toastrelay&apos;s proprietary materials</li>
+          <li>Use Toastrelay branding without permission</li>
         </ul>
         <p>
-          &quot;ToastRelay&quot; and related product names, logos, and marks may be trademarks or brand assets of BRYME PLATFORMS LTD.
+          &quot;Toastrelay&quot; and related product names, logos, and marks may be trademarks or brand assets of BRYME PLATFORMS LTD.
         </p>
       </>
     ),
@@ -342,9 +342,9 @@ const termsData: TermSection[] = [
     title: '16. Third-Party Services',
     content: (
       <p>
-        ToastRelay may integrate with or rely on third-party services, including payment processors, email providers, cloud infrastructure, authentication services, and other technology providers.
+        Toastrelay may integrate with or rely on third-party services, including payment processors, email providers, cloud infrastructure, authentication services, and other technology providers.
         Your use of third-party services may be subject to their own terms and policies.
-        ToastRelay is not responsible for the independent actions, availability, or policies of third-party services.
+        Toastrelay is not responsible for the independent actions, availability, or policies of third-party services.
       </p>
     ),
   },
@@ -355,10 +355,10 @@ const termsData: TermSection[] = [
     content: (
       <>
         <p className="mb-4">
-          Some events listed on ToastRelay may be hosted or managed entirely by third parties. For these events, ToastRelay may provide an event discovery page containing information supplied by the event creator. When you select an action such as purchasing a ticket, registering, RSVPing, or engaging with the event, ToastRelay may redirect you to a third-party website or service designated by the event creator.
+          Some events listed on Toastrelay may be hosted or managed entirely by third parties. For these events, Toastrelay may provide an event discovery page containing information supplied by the event creator. When you select an action such as purchasing a ticket, registering, RSVPing, or engaging with the event, Toastrelay may redirect you to a third-party website or service designated by the event creator.
         </p>
         <p className="mb-4">
-          Once you leave ToastRelay, your interaction is governed by the terms, privacy policy, and practices of the third-party website or service. ToastRelay does not process or control transactions completed on external websites and is not responsible for the availability, accuracy, security, content, payment processing, refunds, cancellations, ticket fulfillment, or other activities of the external website or event organizer.
+          Once you leave Toastrelay, your interaction is governed by the terms, privacy policy, and practices of the third-party website or service. Toastrelay does not process or control transactions completed on external websites and is not responsible for the availability, accuracy, security, content, payment processing, refunds, cancellations, ticket fulfillment, or other activities of the external website or event organizer.
         </p>
         <p>
           You should review the third party&apos;s terms and privacy policy before providing personal information or making a payment.
@@ -372,7 +372,7 @@ const termsData: TermSection[] = [
     title: '18. Fraud, Security, and Risk Controls',
     content: (
       <>
-        <p className="mb-4">To protect users and the platform, ToastRelay may:</p>
+        <p className="mb-4">To protect users and the platform, Toastrelay may:</p>
         <ul className="list-disc pl-5 space-y-2 mb-4">
           <li>Monitor transactions for suspicious activity</li>
           <li>Review events</li>
@@ -385,7 +385,7 @@ const termsData: TermSection[] = [
           <li>Cooperate with payment providers and lawful authorities</li>
         </ul>
         <p>
-          These measures may be taken where reasonably necessary to protect users, prevent fraud, comply with law, or protect ToastRelay.
+          These measures may be taken where reasonably necessary to protect users, prevent fraud, comply with law, or protect Toastrelay.
         </p>
       </>
     ),
@@ -396,18 +396,18 @@ const termsData: TermSection[] = [
     title: '19. Suspension and Termination',
     content: (
       <>
-        <p className="mb-4">We may suspend or terminate your access to ToastRelay where:</p>
+        <p className="mb-4">We may suspend or terminate your access to Toastrelay where:</p>
         <ul className="list-disc pl-5 space-y-2 mb-4">
           <li>You violate these Terms</li>
           <li>You engage in fraudulent activity</li>
           <li>Your activity creates a security risk</li>
-          <li>Your activity exposes ToastRelay or other users to legal risk</li>
+          <li>Your activity exposes Toastrelay or other users to legal risk</li>
           <li>You fail to pay applicable fees</li>
           <li>Your event violates our policies</li>
           <li>We are required to do so by law</li>
           <li>We reasonably believe suspension is necessary to protect the platform or its users</li>
         </ul>
-        <p>You may stop using ToastRelay at any time. Termination does not remove obligations that accrued before termination.</p>
+        <p>You may stop using Toastrelay at any time. Termination does not remove obligations that accrued before termination.</p>
       </>
     ),
   },
@@ -418,10 +418,10 @@ const termsData: TermSection[] = [
     content: (
       <>
         <p className="mb-4">
-          ToastRelay provides its platform on an &quot;as available&quot; basis. We do not guarantee that:
+          Toastrelay provides its platform on an &quot;as available&quot; basis. We do not guarantee that:
         </p>
         <ul className="list-disc pl-5 space-y-2 mb-4">
-          <li>ToastRelay will always be available</li>
+          <li>Toastrelay will always be available</li>
           <li>The platform will be completely error-free</li>
           <li>Events will occur as advertised</li>
           <li>Organizers will fulfill their obligations</li>
@@ -431,7 +431,7 @@ const termsData: TermSection[] = [
           <li>Any particular event will receive registrations or ticket sales</li>
         </ul>
         <p>
-          ToastRelay does not guarantee the quality, safety, legality, authenticity, or performance of an event or organizer merely because the event appears on the platform.
+          Toastrelay does not guarantee the quality, safety, legality, authenticity, or performance of an event or organizer merely because the event appears on the platform.
         </p>
       </>
     ),
@@ -444,7 +444,7 @@ const termsData: TermSection[] = [
       <p>
         Unless expressly stated otherwise, the event organizer is responsible for the actual event.
         This includes the venue, performers, speakers, food, transportation, security, ticket fulfillment, cancellations, event quality, and attendee experience.
-        If an organizer cancels or materially changes an event, ToastRelay may take reasonable steps to assist affected users, but ToastRelay does not automatically assume the organizer&apos;s obligations.
+        If an organizer cancels or materially changes an event, Toastrelay may take reasonable steps to assist affected users, but Toastrelay does not automatically assume the organizer&apos;s obligations.
       </p>
     ),
   },
@@ -454,7 +454,7 @@ const termsData: TermSection[] = [
     title: '22. Limitation of Liability',
     content: (
       <p>
-        To the maximum extent permitted by applicable law, BRYME PLATFORMS LTD and ToastRelay will not be liable for indirect, incidental, consequential, special, or punitive losses arising from your use of the platform or participation in an event.
+        To the maximum extent permitted by applicable law, BRYME PLATFORMS LTD and Toastrelay will not be liable for indirect, incidental, consequential, special, or punitive losses arising from your use of the platform or participation in an event.
         Nothing in these Terms excludes or limits liability that cannot legally be excluded or limited under applicable law.
       </p>
     ),
@@ -466,11 +466,11 @@ const termsData: TermSection[] = [
     content: (
       <>
         <p className="mb-4">
-          To the extent permitted by applicable law, you agree to indemnify and hold harmless BRYME PLATFORMS LTD, ToastRelay, and their officers, employees, contractors, and service providers from claims, losses, liabilities, damages, and expenses arising from:
+          To the extent permitted by applicable law, you agree to indemnify and hold harmless BRYME PLATFORMS LTD, Toastrelay, and their officers, employees, contractors, and service providers from claims, losses, liabilities, damages, and expenses arising from:
         </p>
         <ul className="list-disc pl-5 space-y-2">
           <li>Your violation of these Terms</li>
-          <li>Your unlawful use of ToastRelay</li>
+          <li>Your unlawful use of Toastrelay</li>
           <li>Your event</li>
           <li>Content you upload</li>
           <li>Your infringement of another person&apos;s rights</li>
@@ -485,7 +485,7 @@ const termsData: TermSection[] = [
     title: '24. Privacy',
     content: (
       <p>
-        Your use of ToastRelay is also governed by our Privacy Policy.
+        Your use of Toastrelay is also governed by our Privacy Policy.
         Our Privacy Policy explains how we collect, use, store, and protect personal information.
       </p>
     ),
@@ -497,8 +497,8 @@ const termsData: TermSection[] = [
     content: (
       <p>
         We may update these Terms from time to time.
-        When material changes are made, we may provide notice through ToastRelay or other appropriate means.
-        Your continued use of ToastRelay after the updated Terms become effective means that you accept the updated Terms to the extent permitted by applicable law.
+        When material changes are made, we may provide notice through Toastrelay or other appropriate means.
+        Your continued use of Toastrelay after the updated Terms become effective means that you accept the updated Terms to the extent permitted by applicable law.
       </p>
     ),
   },
@@ -509,7 +509,7 @@ const termsData: TermSection[] = [
     content: (
       <p>
         These Terms shall be governed by the laws of the Federal Republic of Nigeria, subject to applicable mandatory legal requirements.
-        Any dispute arising from these Terms or your use of ToastRelay shall be handled in accordance with applicable Nigerian law and the jurisdiction of the appropriate courts.
+        Any dispute arising from these Terms or your use of Toastrelay shall be handled in accordance with applicable Nigerian law and the jurisdiction of the appropriate courts.
       </p>
     ),
   },
@@ -529,7 +529,7 @@ const termsData: TermSection[] = [
     title: '28. Entire Agreement',
     content: (
       <p>
-        These Terms, together with our Privacy Policy and any additional terms or policies expressly incorporated into the service, constitute the agreement governing your use of ToastRelay.
+        These Terms, together with our Privacy Policy and any additional terms or policies expressly incorporated into the service, constitute the agreement governing your use of Toastrelay.
       </p>
     ),
   },
@@ -539,7 +539,7 @@ const termsData: TermSection[] = [
     title: '29. Contact Us',
     content: (
       <div className="space-y-1">
-        <p>ToastRelay is operated by:</p>
+        <p>Toastrelay is operated by:</p>
         <p className="font-semibold text-gray-900">BRYME PLATFORMS LTD</p>
         <p>Nigeria</p>
         <p className="pt-2">For questions regarding these Terms:</p>
@@ -630,15 +630,15 @@ export default function TermsOfUse() {
 
             {/* Document Intro Text */}
             <div className="space-y-4 text-sm leading-relaxed text-gray-600 mb-10">
-              <p className="font-semibold text-gray-900">Welcome to ToastRelay.</p>
+              <p className="font-semibold text-gray-900">Welcome to Toastrelay.</p>
               <p>
-                These Terms of Use (&quot;Terms&quot;) govern your access to and use of ToastRelay, a platform operated by BRYME PLATFORMS LTD (&quot;ToastRelay&quot;, &quot;we&quot;, &quot;us&quot;, or &quot;our&quot;).
+                These Terms of Use (&quot;Terms&quot;) govern your access to and use of Toastrelay, a platform operated by BRYME PLATFORMS LTD (&quot;Toastrelay&quot;, &quot;we&quot;, &quot;us&quot;, or &quot;our&quot;).
               </p>
               <p>
-                By creating an account, accessing ToastRelay, creating an event, purchasing a ticket, registering for an event, making a contribution, or otherwise using our services, you agree to these Terms.
+                By creating an account, accessing Toastrelay, creating an event, purchasing a ticket, registering for an event, making a contribution, or otherwise using our services, you agree to these Terms.
               </p>
               <p>
-                If you do not agree to these Terms, you must not use ToastRelay.
+                If you do not agree to these Terms, you must not use Toastrelay.
               </p>
             </div>
 

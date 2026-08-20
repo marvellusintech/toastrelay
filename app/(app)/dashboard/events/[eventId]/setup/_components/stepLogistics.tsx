@@ -153,7 +153,7 @@ export function StepLogistics({ onNext, isSaving }: StepProps) {
             type="text"
             {...register("name")}
             className="w-full mt-1 p-2.5 border rounded-xl bg-zinc-50 focus:bg-white text-sm"
-            placeholder="e.g., ToastRelay Gala Night"
+            placeholder="e.g., Toastrelay Gala Night"
           />
           {errors.name && (
             <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>

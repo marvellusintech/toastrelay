@@ -201,7 +201,7 @@ export default function CreateEventPage() {
                             </FieldLabel>
                             <FieldDescription className="text-xs text-zinc-500 leading-normal">
                               Create and manage this event entirely on
-                              ToastRelay.
+                              Toastrelay.
                             </FieldDescription>
                           </FieldContent>
                         </Field>
@@ -242,7 +242,7 @@ export default function CreateEventPage() {
                               External Event
                             </FieldLabel>
                             <FieldDescription className="text-xs text-zinc-500 leading-normal">
-                              Discovered on ToastRelay, hosted on another
+                              Discovered on Toastrelay, hosted on another
                               platform.
                             </FieldDescription>
                           </FieldContent>

@@ -268,7 +268,7 @@ export default function CreateAccount() {
                   htmlFor="agree-terms"
                   className="text-sm text-black/70 cursor-pointer select-none leading-snug"
                 >
-                  I agree to ToastRelay’s{" "}
+                  I agree to Toastrelay’s{" "}
                   <Link
                     href="/terms"
                     target="_blank"

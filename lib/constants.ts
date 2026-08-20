@@ -1,6 +1,6 @@
 import { publicEnv } from "@/lib/env/public";
 
-export const APP_NAME = "ToastRelay";
+export const APP_NAME = "Toastrelay";
 export const AUTH_COOKIE_NAME = "toastrelay_token";
 export const API_ENDPOINT = `${publicEnv.apiBaseUrl}/v1`;
 

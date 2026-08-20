@@ -187,7 +187,7 @@ export function Pricing() {
 
                 <p className="text-xs text-black/50 leading-relaxed font-body">
                   Planning something that needs more than the standard
-                  ToastRelay experience? Talk to our team.
+                  Toastrelay experience? Talk to our team.
                 </p>
 
                 <div className="border-t border-black/5 pt-6 space-y-3.5 text-xs">
