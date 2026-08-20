@@ -306,7 +306,7 @@ export const UserEvents: React.FC = () => {
                   >
                     <button
                       onClick={() =>
-                        router.push(`/dashboard/events/${event.id}/edit`)
+                        router.push(`/dashboard/events/${event.id}/setup?step=logistics`)
                       }
                       className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-neutral-700 hover:bg-neutral-50 rounded-lg transition"
                     >

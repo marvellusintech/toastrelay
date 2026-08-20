@@ -33,13 +33,13 @@ export function StepContributions({ onNext, isSaving }: StepProps) {
       <div className="flex items-center justify-between border-b pb-4">
         <div>
           <h2 className="text-xl font-bold text-zinc-900">
-            Contribution Threads
+            Contribution & Threads
           </h2>
           <p className="text-sm text-zinc-500">
             Enable uniform apparel selections, Aso-Ebi, or gifting pools.
           </p>
         </div>
-        <input
+        {/* <input
           type="checkbox"
           checked={enableContributions}
           onChange={(e) => {
@@ -54,7 +54,7 @@ export function StepContributions({ onNext, isSaving }: StepProps) {
             }
           }}
           className="h-5 w-5 rounded text-zinc-900 border-zinc-300 focus:ring-zinc-950"
-        />
+        /> */}
       </div>
 
 
@@ -151,12 +151,14 @@ export function StepContributions({ onNext, isSaving }: StepProps) {
           </button>
         </div>
       ) : (
-        <div className="p-8 text-center border-2 border-dashed rounded-2xl bg-zinc-50/50">
-          <p className="text-sm text-zinc-400">
-            Contribution matrix skipped. Marketplace features will remain
-            hidden.
-          </p>
-        </div>
+       <div>
+          {/* <div className="p-8 text-center border-2 border-dashed rounded-2xl bg-zinc-50/50">
+           <p className="text-sm text-zinc-400">
+             Contribution matrix skipped. Marketplace features will remain
+             hidden.
+           </p>
+         </div> */}
+       </div>
       )}
 
             <div className="flex items-center justify-between p-4 bg-zinc-50 rounded-xl border">

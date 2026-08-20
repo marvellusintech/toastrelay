@@ -4,6 +4,8 @@
 import * as React from "react";
 import { EventDetails } from "@/types/response";
 import { getTemplateComponent } from "@/components/event/templates";
+import Footer from "../layouts/footer";
+;
 
 interface EventPageClientProps {
   event: EventDetails;
@@ -52,15 +54,19 @@ export default function EventPageClient({ event }: EventPageClientProps) {
     };
   }, [isCustomTheme, theme]);
 
-  // 🎯 Fetch the exact template component directly using event.templateId
+  // Retrieve the component reference
   const TemplateComponent = getTemplateComponent(templateId);
 
-  return React.createElement(TemplateComponent, {
-    event,
-    formattedDate,
-    isCoverVideo,
-    borderRadiusClass,
-    customStyles,
-    
-  });
+  return (
+    <>
+      {React.createElement(TemplateComponent, {
+        event,
+        formattedDate,
+        isCoverVideo,
+        borderRadiusClass,
+        customStyles,
+      })}
+      <Footer />
+    </>
+  );
 }

@@ -71,7 +71,7 @@ export function DashboardStats() {
     <section className={containerClass}>
       {/* Wallet Balance Tile */}
       <Link
-        href="/dashboard/finance?tab=withdrawals"
+        href="/dashboard/finance?tab=withdraw"
         className="w-[240px] shrink-0 sm:shrink sm:w-auto group"
       >
         <Card className="h-full gap-0 px-4 pt-4 pb-4 bg-neutral-900 border-neutral-800 transition group-hover:shadow-sm group-hover:border-neutral-700 flex flex-col">
@@ -115,7 +115,7 @@ export function DashboardStats() {
           </div>
           <div className="mt-auto flex justify-end">
             <p className="text-xs text-neutral-400 font-semibold group-hover:text-[var(--primary)] transition-colors">
-             Withdrawal
+             Withdraw
             </p>
           </div>
         </Card>

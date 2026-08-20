@@ -50,7 +50,7 @@ export function FinanceOverview({
             {formatCurrency(availableBalance)}
           </p>
           <p className="mt-1 text-xs text-emerald-600 font-medium flex items-center gap-1">
-            <ArrowDownToLine className="h-3.5 w-3.5" /> Ready for manual withdrawal request
+            <ArrowDownToLine className="h-3.5 w-3.5" /> Ready for withdrawal
           </p>
         </Card>
       </div>

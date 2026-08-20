@@ -127,9 +127,9 @@ export function FinanceWithdraw({ availableBalance }: FinanceWithdrawProps) {
             <div className="mt-3 flex items-start gap-2 text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-xl p-4">
               <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
               <div>
-                <p className="font-semibold">No Bank Account Configured</p>
+                <p className="font-semibold">No Bank Account Added</p>
                 <p className="text-xs text-amber-700 mt-0.5">
-                  Please configure your bank details under the <strong>Bank Account</strong> tab before requesting a withdrawal.
+                  Please add your bank details before requesting a withdrawal.
                 </p>
               </div>
             </div>

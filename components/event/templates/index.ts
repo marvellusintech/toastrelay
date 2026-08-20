@@ -5,8 +5,8 @@ import ModernWeddingTemplate from "./ModernWeddingTemplate";
 import MinimalTemplate from "./MinimalTemplate";
 
 export const TEMPLATE_REGISTRY: Record<string, React.ComponentType<TemplateProps>> = {
-  "modern-wedding": ModernWeddingTemplate,
-  "tpl_minimal": MinimalTemplate,
+  "evermore": ModernWeddingTemplate,
+  "essential": MinimalTemplate,
 };
 
 export function getTemplateComponent(templateId?: string | null): React.ComponentType<TemplateProps> {
