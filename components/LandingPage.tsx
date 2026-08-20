@@ -13,7 +13,7 @@ import Link from "next/link";
 export default function LandingPage() {
   const router = useRouter();
   return (
-    <main className="pt-16">
+    <main className="pt-16 lg:pt-0">
       <AnimatePresence mode="wait">
         <motion.div
           initial={{ opacity: 0, y: 10, scale: 0.95 }}
@@ -22,13 +22,13 @@ export default function LandingPage() {
         >
           <ContainerScroll
             titleComponent={
-              <div className="space-y-6">
+              <div className="space-y-6 flex flex-col items-center">
                 <span className="mb-4 block text-[11px] font-bold font-display tracking-[0.2em] text-primary-550 uppercase">
                   Create. Celebrate. Share.
                 </span>
-                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-extrabold tracking-tight text-gray-900">
+                <h1 className="w-7/12 text-4xl sm:text-5xl md:text-5xl lg:text-5xl font-display font-extrabold tracking-tight text-gray-900">
                   Every Event Deserves A <br />
-                  <span className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold font-sans italic text-primary lowercase">
+                  <span className="text-5xl sm:text-6xl md:text-7xl lg:text-7xl font-bold font-sans italic text-primary lowercase">
                     stage
                   </span>
                 </h1>
