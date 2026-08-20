@@ -27,7 +27,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Toastrelay",
   description:
-    "The frontend for event stages, guest presence, toasts, moments, and passes.",
+    "Toastrelay is an event platform for creating event pages, managing guests, collecting RSVPs, selling tickets, and bringing your event experience together in one place.",
   icons: {
     icon: "/icon.svg",
     shortcut: "/icon.svg",
