@@ -1017,8 +1017,9 @@ export default function MinimalTemplate({
 
                   <Button
                     type="submit"
+                    variant="secondary"
                     disabled={isRsvpSubmitting}
-                    style={primaryButtonStyle}
+
                     className="w-full h-11 bg-zinc-900 hover:bg-zinc-800 text-white font-medium rounded-lg"
                   >
                     {isRsvpSubmitting ? (
@@ -1159,7 +1160,7 @@ export default function MinimalTemplate({
                   <Button
                     type="submit"
                     disabled={isToastSubmitting}
-                    style={primaryButtonStyle}
+                    variant="secondary"
                     className="w-full h-11 bg-zinc-900 hover:bg-zinc-800 text-white font-medium rounded-lg"
                   >
                     {isToastSubmitting ? (

@@ -303,6 +303,7 @@ export default function TicketPurchaseModal({
           <Button
             type="button"
             className="w-full"
+            variant="secondary"
             disabled={
               isSubmitting ||
               !selectedTier ||
