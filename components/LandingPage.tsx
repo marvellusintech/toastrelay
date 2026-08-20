@@ -13,7 +13,7 @@ import Link from "next/link";
 export default function LandingPage() {
   const router = useRouter();
   return (
-    <main className="">
+    <main className="pt-16">
       <AnimatePresence mode="wait">
         <motion.div
           initial={{ opacity: 0, y: 10, scale: 0.95 }}
@@ -32,6 +32,11 @@ export default function LandingPage() {
                     stage
                   </span>
                 </h1>
+                <div className="flex justify-center">
+                <p className="lg:w-8/12">
+                  Toastrelay is an event platform for creating event pages, managing guests, collecting RSVPs, selling tickets, and bringing your event experience together in one place.
+                </p>
+                </div>
                 <div className="lg:mb-10 flex flex-col sm:flex-row gap-4 justify-center pt-4">
                   <Button
                     variant="secondary"
