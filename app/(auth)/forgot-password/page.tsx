@@ -35,7 +35,7 @@ export default function ForgotPasswordPage() {
   async function onSubmit(data: ForgotPasswordValues) {
     try {
       const response = await forgotMutation.mutateAsync(data);
-      toast.success(response?.message ?? "Reset link sent!");
+      toast.success("Reset link sent!");
       form.reset();
     } catch (error) {
       toast.error(
@@ -49,11 +49,11 @@ export default function ForgotPasswordPage() {
       <div className="mx-auto my-20 max-w-lg">
         <Card className="p-8 md:p-10">
           <div className="text-center space-y-1">
-            <MailCheck className="mx-auto h-10 w-10 text-turquoise" />
-            <h3 className="font-display text-2xl font-bold tracking-tight text-black">
+            {/* <MailCheck className="mx-auto h-10 w-10 text-turquoise" /> */}
+            <h3 className="font-display uppercase text-2xl font-bold tracking-tight text-black">
               Forgot your password?
             </h3>
-            <p className="mb-8 text-sm text-black/50">
+            <p className="mb-6 text-sm text-black/50">
               Enter your email and we&apos;ll send you a link to reset it.
             </p>
           </div>

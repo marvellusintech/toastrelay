@@ -43,7 +43,7 @@ export function Pricing() {
               Simple Pricing
             </span>
 
-            <h2 className="text-5xl font-bold tracking-tight font-display uppercase text-black leading-none">
+            <h2 className="text-3xl lg:text-5xl font-bold tracking-tight font-display uppercase text-black leading-none">
               Built for Celebrations
             </h2>
 

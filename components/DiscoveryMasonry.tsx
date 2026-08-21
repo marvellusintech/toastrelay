@@ -204,7 +204,7 @@ export default function DiscoveryMasonry() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search events, themes, or organizers..."
+                placeholder="Search events, vendors or organizers..."
                 className="w-full rounded-full bg-[#EBF0F3] py-3 pl-12 pr-4 text-[15px] font-normal outline-none transition focus:bg-[#E2E8F0] placeholder:text-neutral-500"
               />
             </div>

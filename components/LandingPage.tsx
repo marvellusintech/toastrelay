@@ -33,11 +33,14 @@ export default function LandingPage() {
                   </span>
                 </h1>
                 <div className="flex justify-center">
-                <p className="lg:w-8/12">
-                  Toastrelay is an event platform for creating event pages, managing guests, collecting RSVPs, selling tickets, and bringing your event experience together in one place.
-                </p>
+                  <p className="lg:w-8/12">
+                    Toastrelay is the place to discover, create, and experience
+                    events. Find events happening around you or create your own
+                    with everything you need to bring your event experience
+                    together in one place.
+                  </p>
                 </div>
-                <div className="lg:mb-10 flex flex-col sm:flex-row gap-4 justify-center pt-4">
+                <div className="lg:mb-10 flex  gap-4 justify-center pt-4">
                   <Button
                     variant="secondary"
                     onClick={() => router.push("/dashboard/events/create")}
