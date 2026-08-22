@@ -35,17 +35,17 @@ export const metadata: Metadata = {
     apple: "/icon.svg",
   },
   openGraph: {
-    title: "ToastRelay — Every Event Deserves a Stage",
+    title: "Toastrelay — Every Event Deserves a Stage",
     description:
       "Discover events, create event pages, manage guests, collect RSVPs, sell tickets, and bring your event experience together in one place.",
     url: "https://toastrelay.com",
-    siteName: "ToastRelay",
+    siteName: "Toastrelay",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "ToastRelay",
+        alt: "Toastrelay",
       },
     ],
     locale: "en_US",
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "ToastRelay — Every Event Deserves a Stage",
+    title: "Toastrelay — Every Event Deserves a Stage",
     description:
       "Discover events, create event pages, manage guests, collect RSVPs, sell tickets, and bring your event experience together in one place.",
     images: ["/og-image.png"],
