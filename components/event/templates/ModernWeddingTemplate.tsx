@@ -629,7 +629,7 @@ export default function ModernWeddingTemplate({
                       style={accentTextStyle}
                     />
                     <div>
-                      <p className="font-medium text-stone-200">Hosted by</p>
+                      <p className="font-medium text-stone-200">Listed by</p>
                       <p className="text-xs text-stone-400 mt-0.5">
                         {host.firstName} {host.lastName}
                       </p>

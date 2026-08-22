@@ -502,7 +502,7 @@ export default function MinimalTemplate({
               </div>
               {host && (
                 <p className="text-sm text-zinc-500">
-                  Hosted by{" "}
+                  Listed by{" "}
                   <span className="font-medium text-zinc-700">
                     {host.firstName} {host.lastName}
                   </span>
@@ -728,7 +728,7 @@ export default function MinimalTemplate({
                     <Users className="w-4 h-4 text-zinc-400 shrink-0 mt-0.5" />
                     <div>
                       <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
-                        Hosted by
+                        Listed by
                       </p>
                       <p className="text-sm font-medium text-zinc-700 mt-0.5">
                         {host.firstName} {host.lastName}
