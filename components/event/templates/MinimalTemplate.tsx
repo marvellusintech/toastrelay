@@ -801,7 +801,7 @@ export default function MinimalTemplate({
                         className="w-full font-semibold text-white h-11"
                         variant="secondary"
                         style={primaryButtonStyle}
-                        onClick={() => window.open(externalUrl, "_blank")}
+                        onClick={() => window.open(`${externalUrl}?utm_source=toastrelay&utm_medium=referral`, "_blank")}
                       >
                         <ExternalLink className="w-4 h-4 mr-2" /> Continue
                       </Button>
