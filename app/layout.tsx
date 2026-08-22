@@ -25,13 +25,38 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://toastrelay.com"),
   title: "Toastrelay",
   description:
-    "Toastrelay is an event platform for creating event pages, managing guests, collecting RSVPs, selling tickets, and bringing your event experience together in one place.",
+    "Discover events, create event pages, manage guests, collect RSVPs, sell tickets, and bring your event experience together in one place.",
   icons: {
     icon: "/icon.svg",
     shortcut: "/icon.svg",
     apple: "/icon.svg",
+  },
+  openGraph: {
+    title: "ToastRelay — Every Event Deserves a Stage",
+    description:
+      "Discover events, create event pages, manage guests, collect RSVPs, sell tickets, and bring your event experience together in one place.",
+    url: "https://toastrelay.com",
+    siteName: "ToastRelay",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "ToastRelay",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ToastRelay — Every Event Deserves a Stage",
+    description:
+      "Discover events, create event pages, manage guests, collect RSVPs, sell tickets, and bring your event experience together in one place.",
+    images: ["/og-image.png"],
   },
 };
 
