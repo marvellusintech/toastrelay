@@ -196,7 +196,7 @@ export default function DiscoveryMasonry() {
         className="flex-1 px-2 lg:px-8 pb-12 overflow-y-auto"
       >
         {/* --- TOP FIXED SEARCH BAR HEADER --- */}
-        <div className="sticky top-0 z-20 px-2  pt-2 pb-2">
+        <div className="sticky top-0 z-50 px-2  pt-2 pb-2">
           <header className="flex flex-col lg:flex-row lg:items-center gap-4 py-5">
             <div className="relative flex flex-1 items-center">
               <Search className="absolute left-4 h-5 w-5 text-neutral-400 pointer-events-none" />
@@ -374,12 +374,12 @@ export default function DiscoveryMasonry() {
                             <span /> // Spacer if no host
                           )}
 
-                          <button
+                          {/* <button
                             onClick={(e) => e.stopPropagation()} // Prevent card click when interacting with menu
                             className="rounded-full bg-white p-2 text-neutral-900 hover:bg-neutral-100 transition"
                           >
                             <MoreHorizontal className="h-4 w-4" />
-                          </button>
+                          </button> */}
                         </div>
                       </div>
                     </div>
