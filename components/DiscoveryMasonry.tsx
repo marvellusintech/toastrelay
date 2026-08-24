@@ -27,7 +27,7 @@ const CATEGORIES = [
   "Today",
   "Festivals",
   "Weddings",
-    "Vendors",
+  "Vendors",
   "Concerts",
 ];
 
@@ -208,12 +208,14 @@ export default function DiscoveryMasonry() {
                 className="w-full rounded-full bg-[#EBF0F3] py-3 pl-12 pr-4 text-[15px] font-normal outline-none transition focus:bg-[#E2E8F0] placeholder:text-neutral-500"
               />
             </div>
-            <Link href="/dashboard/events/create">
-              <Button variant="secondary">
-                Create event
-                <Plus className="h-4 w-4" />
-              </Button>
-            </Link>
+            {!scrolled && (
+              <Link href="/dashboard/events/create">
+                <Button variant="secondary">
+                  Create event
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </Link>
+            )}
           </header>
 
           {/* --- SUB-NAVIGATION CATEGORY PILLS --- */}
@@ -279,12 +281,12 @@ export default function DiscoveryMasonry() {
 
               // Determine if event is Free vs Ticketed
               const isFree =
-                (!event.ticketEvent ||
+                !event.ticketEvent ||
                 !event.ticketEvent.tiers ||
                 event.ticketEvent.tiers.length === 0 ||
                 event.ticketEvent.tiers.some(
                   (tier) => Number(tier.price) === 0,
-                )) && !event.isExternal;
+                );
 
               return (
                 <Card
@@ -335,19 +337,21 @@ export default function DiscoveryMasonry() {
                       <div className="absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex flex-col justify-between p-4 z-20">
                         {/* Top: Free/Ticket Status & Restored View Button */}
                         <div className="flex items-start justify-between w-full">
-                          <span
-                            className={cn(
-                              "text-xs hidden lg:block font-medium text-white tracking-wide backdrop-blur-md px-2.5 py-1.5 rounded-full flex items-center gap-1.5",
-                              isFree
-                                ? "bg-green-500/80"
-                                : "bg-black/40 border border-white/20",
-                            )}
-                          >
-                            <Ticket className="w-3.5 h-3.5" />
-                            {isFree ? "Free Entry" : "Tickets"}
-                          </span>
+                          {!event.isExternal && (
+                            <span
+                              className={cn(
+                                "text-[9px] hidden lg:flex font-medium text-white tracking-wide backdrop-blur-md px-2 py-1.5 rounded-full flex items-center gap-1.5",
+                                isFree
+                                  ? "bg-green-500/80"
+                                  : "bg-black/40 border border-white/20",
+                              )}
+                            >
+                              <Ticket className="w-3.5 h-3.5" />
+                              {isFree ? "Free Entry" : "Tickets"}
+                            </span>
+                          )}
 
-                          <Button
+                          <Button className="ml-auto px-2 "
                             onClick={(e) => {
                               e.stopPropagation();
                               handleCardClick(event.slug);

@@ -16,7 +16,7 @@ import {
 const NAV_LINKS = [
   { href: "/#features", label: "Features" },
   { href: "/#pricing", label: "Pricing" },
-  { href: "/", label: "Find Events" },
+  { href: "/discovery", label: "Find Events" },
 ];
 
 function ToastrelayLogoIcon({ className = "w-5 h-5" }: { className?: string }) {
