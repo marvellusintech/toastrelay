@@ -279,12 +279,12 @@ export default function DiscoveryMasonry() {
 
               // Determine if event is Free vs Ticketed
               const isFree =
-                !event.ticketEvent ||
+                (!event.ticketEvent ||
                 !event.ticketEvent.tiers ||
                 event.ticketEvent.tiers.length === 0 ||
                 event.ticketEvent.tiers.some(
                   (tier) => Number(tier.price) === 0,
-                );
+                )) && !event.isExternal;
 
               return (
                 <Card
@@ -337,7 +337,7 @@ export default function DiscoveryMasonry() {
                         <div className="flex items-start justify-between w-full">
                           <span
                             className={cn(
-                              "text-xs font-medium text-white tracking-wide backdrop-blur-md px-2.5 py-1.5 rounded-full flex items-center gap-1.5",
+                              "text-xs hidden lg:block font-medium text-white tracking-wide backdrop-blur-md px-2.5 py-1.5 rounded-full flex items-center gap-1.5",
                               isFree
                                 ? "bg-green-500/80"
                                 : "bg-black/40 border border-white/20",
