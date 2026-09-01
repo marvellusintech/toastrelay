@@ -4,7 +4,6 @@ import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   Loader2,
-  Wallet as WalletIcon,
   Building2,
   Coins,
   ChevronLeft,
@@ -47,6 +46,12 @@ const financeTabs = [
   { id: "history" as const, label: "Transaction History", icon: History },
 ];
 
+function isEventSetupReturnPath(value: string | null): value is string {
+  return Boolean(
+    value && /^\/dashboard\/events\/[^/?]+\/setup(?:\?.*)?$/.test(value),
+  );
+}
+
 function FinanceContent() {
   const router = useRouter();
 
@@ -55,6 +60,10 @@ function FinanceContent() {
   const initialTab = TAB_IDS.includes(searchParams.get("tab") as FinanceTab)
     ? (searchParams.get("tab") as FinanceTab)
     : "overview";
+  const returnTo = searchParams.get("returnTo");
+  const returnToAfterBankSetup = isEventSetupReturnPath(returnTo)
+    ? returnTo
+    : null;
   const [activeTab, setActiveTab] = useState<FinanceTab>(initialTab);
 
   const [bankAccountSuccess, setBankAccountSuccess] = useState(false);
@@ -167,6 +176,9 @@ function FinanceContent() {
                     queryKey: queryKeys.withdrawals.earnings(),
                   });
                   setBankAccountSuccess(true);
+                  if (returnToAfterBankSetup) {
+                    router.push(returnToAfterBankSetup);
+                  }
                 }}
               />
             )}

@@ -181,7 +181,7 @@ export const UserEvents: React.FC = () => {
           Get started by creating your first celebration or gathering thread.
         </p>
         <Button
-          onClick={() => router.push("/dashboard/create")}
+          onClick={() => router.push("/dashboard/events/create")}
           variant="secondary"
           size="sm"
         >

@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useMutation } from "@tanstack/react-query";
 import { upsertTicketApi } from "@/lib/api/events";
+import { usePayoutAccountGuard } from "@/lib/hooks/use-payout-account-guard";
 
 interface StepProps {
   onNext: () => Promise<void>;
@@ -31,12 +32,17 @@ export function StepTicketing({ onNext, isSaving, eventId }: StepProps) {
   const ticketEventMutation = useMutation({
     mutationFn: upsertTicketApi,
   });
+  const { ensurePayoutAccount } = usePayoutAccountGuard();
 
   const isPending = ticketEventMutation.isPending;
 
   const handleNext = async () => {
     const tiers = getValues("ticketingData.tiers");
     if (!tiers) return;
+
+    const hasPaidTicket = tiers.some((tier) => Number(tier.price) > 0);
+    if (!(await ensurePayoutAccount(hasPaidTicket))) return;
+
     try {
       const res = await ticketEventMutation.mutateAsync({eventId, tiers});
 

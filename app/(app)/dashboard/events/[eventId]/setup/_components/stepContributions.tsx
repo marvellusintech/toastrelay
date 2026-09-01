@@ -7,6 +7,7 @@ import { type WizardFormValues } from "@/validations/event.schema";
 import { Loader2, Plus, Trash2, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import { usePayoutAccountGuard } from "@/lib/hooks/use-payout-account-guard";
 
 interface StepProps {
   onNext: () => Promise<void>;
@@ -14,8 +15,9 @@ interface StepProps {
 }
 export function StepContributions({ onNext, isSaving }: StepProps) {
   const router = useRouter();
-  const { register, watch, setValue, control } =
+  const { register, watch, setValue, control, getValues } =
     useFormContext<WizardFormValues>();
+  const { ensurePayoutAccount } = usePayoutAccountGuard();
   const enableContributions = watch("enableContributions");
   const allowToasts = watch("allowToasts");
 
@@ -25,6 +27,12 @@ export function StepContributions({ onNext, isSaving }: StepProps) {
   });
 
   const handleSubmit = async () => {
+    const items = getValues("contributionsData.items");
+    const hasPaidContribution = (items ?? []).some(
+      (item) => Number(item.price) > 0,
+    );
+    if (!(await ensurePayoutAccount(hasPaidContribution))) return;
+
     await onNext();
   };
 
@@ -195,7 +203,7 @@ export function StepContributions({ onNext, isSaving }: StepProps) {
         >
           {isSaving ? (
             <Loader2 className="h-4 w-4 animate-spin" />
-          ) : enableContributions ? (
+          ) : enableContributions || allowToasts ? (
             "Save & Review"
           ) : (
             "Skip & Review"

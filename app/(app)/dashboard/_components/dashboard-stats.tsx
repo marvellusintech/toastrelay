@@ -115,7 +115,7 @@ export function DashboardStats() {
           </div>
           <div className="mt-auto flex justify-end">
             <p className="text-xs text-neutral-400 font-semibold group-hover:text-[var(--primary)] transition-colors">
-             Withdraw
+             Withdraw →
             </p>
           </div>
         </Card>
