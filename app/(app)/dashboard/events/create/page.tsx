@@ -49,6 +49,7 @@ export default function CreateEventPage() {
     resolver: zodResolver(createEventSchema),
     defaultValues: {
       name: "",
+      currency: "NGN",
       isExternal: false,
       // Left unselected to require explicit user action
     },
@@ -144,8 +145,8 @@ export default function CreateEventPage() {
                       <SelectContent>
                         <SelectItem value="NGN">
                           <span className="flex items-center gap-2">
-                            <span>🇳🇬</span>
-                            <span>Nigerian Naira (NGN - ₦)</span>
+                            {/* <span>🇳🇬</span> */}
+                            <span>Naira (NGN)</span>
                           </span>
                         </SelectItem>
                         {/* <SelectItem value="USD">

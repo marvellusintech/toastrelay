@@ -34,6 +34,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
+import { EventShare } from "@/components/reuseables/event-share";
 
 import { cn, formatDate, formatCurrency } from "@/lib/utils";
 import { getInitials } from "@/lib/utils/helpers";
@@ -360,6 +361,7 @@ export function EventDetailsPage({ event }: EventDetailsPageProps) {
           </Button>
 
           <div className="flex items-center gap-3">
+            <EventShare slug={event.slug} eventName={event.name} />
             <Button asChild variant="outline" size="sm">
               <Link href={`/dashboard/events/${event.id}/check-in`}>
                 <ScanLine className="h-4 w-4" />

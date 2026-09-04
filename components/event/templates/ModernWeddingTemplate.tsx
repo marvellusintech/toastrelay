@@ -20,6 +20,7 @@ import {
   ZoomIn,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { EventShare } from "@/components/reuseables/event-share";
 import { RSVPStatus } from "@/types/enum";
 import { submitRsvpApi, createToastApi } from "@/lib/api/events";
 import TicketPurchaseModal from "@/components/event/TicketPurchaseModal";
@@ -426,6 +427,13 @@ export default function ModernWeddingTemplate({
 
         <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/50 to-stone-950/30" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-transparent via-stone-950/40 to-stone-950" />
+        <div className="absolute right-6 top-6 z-20">
+          <EventShare
+            slug={event.slug}
+            eventName={name}
+            triggerClassName="border-stone-100/30 bg-stone-950/30 text-stone-50 hover:bg-stone-950/50 hover:text-stone-50"
+          />
+        </div>
 
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-6">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-stone-900/80 border border-stone-800 text-rose-300 text-xs tracking-widest uppercase font-sans backdrop-blur-md">

@@ -95,7 +95,7 @@ export default function DiscoveryMasonry() {
         const queryParams: GetEventsOptions = {
           page: targetPage,
           limit: 12,
-          isPublic: true, // Only show public events
+          isPublic: true,
         };
 
         const searchParts = [];
@@ -113,9 +113,15 @@ export default function DiscoveryMasonry() {
           const fetchedEvents = response.data.events || [];
           const pagination = response.data.pagination;
 
-          setEvents((prev) =>
-            isNewSearch ? fetchedEvents : [...prev, ...fetchedEvents],
-          );
+          setEvents((prev) => {
+            if (isNewSearch) return fetchedEvents;
+            // Prevent duplicated items using a unique Map check by ID
+            const combined = [...prev, ...fetchedEvents];
+            const uniqueMap = new Map();
+            combined.forEach((item) => uniqueMap.set(item.id, item));
+            return Array.from(uniqueMap.values());
+          });
+
           setHasMore(pagination?.hasMore ?? false);
           setPage(targetPage);
         } else {
@@ -142,7 +148,6 @@ export default function DiscoveryMasonry() {
           setError(errorMessage);
         }
 
-        // Stop the observer from requesting the same failed page in a loop.
         setHasMore(false);
       } finally {
         if (requestId !== requestIdRef.current) return;
@@ -169,7 +174,14 @@ export default function DiscoveryMasonry() {
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !isFetchingRef.current) {
+        // Prevent observer from triggering page 2 before initial page 1 is loaded
+        if (
+          entries[0].isIntersecting &&
+          hasMore &&
+          !isFetchingRef.current &&
+          !loading &&
+          page > 0
+        ) {
           void fetchEvents(page + 1, debouncedQuery, activeCategory, false);
         }
       },
@@ -181,23 +193,21 @@ export default function DiscoveryMasonry() {
     return () => {
       observer.unobserve(target);
     };
-  }, [hasMore, page, debouncedQuery, activeCategory, fetchEvents]);
+  }, [hasMore, page, loading, debouncedQuery, activeCategory, fetchEvents]);
 
   const handleCardClick = (slug: string) => {
     router.push(`/events/${slug}`);
   };
 
   return (
-    <div className="h-screen w-full  antialiased text-neutral-900 flex flex-col">
-      {/* --- MAIN BROWSE VIEW CONTAINER --- */}
+    <div className="h-screen w-full antialiased text-neutral-900 flex flex-col">
       <main
         ref={scrollContainerRef}
         onScroll={handleScroll}
         className="flex-1 px-2 lg:px-8 pb-12 overflow-y-auto"
       >
-{/* --- TOP FIXED SEARCH BAR HEADER --- */}
-        <div className="sticky top-0 z-50 px-2 pt-2 pb-2 bg-white/95 backdrop-blur-md transition-all duration-300">
-          <header className="flex flex-col lg:flex-row lg:items-center gap-4 py-5">
+        <div className="sticky top-0 z-50 px-2 pt-2 bg-white/5 backdrop-blur-md transition-all duration-300">
+          <header className="flex flex-col lg:flex-row lg:items-center gap-4 py-3">
             <div className="relative flex flex-1 items-center">
               <Search className="absolute left-4 h-5 w-5 text-neutral-400 pointer-events-none" />
               <input
@@ -209,13 +219,12 @@ export default function DiscoveryMasonry() {
               />
             </div>
 
-            {/* Transition opacity/width instead of unmounting conditionally */}
             <div
               className={cn(
-                "transition-all duration-300 ease-in-out overflow-hidden flex items-center shrink-0",
+                "hidden lg:block transition-all duration-300 ease-in-out overflow-hidden lg:flex items-center shrink-0",
                 scrolled
-                  ? "max-w-0 opacity-0 pointer-events-none scale-95"
-                  : "max-w-[200px] opacity-100 scale-100"
+                  ? "max-w-0 opacity-0 pointer-events-none"
+                  : "max-w-[200px] opacity-100"
               )}
             >
               <Link href="/dashboard/events/create">
@@ -227,18 +236,16 @@ export default function DiscoveryMasonry() {
             </div>
           </header>
 
-          {/* --- SUB-NAVIGATION CATEGORY PILLS --- */}
-          {/* Grid template row animation provides fluid collapse without height glitches */}
           <div
             className={cn(
-              "grid transition-all duration-300 ease-in-out",
+              "grid transition-all duration-300 ease-in-out overflow-hidden",
               scrolled
-                ? "grid-rows-[0fr] opacity-0 pointer-events-none mt-0"
-                : "grid-rows-[1fr] opacity-100 mt-4"
+                ? "grid-rows-[0fr] opacity-0 pointer-events-none"
+                : "grid-rows-[1fr] opacity-100"
             )}
           >
-            <section className="overflow-hidden">
-              <div className="flex items-center gap-3 overflow-x-auto pb-3 scrollbar-none">
+            <section className="min-h-0 overflow-hidden">
+              <div className="flex items-center gap-3 overflow-x-auto pt-2 pb-3 scrollbar-none">
                 {CATEGORIES.map((cat) => (
                   <button
                     key={cat}
@@ -271,18 +278,16 @@ export default function DiscoveryMasonry() {
           </div>
         </div>
 
-        {/* --- MASONRY GRID SYSTEM --- */}
         {!loading && events.length === 0 && !error ? (
           <div className="text-center py-12 text-neutral-500">
             No events found matching your criteria.
           </div>
         ) : (
           <section className="px-2 mt-4 columns-2 gap-4 md:columns-3 lg:columns-4 space-y-4">
-            {events.map((event, idx) => {
+            {events.map((event) => {
               const coverMedia = getFileUrl(event.coverImage);
               const isVideo = checkIsVideo(coverMedia);
 
-              // Formatting Date safely
               let dateFormatted = "TBD";
               if (event.startDate) {
                 try {
@@ -293,7 +298,6 @@ export default function DiscoveryMasonry() {
                 } catch (e) {}
               }
 
-              // Determine if event is Free vs Ticketed
               const isFree =
                 !event.ticketEvent ||
                 !event.ticketEvent.tiers ||
@@ -304,19 +308,17 @@ export default function DiscoveryMasonry() {
 
               return (
                 <Card
-                  key={`${event.id}-${idx}`}
+                  key={event.id}
                   className="px-2 py-3 break-inside-avoid mb-4 border border-neutral-100 hover:shadow-lg transition-all"
                 >
                   <div
                     onClick={() => handleCardClick(event.slug)}
                     className="group relative overflow-hidden rounded-xl lg:rounded-2xl cursor-pointer"
                   >
-                    {/* Media Container */}
                     <div
                       className={cn(
                         "relative w-full overflow-hidden rounded-xl lg:rounded-2xl bg-neutral-100 min-h-[160px]",
-                        !coverMedia &&
-                          " flex items-center justify-center",
+                        !coverMedia && "flex items-center justify-center",
                       )}
                     >
                       {coverMedia ? (
@@ -338,7 +340,6 @@ export default function DiscoveryMasonry() {
                         )
                       ) : null}
 
-                      {/* Event Type Badge (Always visible on empty states, fades on hover for media) */}
                       {event.eventType && (
                         <div className="absolute top-3 left-3 z-10 transition-opacity duration-300 group-hover:opacity-0">
                           <span className="text-[10px] font-medium tracking-wide bg-white/70 backdrop-blur-md px-2 py-1 rounded-full shadow-sm text-neutral-800">
@@ -347,9 +348,7 @@ export default function DiscoveryMasonry() {
                         </div>
                       )}
 
-                      {/* Hover Overlay Layer */}
                       <div className="absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex flex-col justify-between p-4 z-20">
-                        {/* Top: Free/Ticket Status & Restored View Button */}
                         <div className="flex items-start justify-between w-full">
                           {!event.isExternal && (
                             <span
@@ -365,7 +364,8 @@ export default function DiscoveryMasonry() {
                             </span>
                           )}
 
-                          <Button className="ml-auto px-2 "
+                          <Button
+                            className="ml-auto px-2"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleCardClick(event.slug);
@@ -375,7 +375,6 @@ export default function DiscoveryMasonry() {
                           </Button>
                         </div>
 
-                        {/* Bottom: Host Info & Restored More Menu */}
                         <div className="flex items-center justify-between text-white w-full">
                           {event.host ? (
                             <div className="text-white/90 text-xs flex items-center gap-1.5">
@@ -385,20 +384,12 @@ export default function DiscoveryMasonry() {
                               </span>
                             </div>
                           ) : (
-                            <span /> // Spacer if no host
+                            <span />
                           )}
-
-                          {/* <button
-                            onClick={(e) => e.stopPropagation()} // Prevent card click when interacting with menu
-                            className="rounded-full bg-white p-2 text-neutral-900 hover:bg-neutral-100 transition"
-                          >
-                            <MoreHorizontal className="h-4 w-4" />
-                          </button> */}
                         </div>
                       </div>
                     </div>
 
-                    {/* Lower Context Label Elements */}
                     <div className="mt-2.5 lg:mt-3 px-1">
                       <h3 className="truncate text-sm md:text-base font-bold text-neutral-900 line-clamp-1 leading-tight group-hover:text-coral transition-colors">
                         {event.name}
@@ -428,7 +419,6 @@ export default function DiscoveryMasonry() {
           </section>
         )}
 
-        {/* Error Banner */}
         {error && (
           <div className="my-4 flex flex-col items-center gap-2 text-center text-sm text-red-500">
             <p>{error}</p>
@@ -445,7 +435,6 @@ export default function DiscoveryMasonry() {
           </div>
         )}
 
-        {/* Infinite Scroll Loader */}
         <div
           ref={observerTarget}
           className="py-8 flex justify-center items-center"

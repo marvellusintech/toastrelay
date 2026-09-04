@@ -24,6 +24,7 @@ import {
   Video,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { EventShare } from "@/components/reuseables/event-share";
 import { RSVPStatus } from "@/types/enum";
 import { submitRsvpApi, createToastApi } from "@/lib/api/events";
 import TicketPurchaseModal from "@/components/event/TicketPurchaseModal";
@@ -370,7 +371,7 @@ export default function MinimalTemplate({
       className="min-h-screen pb-10 lg:pb-20 px-4 xl:px-0 bg-white text-zinc-900 font-sans"
       style={customStyles}
     >
-      <div className=" xl:px-20 pt-10">
+      <div className="flex items-center justify-between xl:px-20 pt-10">
         <Link href={"/"}>
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-black text-black">
@@ -393,6 +394,11 @@ export default function MinimalTemplate({
             </span>
           </div>
         </Link>
+        <EventShare
+          slug={event.slug}
+          eventName={name}
+          triggerClassName="border-zinc-200 bg-white text-zinc-900 hover:bg-zinc-100"
+        />
       </div>
 
       {/* Hero Section */}
