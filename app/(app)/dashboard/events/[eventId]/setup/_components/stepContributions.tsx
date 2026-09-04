@@ -12,8 +12,9 @@ import { usePayoutAccountGuard } from "@/lib/hooks/use-payout-account-guard";
 interface StepProps {
   onNext: () => Promise<void>;
   isSaving: boolean;
+  eventId: string;
 }
-export function StepContributions({ onNext, isSaving }: StepProps) {
+export function StepContributions({ onNext, isSaving, eventId }: StepProps) {
   const router = useRouter();
   const { register, watch, setValue, control, getValues } =
     useFormContext<WizardFormValues>();
@@ -31,7 +32,19 @@ export function StepContributions({ onNext, isSaving }: StepProps) {
     const hasPaidContribution = (items ?? []).some(
       (item) => Number(item.price) > 0,
     );
-    if (!(await ensurePayoutAccount(hasPaidContribution))) return;
+    if (
+      !(await ensurePayoutAccount(hasPaidContribution, () => {
+        sessionStorage.setItem(
+          `event-setup-payment-draft:${eventId}`,
+          JSON.stringify({
+            enableContributions: getValues("enableContributions"),
+            contributionsData: getValues("contributionsData"),
+          }),
+        );
+      }))
+    ) {
+      return;
+    }
 
     await onNext();
   };

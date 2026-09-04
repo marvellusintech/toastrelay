@@ -156,6 +156,22 @@ const termsData: TermSection[] = [
           <li>Applicable laws and regulations</li>
           <li>Toastrelay&apos;s payout procedures</li>
         </ul>
+
+        <p className="mb-4">
+          When an organizer connects a new bank account, Toastrelay may create or
+          associate a payment-provider subaccount with that bank account. The first
+          payout associated with a new or updated subaccount may be delayed while
+          the subaccount is reviewed and verified through our payment provider.
+          Toastrelay may be required to review and verify the subaccount before the
+          payment provider releases the first payout.
+        </p>
+
+        <p className="mb-4">
+          Subsequent payouts may be processed according to the applicable
+          payment-provider settlement schedule, provided the account remains eligible
+          to receive payouts.
+        </p>
+
         <p className="mb-4">
           Toastrelay may delay, restrict, or suspend payouts where reasonably necessary to investigate:
         </p>
@@ -169,8 +185,10 @@ const termsData: TermSection[] = [
           <li>Illegal activity</li>
           <li>Material complaints relating to an event</li>
         </ul>
+
         <p>
-          A payout restriction does not necessarily mean that Toastrelay has determined that an organizer has committed wrongdoing.
+          A payout restriction does not necessarily mean that Toastrelay has determined
+          that an organizer has committed wrongdoing.
         </p>
       </>
     ),
@@ -573,12 +591,12 @@ export default function TermsOfUse() {
 
   return (
     <div className="min-h-screen bg-white font-sans text-gray-700 antialiased">
-      <div className="mx-auto max-w-6xl px-6 pt-20 lg:pt-32 pb-12">
+      <div className="mx-auto max-w-6xl px-6 pt-6 lg:pt-32 pb-12">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-12">
           
           {/* Truly Fixed Left Sidebar (on desktop) */}
           <aside className="lg:col-span-4">
-            <div className="mt-16 lg:mt-20 lg:fixed lg:top-12 lg:w-[280px] space-y-8">
+            <div className="mt-10 lg:mt-20 lg:fixed lg:top-12 lg:w-[280px] space-y-8">
               {/* Category Title */}
               <h1 className="text-4xl font-bold tracking-tight text-gray-900">
                 Legal
@@ -595,7 +613,7 @@ export default function TermsOfUse() {
               </div>
 
               {/* Sub-Section Navigation Links */}
-              <nav className="space-y-2 border-t border-gray-100 pt-6 text-xs text-gray-400 max-h-[calc(100vh-250px)] overflow-y-auto pr-2">
+              <nav className="space-y-2 border-t border-gray-100 pt-6 text-xs text-gray-400 max-h-[calc(100vh-400px)] overflow-y-auto pr-2">
                 {termsData.map((item) => {
                   const isActive = activeSection === item.id;
                   return (

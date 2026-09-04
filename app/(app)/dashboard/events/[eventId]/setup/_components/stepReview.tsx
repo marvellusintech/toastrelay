@@ -62,7 +62,7 @@ function buildPreviewEvent(values: WizardFormValues, eventData: EventDetails): E
     slug: values.slug || eventData.slug,
     createdAt: eventData.createdAt,
     updatedAt: eventData.updatedAt,
-    isPublic: eventData.isPublic,
+    isPublic: values.isPublic,
     currency: eventData.currency,
     claimStatus: eventData.claimStatus,
     createdByUserId: eventData.createdByUserId,

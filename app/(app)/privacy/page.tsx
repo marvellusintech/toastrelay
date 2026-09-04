@@ -285,12 +285,12 @@ export default function PrivacyPolicy() {
 
   return (
     <div className="min-h-screen bg-white font-sans text-gray-700 antialiased">
-      <div className="mx-auto max-w-6xl px-6 pt-20 lg:pt-32 pb-12">
+      <div className="mx-auto max-w-6xl px-6 pt-6 lg:pt-32 pb-12 ">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-12">
           
           {/* Truly Fixed Left Sidebar (on desktop) */}
           <aside className="lg:col-span-4">
-            <div className="mt-16 lg:mt-20 lg:fixed lg:top-12 lg:w-[280px] space-y-8">
+            <div className="mt-10 lg:mt-20  lg:fixed lg:top-12 lg:w-[280px] space-y-8">
               {/* Category Title */}
               <h1 className="text-4xl font-bold tracking-tight text-gray-900">
                 Legal

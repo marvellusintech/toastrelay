@@ -6,11 +6,13 @@ import {
   Eye,
   EyeOff,
   Loader2,
+  LogOut,
   ShieldCheck,
   UserRound,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { changePasswordApi, updateProfileApi } from "@/lib/api/auth";
@@ -24,7 +26,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useAuthStore } from "@/lib/store/useAuthStore";
-import { getInitials } from "@/lib/utils/helpers";
+import { useLogout } from "@/app/_queries/auth";
 import { cn } from "@/lib/utils";
 import {
   changePasswordSchema,
@@ -41,6 +43,7 @@ const tabs: { id: ProfileTab; label: string; icon: typeof UserRound }[] = [
 ];
 
 export default function ProfilePage() {
+  const router = useRouter();
   const user = useAuthStore((state) => state.user);
   const setAuth = useAuthStore((state) => state.setAuth);
   const [activeTab, setActiveTab] = useState<ProfileTab>("profile");
@@ -48,6 +51,7 @@ export default function ProfilePage() {
 
   const profileMutation = useMutation({ mutationFn: updateProfileApi });
   const passwordMutation = useMutation({ mutationFn: changePasswordApi });
+  const logoutMutation = useLogout();
 
   const profileForm = useForm<ProfileValues>({
     resolver: zodResolver(profileSchema),
@@ -102,6 +106,15 @@ export default function ProfilePage() {
     }
   }
 
+  async function handleLogout() {
+    try {
+      await logoutMutation.mutateAsync();
+    } finally {
+      useAuthStore.getState().logout();
+      router.replace("/login");
+    }
+  }
+
   if (!user) {
     return (
       <main className="mx-auto flex min-h-[50vh] w-full max-w-7xl items-center justify-center px-6 py-8">
@@ -114,17 +127,27 @@ export default function ProfilePage() {
     <main className="bg-[#FAF9F6]">
       <div className="mx-auto w-full max-w-5xl px-6 py-8 sm:px-8 lg:px-10">
         <div className="flex flex-col gap-5 border-b border-line pb-8 md:flex-row md:items-end md:justify-between">
-          <div className="flex items-center gap-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary text-xl font-bold text-primary-foreground">
+          <div className="flex flex-wrap lg:items-center gap-4">
+            {/* <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary text-xl font-bold text-primary-foreground">
               {getInitials(user.firstName, user.lastName)}
-            </div>
+            </div> */}
             <div>
-              <h1 className="mt-2 text-4xl font-bold font-display md:text-2xl">
-                {user.firstName} {user.lastName}
+              <h1 className="mt-2 text-xl font-bold font-display md:text-2xl">
+                Settings
               </h1>
-              <p className="text-sm text-muted">{user.email}</p>
+              <p className="text-sm text-muted">{user.firstName} {user.lastName} · {user.email}</p>
             </div>
           </div>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleLogout}
+            disabled={logoutMutation.isPending}
+            className="border-red-200 text-red-700 hover:bg-red-50 hover:text-red-800"
+          >
+            <LogOut className="h-4 w-4" />
+            {logoutMutation.isPending ? "Logging out..." : "Log out"}
+          </Button>
         </div>
 
         <div className="grid gap-8 py-8 md:grid-cols-[240px_1fr]">

@@ -10,7 +10,10 @@ export function usePayoutAccountGuard() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const ensurePayoutAccount = async (requiresPayoutAccount: boolean) => {
+  const ensurePayoutAccount = async (
+    requiresPayoutAccount: boolean,
+    onPayoutAccountMissing?: () => void,
+  ) => {
     if (!requiresPayoutAccount) return true;
 
     try {
@@ -20,6 +23,7 @@ export function usePayoutAccountGuard() {
       const queryString = searchParams.toString();
       const returnTo = queryString ? `${pathname}?${queryString}` : pathname;
 
+      onPayoutAccountMissing?.();
       toast.info("Add a verified bank account before accepting payments.");
       router.push(
         `/dashboard/finance?tab=bank&returnTo=${encodeURIComponent(returnTo)}`,

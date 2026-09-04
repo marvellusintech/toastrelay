@@ -41,7 +41,19 @@ export function StepTicketing({ onNext, isSaving, eventId }: StepProps) {
     if (!tiers) return;
 
     const hasPaidTicket = tiers.some((tier) => Number(tier.price) > 0);
-    if (!(await ensurePayoutAccount(hasPaidTicket))) return;
+    if (
+      !(await ensurePayoutAccount(hasPaidTicket, () => {
+        sessionStorage.setItem(
+          `event-setup-payment-draft:${eventId}`,
+          JSON.stringify({
+            enableTicketing: getValues("enableTicketing"),
+            ticketingData: getValues("ticketingData"),
+          }),
+        );
+      }))
+    ) {
+      return;
+    }
 
     try {
       const res = await ticketEventMutation.mutateAsync({eventId, tiers});
@@ -99,7 +111,7 @@ export function StepTicketing({ onNext, isSaving, eventId }: StepProps) {
                 </div>
                 <div className="w-20">
                   <label className="text-[10px] font-bold text-zinc-400 uppercase">
-                    Price ($)
+                    Price (₦)
                   </label>
                   <input
                     type="number"

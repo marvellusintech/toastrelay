@@ -51,6 +51,31 @@ interface PageProps {
   }>;
 }
 
+type EventSetupPaymentDraft = Partial<
+  Pick<
+    WizardFormValues,
+    | "enableTicketing"
+    | "ticketingData"
+    | "enableContributions"
+    | "contributionsData"
+  >
+>;
+
+function getPaymentDraft(eventId: string): EventSetupPaymentDraft | null {
+  if (typeof window === "undefined") return null;
+
+  const key = `event-setup-payment-draft:${eventId}`;
+  const storedDraft = sessionStorage.getItem(key);
+  if (!storedDraft) return null;
+
+  try {
+    return JSON.parse(storedDraft) as EventSetupPaymentDraft;
+  } catch {
+    sessionStorage.removeItem(key);
+    return null;
+  }
+}
+
 export default function EventSetupWizardPage({ params }: PageProps) {
   return (
     <Suspense fallback={<SetupWizardLoading />}>
@@ -136,6 +161,7 @@ function EventSetupWizard({ params }: PageProps) {
             ? new Date(eventData.endDate)
             : undefined,
           location: eventData.location ?? "",
+          isPublic: eventData.isPublic ?? true,
           isExternal: Boolean(eventData.isExternal),
           externalUrl: eventData.externalUrl ?? "",
           format:
@@ -184,8 +210,19 @@ function EventSetupWizard({ params }: PageProps) {
   const methods = useForm<WizardFormValues>({
     resolver: zodResolver(eventWizardSchema),
     mode: "onChange",
-    values: wizardValues,
   });
+  const { reset } = methods;
+
+  useEffect(() => {
+    if (!wizardValues) return;
+
+    const paymentDraft = getPaymentDraft(eventId);
+    reset({ ...wizardValues, ...paymentDraft });
+
+    if (paymentDraft) {
+      sessionStorage.removeItem(`event-setup-payment-draft:${eventId}`);
+    }
+  }, [eventId, reset, wizardValues]);
 
   // Live isExternal from the form — updates instantly on toggle
   const isExternal = methods.watch("isExternal");
@@ -214,6 +251,10 @@ function EventSetupWizard({ params }: PageProps) {
       router.replace("?step=review");
     }
   }, [isExternal, currentStep, router]);
+
+  if (isLoading) {
+    return <SetupWizardLoading />;
+  }
 
   const handleSaveAndAdvance = async (nextStepId?: string) => {
     if (!eventId || eventId === "undefined") {
@@ -422,6 +463,7 @@ function EventSetupWizard({ params }: PageProps) {
               <StepContributions
                 onNext={handleSaveAndAdvance}
                 isSaving={isSaving}
+                eventId={eventId}
               />
             )}
             {currentStep === "review" && eventData && <StepReview eventId={eventId} eventData={eventData} />}

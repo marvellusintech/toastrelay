@@ -6,7 +6,16 @@ import { type WizardFormValues } from "@/validations/event.schema";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { DatePicker } from "@/components/DatePicker";
-import { Check, ChevronsUpDown, Loader2, Wifi, MapPin, Users, Camera } from "lucide-react";
+import {
+  Check,
+  ChevronsUpDown,
+  Loader2,
+  Wifi,
+  MapPin,
+  Users,
+  Camera,
+  Globe2,
+} from "lucide-react";
 import {
   Command,
   CommandEmpty,
@@ -46,6 +55,7 @@ export function StepLogistics({ onNext, isSaving }: StepProps) {
   const [isLoadingMeta, setIsLoadingMeta] = React.useState(true);
 
   const isExternal = watch("isExternal");
+  const isPublic = watch("isPublic");
   const format = watch("format");
   const allowRsvp = watch("allowRsvp");
   const allowMoments = watch("allowMoments");
@@ -416,8 +426,28 @@ export function StepLogistics({ onNext, isSaving }: StepProps) {
           </div>
         )}
 
-        {/* RSVP & Moments Toggles */}
+        {/* Event settings toggles */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="flex items-center justify-between p-4 bg-zinc-50 rounded-xl border">
+            <div className="space-y-0.5">
+              <div className="flex items-center gap-1.5">
+                <Globe2 className="w-4 h-4 text-zinc-600" />
+                <label className="text-sm font-medium text-zinc-800">
+                  Public Event
+                </label>
+              </div>
+              <span className="text-xs text-zinc-500">
+                {isPublic
+                  ? "Anyone can discover and view this event"
+                  : "Only guests with your event link can view it"}
+              </span>
+            </div>
+            <Switch
+              checked={isPublic}
+              onCheckedChange={(checked) => setValue("isPublic", checked)}
+            />
+          </div>
+
           <div className="flex items-center justify-between p-4 bg-zinc-50 rounded-xl border">
             <div className="space-y-0.5">
               <div className="flex items-center gap-1.5">

@@ -23,6 +23,7 @@ export const logisticsBaseSchema = z.object({
     ),
   startDate: z.date().min(new Date(), "Start date must be in the future"),
   endDate: z.date().optional(),
+  isPublic: z.boolean().default(true),
   isExternal: z.boolean(),
   location: z.string().optional(),
   externalUrl: z.url("Please enter a valid URL").optional(),

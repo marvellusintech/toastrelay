@@ -50,7 +50,7 @@ export function MobileBottomNav({ items }: BottomNavProps) {
 
                   <Link href="/dashboard/settings" aria-label="Go to profile">
             <Avatar>
-              <AvatarImage src="https://github.com/shadcn.png" />
+              <AvatarImage src={user?.photo} />
               <AvatarFallback>
                 {getInitials(user?.firstName ?? "T", user?.lastName ?? "R")}
               </AvatarFallback>
