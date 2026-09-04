@@ -195,8 +195,8 @@ export default function DiscoveryMasonry() {
         onScroll={handleScroll}
         className="flex-1 px-2 lg:px-8 pb-12 overflow-y-auto"
       >
-        {/* --- TOP FIXED SEARCH BAR HEADER --- */}
-        <div className="sticky top-0 z-50 px-2  pt-2 pb-2">
+{/* --- TOP FIXED SEARCH BAR HEADER --- */}
+        <div className="sticky top-0 z-50 px-2 pt-2 pb-2 bg-white/95 backdrop-blur-md transition-all duration-300">
           <header className="flex flex-col lg:flex-row lg:items-center gap-4 py-5">
             <div className="relative flex flex-1 items-center">
               <Search className="absolute left-4 h-5 w-5 text-neutral-400 pointer-events-none" />
@@ -208,53 +208,67 @@ export default function DiscoveryMasonry() {
                 className="w-full rounded-full bg-[#EBF0F3] py-3 pl-12 pr-4 text-[15px] font-normal outline-none transition focus:bg-[#E2E8F0] placeholder:text-neutral-500"
               />
             </div>
-            {!scrolled && (
+
+            {/* Transition opacity/width instead of unmounting conditionally */}
+            <div
+              className={cn(
+                "transition-all duration-300 ease-in-out overflow-hidden flex items-center shrink-0",
+                scrolled
+                  ? "max-w-0 opacity-0 pointer-events-none scale-95"
+                  : "max-w-[200px] opacity-100 scale-100"
+              )}
+            >
               <Link href="/dashboard/events/create">
-                <Button variant="secondary">
+                <Button variant="secondary" className="whitespace-nowrap">
                   Create event
-                  <Plus className="h-4 w-4" />
+                  <Plus className="h-4 w-4 ml-1" />
                 </Button>
               </Link>
-            )}
+            </div>
           </header>
 
           {/* --- SUB-NAVIGATION CATEGORY PILLS --- */}
-          <section
+          {/* Grid template row animation provides fluid collapse without height glitches */}
+          <div
             className={cn(
-              "mt-4 flex items-center gap-3 overflow-x-auto pb-3 scrollbar-none transition-all duration-300",
+              "grid transition-all duration-300 ease-in-out",
               scrolled
-                ? "max-h-0 mt-0 opacity-0 pointer-events-none pb-0"
-                : "max-h-14 opacity-100",
+                ? "grid-rows-[0fr] opacity-0 pointer-events-none mt-0"
+                : "grid-rows-[1fr] opacity-100 mt-4"
             )}
           >
-            {CATEGORIES.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={cn(
-                  "inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition whitespace-nowrap",
-                  activeCategory === cat
-                    ? "bg-neutral-900 text-white"
-                    : "bg-transparent text-neutral-800 hover:bg-neutral-100",
-                )}
-              >
-                <span>{cat}</span>
-                {cat === "Vendors" && (
-                  <Badge
-                    variant="secondary"
+            <section className="overflow-hidden">
+              <div className="flex items-center gap-3 overflow-x-auto pb-3 scrollbar-none">
+                {CATEGORIES.map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setActiveCategory(cat)}
                     className={cn(
-                      "text-[10px] px-1.5 py-0.5 font-medium leading-none pointer-events-none",
+                      "inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition whitespace-nowrap",
                       activeCategory === cat
-                        ? "bg-neutral-800 text-neutral-200 border-neutral-700"
-                        : "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 border-amber-200 dark:border-amber-800",
+                        ? "bg-neutral-900 text-white"
+                        : "bg-transparent text-neutral-800 hover:bg-neutral-100"
                     )}
                   >
-                    Coming Soon
-                  </Badge>
-                )}
-              </button>
-            ))}
-          </section>
+                    <span>{cat}</span>
+                    {cat === "Vendors" && (
+                      <Badge
+                        variant="secondary"
+                        className={cn(
+                          "text-[10px] px-1.5 py-0.5 font-medium leading-none pointer-events-none",
+                          activeCategory === cat
+                            ? "bg-neutral-800 text-neutral-200 border-neutral-700"
+                            : "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 border-amber-200 dark:border-amber-800"
+                        )}
+                      >
+                        Coming Soon
+                      </Badge>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </section>
+          </div>
         </div>
 
         {/* --- MASONRY GRID SYSTEM --- */}
@@ -300,9 +314,9 @@ export default function DiscoveryMasonry() {
                     {/* Media Container */}
                     <div
                       className={cn(
-                        "relative w-full overflow-hidden rounded-xl lg:rounded-2xl bg-neutral-100",
+                        "relative w-full overflow-hidden rounded-xl lg:rounded-2xl bg-neutral-100 min-h-[160px]",
                         !coverMedia &&
-                          "min-h-[160px] flex items-center justify-center",
+                          " flex items-center justify-center",
                       )}
                     >
                       {coverMedia ? (

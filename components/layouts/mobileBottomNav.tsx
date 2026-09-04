@@ -13,7 +13,7 @@ interface BottomNavProps {
 
 export function MobileBottomNav({ items }: BottomNavProps) {
   const pathname = usePathname();
-    const user = useAuthStore((state) => state.user);
+  const user = useAuthStore((state) => state.user);
 
   function isPathActive(path: string): boolean {
     if (path === "/") return pathname === "/";
@@ -48,14 +48,14 @@ export function MobileBottomNav({ items }: BottomNavProps) {
           );
         })}
 
-                  <Link href="/dashboard/settings" aria-label="Go to profile">
-            <Avatar>
-              <AvatarImage src={user?.photo} />
-              <AvatarFallback>
-                {getInitials(user?.firstName ?? "T", user?.lastName ?? "R")}
-              </AvatarFallback>
-            </Avatar>
-          </Link>
+        <Link href="/dashboard/settings" aria-label="Go to profile">
+          <Avatar className="h-10 w-10">
+            <AvatarImage src="" />
+            <AvatarFallback>
+              {getInitials(user?.firstName ?? "T", user?.lastName ?? "R")}
+            </AvatarFallback>
+          </Avatar>
+        </Link>
       </nav>
     </div>
   );
