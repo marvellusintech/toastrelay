@@ -86,6 +86,7 @@ export type GetEventsOptions = Partial<{
   eventTypeId: string;
   status: EventStatus;
   isPublic: boolean;
+  date: string;
 }>;
 
 export type GetUserEventsOptions = GetEventsOptions & {
