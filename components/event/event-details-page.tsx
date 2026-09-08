@@ -349,7 +349,7 @@ export function EventDetailsPage({ event }: EventDetailsPageProps) {
     <div className="min-h-screen bg-[#FAF9F6] text-foreground ">
       {/* ── Top bar ─────────────────────────────── */}
       <div className="">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-8 lg:px-10">
+        <div className="mx-auto flex max-w-7xl flex-wrap lg:flex-nowrap lg:items-center justify-between px-6 py-8 lg:px-10">
           <Button
             onClick={() => router.push("/dashboard")}
             size="sm"

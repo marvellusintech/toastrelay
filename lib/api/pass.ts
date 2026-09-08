@@ -1,6 +1,11 @@
 import { apiClient } from "@/lib/api";
-import { ScanQrPayload } from "@/types/payload";
-import { EventPass, ScanCheckInResult, UserPass } from "@/types/response";
+import { CheckInByCodePayload, ScanQrPayload } from "@/types/payload";
+import {
+  CheckInByCodeResult,
+  EventPass,
+  ScanCheckInResult,
+  UserPass,
+} from "@/types/response";
 
 export async function getAllMyPassesApi() {
   const response = await apiClient.get<UserPass[]>(`/pass/my-passes`, {
@@ -21,5 +26,16 @@ export async function scanCheckInApi(payload: ScanQrPayload) {
     data: payload,
     withCredentials: true,
   });
+  return response;
+}
+
+export async function checkInByCodeApi(payload: CheckInByCodePayload) {
+  const response = await apiClient.post<CheckInByCodeResult>(
+    `/pass/checkin/by-code`,
+    {
+      data: payload,
+      withCredentials: true,
+    },
+  );
   return response;
 }

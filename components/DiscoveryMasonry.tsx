@@ -21,11 +21,12 @@ import { getEventsApi } from "@/lib/api/events";
 import { GetEventsOptions } from "@/types/payload";
 import { getFileUrl } from "@/lib/utils/getFileUrl";
 import Link from "next/link";
-import { format } from "date-fns";
+import { format, addDays } from "date-fns";
 
 const CATEGORIES = [
   "All",
   "Today",
+  "This weekend",
   "Festivals",
   "Weddings",
   "Vendors",
@@ -75,6 +76,98 @@ const checkIsEventToday = (event: EventDetails): boolean => {
   // If only endDate exists
   if (!isNaN(endTime)) {
     return endTime >= startOfToday && endTime <= endOfToday;
+  }
+
+  return false;
+};
+
+const getThisWeekendRange = () => {
+  const now = new Date();
+  const day = now.getDay(); // 0 = Sunday, 1 = Monday, ..., 5 = Friday, 6 = Saturday
+
+  let diffToFriday = 0;
+  let diffToSunday = 0;
+
+  if (day === 0) {
+    // Sunday: current weekend started Friday (-2 days) and ends today (0 days)
+    diffToFriday = -2;
+    diffToSunday = 0;
+  } else if (day === 6) {
+    // Saturday: current weekend started Friday (-1 day) and ends tomorrow (+1 day)
+    diffToFriday = -1;
+    diffToSunday = 1;
+  } else if (day === 5) {
+    // Friday: current weekend starts today (0 days) and ends Sunday (+2 days)
+    diffToFriday = 0;
+    diffToSunday = 2;
+  } else {
+    // Monday (1) to Thursday (4): upcoming weekend
+    diffToFriday = 5 - day;
+    diffToSunday = 7 - day;
+  }
+
+  const friday = addDays(now, diffToFriday);
+  const sunday = addDays(now, diffToSunday);
+
+  const startOfWeekend = new Date(
+    friday.getFullYear(),
+    friday.getMonth(),
+    friday.getDate(),
+    0,
+    0,
+    0,
+    0,
+  ).getTime();
+
+  const endOfWeekend = new Date(
+    sunday.getFullYear(),
+    sunday.getMonth(),
+    sunday.getDate(),
+    23,
+    59,
+    59,
+    999,
+  ).getTime();
+
+  return { startOfWeekend, endOfWeekend };
+};
+
+const getThisWeekendDates = (): string[] => {
+  const now = new Date();
+  const day = now.getDay();
+
+  let diffToFriday = 0;
+  if (day === 0) diffToFriday = -2;
+  else if (day === 6) diffToFriday = -1;
+  else if (day === 5) diffToFriday = 0;
+  else diffToFriday = 5 - day;
+
+  const friday = addDays(now, diffToFriday);
+  const saturday = addDays(friday, 1);
+  const sunday = addDays(friday, 2);
+
+  return [friday, saturday, sunday].map((d) => format(d, "yyyy-MM-dd"));
+};
+
+const checkIsEventThisWeekend = (event: EventDetails): boolean => {
+  const { startOfWeekend, endOfWeekend } = getThisWeekendRange();
+
+  const startTime = event.startDate ? new Date(event.startDate).getTime() : NaN;
+  const endTime = event.endDate ? new Date(event.endDate).getTime() : NaN;
+
+  // If both dates exist, check if event spans or intersects this weekend
+  if (!isNaN(startTime) && !isNaN(endTime)) {
+    return startTime <= endOfWeekend && endTime >= startOfWeekend;
+  }
+
+  // If only startDate exists
+  if (!isNaN(startTime)) {
+    return startTime >= startOfWeekend && startTime <= endOfWeekend;
+  }
+
+  // If only endDate exists
+  if (!isNaN(endTime)) {
+    return endTime >= startOfWeekend && endTime <= endOfWeekend;
   }
 
   return false;
@@ -229,34 +322,93 @@ export default function DiscoveryMasonry() {
 
         const searchParts = [];
         if (search.trim()) searchParts.push(search.trim());
-        if (category !== "All" && category !== "Today") searchParts.push(category);
+        if (
+          category !== "All" &&
+          category !== "Today" &&
+          category !== "This weekend"
+        ) {
+          searchParts.push(category);
+        }
 
         if (searchParts.length > 0) {
           queryParams.search = searchParts.join(" ");
         }
 
-        const response = await getEventsApi(queryParams);
-        if (requestId !== requestIdRef.current) return;
+        let fetchedEvents: EventDetails[] = [];
+        let hasMorePages = false;
 
-        if (response.data) {
-          const fetchedEvents = response.data.events || [];
-          const pagination = response.data.pagination;
+        if (category === "This weekend") {
+          const weekendDates = getThisWeekendDates();
+          const results = await Promise.allSettled(
+            weekendDates.map((d) =>
+              getEventsApi({
+                ...queryParams,
+                date: d,
+              }),
+            ),
+          );
 
-          setEvents((prev) => {
-            if (isNewSearch) return fetchedEvents;
-            // Prevent duplicated items using a unique Map check by ID
-            const combined = [...prev, ...fetchedEvents];
-            const uniqueMap = new Map();
-            combined.forEach((item) => uniqueMap.set(item.id, item));
-            return Array.from(uniqueMap.values());
-          });
+          if (requestId !== requestIdRef.current) return;
 
-          setHasMore(pagination?.hasMore ?? false);
-          setPage(targetPage);
+          let anySuccess = false;
+          let notFoundOrEmptyCount = 0;
+
+          for (const res of results) {
+            if (res.status === "fulfilled") {
+              anySuccess = true;
+              if (res.value.data?.events) {
+                fetchedEvents.push(...res.value.data.events);
+              }
+              if (res.value.data?.pagination?.hasMore) {
+                hasMorePages = true;
+              }
+            } else {
+              const err = res.reason;
+              const responseData = (
+                err as {
+                  response?: { data?: { message?: string }; status?: number };
+                }
+              )?.response;
+              const msg =
+                responseData?.data?.message ||
+                (err instanceof Error ? err.message : "");
+              if (msg === "No event found" || responseData?.status === 404) {
+                notFoundOrEmptyCount++;
+              }
+            }
+          }
+
+          if (!anySuccess && notFoundOrEmptyCount !== results.length) {
+            const firstFailure = results.find((r) => r.status === "rejected") as
+              | PromiseRejectedResult
+              | undefined;
+            if (firstFailure) throw firstFailure.reason;
+          }
+
+          fetchedEvents = fetchedEvents.filter(checkIsEventThisWeekend);
         } else {
-          setHasMore(false);
-          if (isNewSearch) setEvents([]);
+          const response = await getEventsApi(queryParams);
+          if (requestId !== requestIdRef.current) return;
+
+          if (response.data) {
+            fetchedEvents = response.data.events || [];
+            hasMorePages = response.data.pagination?.hasMore ?? false;
+          } else {
+            hasMorePages = false;
+          }
         }
+
+        setEvents((prev) => {
+          if (isNewSearch) return fetchedEvents;
+          // Prevent duplicated items using a unique Map check by ID
+          const combined = [...prev, ...fetchedEvents];
+          const uniqueMap = new Map();
+          combined.forEach((item) => uniqueMap.set(item.id, item));
+          return Array.from(uniqueMap.values());
+        });
+
+        setHasMore(hasMorePages);
+        setPage(targetPage);
       } catch (err: unknown) {
         if (requestId !== requestIdRef.current) return;
 
@@ -404,6 +556,7 @@ export default function DiscoveryMasonry() {
                   const coverMedia = getFileUrl(event.coverImage);
                   const isVideo = checkIsVideo(coverMedia);
                   const isToday = checkIsEventToday(event);
+                  const isThisWeekend = checkIsEventThisWeekend(event);
                   const isEnded = checkIsEventEnded(event);
 
                   let dateFormatted = "TBD";
@@ -478,6 +631,12 @@ export default function DiscoveryMasonry() {
                                 Today
                               </Badge>
                             </div>
+                          ) : isThisWeekend && !isEnded ? (
+                            <div className="absolute top-3 right-3 z-10 transition-opacity duration-300 group-hover:opacity-0">
+                              <Badge className="bg-indigo-600 text-white backdrop-blur-md text-[10px] font-semibold px-2 py-0.5 rounded-full border-0 shadow-sm hover:bg-indigo-600">
+                                This weekend
+                              </Badge>
+                            </div>
                           ) : isEnded ? (
                             <div className="absolute top-3 right-3 z-10 transition-opacity duration-300 group-hover:opacity-0">
                               <Badge
@@ -494,6 +653,10 @@ export default function DiscoveryMasonry() {
                               {isToday ? (
                                 <Badge className="text-[9px] font-semibold text-white tracking-wide bg-green-600 border border-green-400/30 backdrop-blur-md px-2 py-1 rounded-full flex items-center gap-1.5 hover:bg-green-600">
                                   Today
+                                </Badge>
+                              ) : isThisWeekend && !isEnded ? (
+                                <Badge className="text-[9px] font-semibold text-white tracking-wide bg-indigo-600 border border-indigo-400/30 backdrop-blur-md px-2 py-1 rounded-full flex items-center gap-1.5 hover:bg-indigo-600">
+                                  This weekend
                                 </Badge>
                               ) : isEnded ? (
                                 <Badge

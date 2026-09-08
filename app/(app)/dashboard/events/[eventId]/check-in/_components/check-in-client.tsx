@@ -26,9 +26,9 @@ export function CheckInClientPage({ eventId, eventName }: CheckInClientPageProps
 
         {/* Header */}
         <div className="mb-6 flex items-center gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-turquoise/10">
+          {/* <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-turquoise/10">
             <ScanLine className="h-5 w-5 text-turquoise" />
-          </div>
+          </div> */}
           <div>
             <h1 className="text-lg font-bold text-foreground">Check-in</h1>
             <p className="text-xs text-muted-foreground truncate max-w-xs">{eventName}</p>
@@ -36,7 +36,7 @@ export function CheckInClientPage({ eventId, eventName }: CheckInClientPageProps
         </div>
 
         {/* Scanner panel */}
-        <ScanCheckInPanel />
+        <ScanCheckInPanel eventId={eventId} />
       </div>
     </div>
   );

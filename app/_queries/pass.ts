@@ -2,9 +2,14 @@
 
 import { useMutation, useQuery } from "@tanstack/react-query";
 
-import { getAllMyPassesApi, getMyPassApi, scanCheckInApi } from "@/lib/api/pass";
+import {
+  checkInByCodeApi,
+  getAllMyPassesApi,
+  getMyPassApi,
+  scanCheckInApi,
+} from "@/lib/api/pass";
 import { queryKeys } from "@/lib/api/query_keys";
-import type { ScanQrPayload } from "@/types/payload";
+import type { CheckInByCodePayload, ScanQrPayload } from "@/types/payload";
 
 export function useAllMyPasses() {
   return useQuery({
@@ -24,5 +29,11 @@ export function useMyPass(eventId?: string) {
 export function useScanCheckIn() {
   return useMutation({
     mutationFn: (payload: ScanQrPayload) => scanCheckInApi(payload),
+  });
+}
+
+export function useCheckInByCode() {
+  return useMutation({
+    mutationFn: (payload: CheckInByCodePayload) => checkInByCodeApi(payload),
   });
 }

@@ -257,6 +257,10 @@ export type ScanQrPayload = {
   payload: string;
 };
 
+export type CheckInByCodePayload = {
+  code: string;
+};
+
 // ---------- EMAIL BROADCAST ----------
 
 export type SendEventEmailPayload = {

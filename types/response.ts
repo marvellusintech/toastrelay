@@ -423,6 +423,22 @@ export type ScanCheckInResult =
       checkedInAt: string;
     };
 
+export type CheckInByCodeResult = {
+  id: string;
+  ticketEventId?: string;
+  tierId?: string;
+  userId?: string | null;
+  buyerEmail?: string | null;
+  status: TicketStatus | string;
+  checkedInAt?: string | null;
+  checkinCode?: string | null;
+  qrToken?: string | null;
+  transactionId?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+  tier?: string;
+};
+
 //////////////////////
 // EMAIL BROADCAST
 //////////////////////

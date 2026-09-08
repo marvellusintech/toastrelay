@@ -55,7 +55,7 @@ export function CameraScanner({ onDetected }: Props) {
     if (!ctx) return;
 
     // Downscale the frame to keep decoding fast and accurate.
-    const maxDim = 480;
+    const maxDim = 640;
     const scale = Math.min(1, maxDim / Math.max(video.videoWidth, video.videoHeight));
     canvas.width = Math.round(video.videoWidth * scale);
     canvas.height = Math.round(video.videoHeight * scale);
@@ -77,7 +77,11 @@ export function CameraScanner({ onDetected }: Props) {
     setStarting(true);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment" },
+        video: {
+          facingMode: "environment",
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+        },
       });
       streamRef.current = stream;
       setActive(true);
@@ -104,7 +108,7 @@ export function CameraScanner({ onDetected }: Props) {
           type="button"
           onClick={start}
           disabled={starting}
-          className="inline-flex items-center gap-2 rounded-lg bg-foreground px-3 py-2 text-xs font-bold text-background transition hover:opacity-90 disabled:opacity-50"
+          className="inline-flex items-center gap-2 rounded-lg bg-foreground px-3.5 py-2 text-xs font-semibold text-background transition hover:opacity-90 disabled:opacity-50"
         >
           {starting ? (
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -119,25 +123,42 @@ export function CameraScanner({ onDetected }: Props) {
   }
 
   return (
-    <div className="relative mt-4 overflow-hidden rounded-xl border border-line bg-black">
+    <div className="relative mt-4 overflow-hidden rounded-2xl border border-line bg-black">
       <video
         ref={videoRef}
         autoPlay
         muted
         playsInline
-        className="aspect-video w-full object-cover"
+        className="aspect-[4/3] sm:aspect-[16/11] w-full object-cover"
       />
       <canvas ref={canvasRef} className="hidden" />
-      <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-        <div className="h-40 w-40 rounded-2xl border-2 border-white/80 shadow-[0_0_0_9999px_rgba(0,0,0,0.4)]" />
+
+      {/* Expanded Scanner Frame Overlay */}
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center p-4">
+        <div className="relative aspect-square w-[80%] max-w-[300px] sm:max-w-[340px] rounded-3xl border border-white/20 shadow-[0_0_0_9999px_rgba(0,0,0,0.55)]">
+          {/* Stylized corner guides */}
+          <div className="absolute -top-0.5 -left-0.5 h-8 w-8 rounded-tl-2xl border-t-4 border-l-4 border-turquoise" />
+          <div className="absolute -top-0.5 -right-0.5 h-8 w-8 rounded-tr-2xl border-t-4 border-r-4 border-turquoise" />
+          <div className="absolute -bottom-0.5 -left-0.5 h-8 w-8 rounded-bl-2xl border-b-4 border-l-4 border-turquoise" />
+          <div className="absolute -bottom-0.5 -right-0.5 h-8 w-8 rounded-br-2xl border-b-4 border-r-4 border-turquoise" />
+
+          {/* Subtle scanning laser line indicator */}
+          <div className="absolute inset-x-4 top-1/2 -translate-y-1/2 h-0.5 bg-gradient-to-r from-transparent via-turquoise to-transparent opacity-80 animate-pulse" />
+        </div>
       </div>
-      <p className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 text-[11px] font-medium text-white">
-        Point the camera at a QR code
-      </p>
+
+      {/* Floating helper instruction pill */}
+      <div className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full border border-white/15 bg-black/65 px-4 py-1.5 backdrop-blur-md shadow-lg">
+        <p className="text-xs font-medium text-white/90">
+          Align QR code within the frame
+        </p>
+      </div>
+
+      {/* Close button */}
       <button
         type="button"
         onClick={stop}
-        className="absolute right-3 top-3 rounded-full bg-black/60 p-2 text-white transition hover:bg-black/80"
+        className="absolute right-3.5 top-3.5 rounded-full border border-white/15 bg-black/60 p-2 text-white/90 backdrop-blur-md transition hover:bg-black/80 hover:text-white"
         aria-label="Stop camera"
       >
         <X className="h-4 w-4" />
