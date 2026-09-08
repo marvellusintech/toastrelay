@@ -445,7 +445,7 @@ export default function ModernWeddingTemplate({
       </section>
 
       {/* Main Content */}
-      <main className="max-w-5xl mx-auto px-6 py-16 font-sans relative">
+      <main className="max-w-5xl mx-auto px-6 py-16 lg:pb-28 font-sans relative">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
           {/* Story & Gallery */}
           <div className="lg:col-span-2 space-y-12">

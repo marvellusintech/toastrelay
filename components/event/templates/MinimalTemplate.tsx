@@ -388,7 +388,7 @@ export default function MinimalTemplate({
       </div>
 
       {/* Hero Section */}
-      <div className="pt-10 lg:pt-20 max-w-4xl mx-auto">
+      <div className="pt-10 lg:pt-20 pb-16 lg:pb-28 max-w-4xl mx-auto px-4 xl:px-0">
         {coverImage && (
           <div
             className={`relative overflow-hidden shadow-2xl shadow-black/5 ${borderRadiusClass}`}
