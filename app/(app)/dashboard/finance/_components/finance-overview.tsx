@@ -19,7 +19,7 @@ export function FinanceOverview({
   return (
     <>
       {/* Manual Settlement Banner */}
-      <div className="flex items-start gap-3 rounded-2xl border border-blue-100 bg-blue-50/60 p-4 text-sm text-blue-900">
+      {/* <div className="flex items-start gap-3 rounded-2xl border border-blue-100 bg-blue-50/60 p-4 text-sm text-blue-900">
         <Info className="h-5 w-5 shrink-0 text-blue-600 mt-0.5" />
         <div className="space-y-1">
           <p className="font-semibold">Manual Settlement Schedule</p>
@@ -27,7 +27,7 @@ export function FinanceOverview({
             Funds from ticket sales, toasts, and contributions sit in your <strong>Pending wallet</strong> for 24 hours (T+1) before maturing into your <strong>Available wallet</strong>. From your Available wallet, you can manually request withdrawals directly to your saved bank account anytime.
           </p>
         </div>
-      </div>
+      </div> */}
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Card className="px-5 py-5">
@@ -49,7 +49,7 @@ export function FinanceOverview({
           <p className="mt-1 text-2xl font-bold font-body text-foreground">
             {formatCurrency(availableBalance)}
           </p>
-          <p className="mt-1 text-xs text-emerald-600 font-medium flex items-center gap-1">
+          <p className="mt-1 text-xs text-muted-foreground font-medium flex items-center gap-1">
             <ArrowDownToLine className="h-3.5 w-3.5" /> Ready for withdrawal
           </p>
         </Card>

@@ -6,11 +6,14 @@ import {
   Eye,
   EyeOff,
   Loader2,
+  LogOut,
+  Pencil,
   ShieldCheck,
   UserRound,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { changePasswordApi, updateProfileApi } from "@/lib/api/auth";
@@ -24,6 +27,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useAuthStore } from "@/lib/store/useAuthStore";
+import { useLogout } from "@/app/_queries/auth";
 import { getInitials } from "@/lib/utils/helpers";
 import { cn } from "@/lib/utils";
 import {
@@ -41,13 +45,16 @@ const tabs: { id: ProfileTab; label: string; icon: typeof UserRound }[] = [
 ];
 
 export default function ProfilePage() {
+  const router = useRouter();
   const user = useAuthStore((state) => state.user);
   const setAuth = useAuthStore((state) => state.setAuth);
   const [activeTab, setActiveTab] = useState<ProfileTab>("profile");
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const profileMutation = useMutation({ mutationFn: updateProfileApi });
   const passwordMutation = useMutation({ mutationFn: changePasswordApi });
+  const logoutMutation = useLogout();
 
   const profileForm = useForm<ProfileValues>({
     resolver: zodResolver(profileSchema),
@@ -80,6 +87,7 @@ export default function ProfilePage() {
       const response = await profileMutation.mutateAsync(data);
       if (response.data) setAuth(response.data);
       toast.success("Profile updated");
+      setIsEditingProfile(false);
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Unable to update profile",
@@ -99,6 +107,15 @@ export default function ProfilePage() {
       toast.error(
         error instanceof Error ? error.message : "Unable to change password",
       );
+    }
+  }
+
+  async function handleLogout() {
+    try {
+      await logoutMutation.mutateAsync();
+    } finally {
+      useAuthStore.getState().logout();
+      router.replace("/login");
     }
   }
 
@@ -134,7 +151,10 @@ export default function ProfilePage() {
               <button
                 key={tab.id}
                 type="button"
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => {
+                  setActiveTab(tab.id);
+                  if (tab.id !== "profile") setIsEditingProfile(false);
+                }}
                 className={cn(
                   "inline-flex items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm font-bold transition",
                   activeTab === tab.id
@@ -151,72 +171,171 @@ export default function ProfilePage() {
           {/* ── Active tab content ────────────── */}
           <div>
             {activeTab === "profile" ? (
-              <Card className="p-6 md:p-8">
-                <div className="mb-6 flex items-center gap-2">
-                  <UserRound className="h-5 w-5 text-turquoise" />
-                  <h2 className="text-xl font-bold">Profile details</h2>
-                </div>
+              !isEditingProfile ? (
+                <Card className="p-6 md:p-8">
+                  <div className="mb-6 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <UserRound className="h-5 w-5 text-turquoise" />
+                      <h2 className="text-xl font-bold">Profile details</h2>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setIsEditingProfile(true)}
+                      className="gap-2"
+                    >
+                      <Pencil className="h-4 w-4" />
+                      Edit
+                    </Button>
+                  </div>
 
-                <form onSubmit={profileForm.handleSubmit(onProfileSubmit)}>
-                  <FieldGroup className="gap-4">
-                    <Controller
-                      name="firstName"
-                      control={profileForm.control}
-                      render={({ field, fieldState }) => (
-                        <Field data-invalid={fieldState.invalid}>
-                          <FieldLabel htmlFor="profile-first-name">
-                            First name
-                          </FieldLabel>
-                          <Input
-                            {...field}
-                            id="profile-first-name"
-                            placeholder="Enter your first name"
-                            aria-invalid={fieldState.invalid}
-                            disabled={profileMutation.isPending}
-                          />
-                          {fieldState.invalid && (
-                            <FieldError errors={[fieldState.error]} />
-                          )}
-                        </Field>
-                      )}
-                    />
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                      <div className="rounded-lg border border-line/60 bg-white/60 p-4">
+                        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                          First name
+                        </p>
+                        <p className="mt-1 text-base font-semibold text-foreground">
+                          {user.firstName || "—"}
+                        </p>
+                      </div>
+                      <div className="rounded-lg border border-line/60 bg-white/60 p-4">
+                        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                          Last name
+                        </p>
+                        <p className="mt-1 text-base font-semibold text-foreground">
+                          {user.lastName || "—"}
+                        </p>
+                      </div>
+                    </div>
 
-                    <Controller
-                      name="lastName"
-                      control={profileForm.control}
-                      render={({ field, fieldState }) => (
-                        <Field data-invalid={fieldState.invalid}>
-                          <FieldLabel htmlFor="profile-last-name">
-                            Last name
-                          </FieldLabel>
-                          <Input
-                            {...field}
-                            id="profile-last-name"
-                            placeholder="Enter your last name"
-                            aria-invalid={fieldState.invalid}
-                            disabled={profileMutation.isPending}
-                          />
-                          {fieldState.invalid && (
-                            <FieldError errors={[fieldState.error]} />
-                          )}
-                        </Field>
-                      )}
-                    />
-                  </FieldGroup>
+                    <div className="rounded-lg border border-line/60 bg-white/60 p-4">
+                      <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                        Email address
+                      </p>
+                      <p className="mt-1 text-base font-semibold text-foreground">
+                        {user.email || "—"}
+                      </p>
+                    </div>
 
-                  <Button
-                    type="submit"
-                    variant="secondary"
-                    className="mt-8 w-full"
-                    disabled={
-                      profileForm.formState.isSubmitting ||
-                      profileMutation.isPending
-                    }
-                  >
-                    {profileMutation.isPending ? "Saving..." : "Save changes"}
-                  </Button>
-                </form>
-              </Card>
+                    <div className="border-t border-line pt-6">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleLogout}
+                        disabled={logoutMutation.isPending}
+                        className="border-red-200 text-red-700 hover:bg-red-50 hover:text-red-800"
+                      >
+                        <LogOut className="h-4 w-4" />
+                        {logoutMutation.isPending ? "Logging out..." : "Log out"}
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              ) : (
+                <Card className="p-6 md:p-8">
+                  <div className="mb-6 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <UserRound className="h-5 w-5 text-turquoise" />
+                      <h2 className="text-xl font-bold">Edit profile details</h2>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        profileForm.reset({
+                          firstName: user.firstName,
+                          lastName: user.lastName,
+                        });
+                        setIsEditingProfile(false);
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+
+                  <form onSubmit={profileForm.handleSubmit(onProfileSubmit)}>
+                    <FieldGroup className="gap-4">
+                      <Controller
+                        name="firstName"
+                        control={profileForm.control}
+                        render={({ field, fieldState }) => (
+                          <Field data-invalid={fieldState.invalid}>
+                            <FieldLabel htmlFor="profile-first-name">
+                              First name
+                            </FieldLabel>
+                            <Input
+                              {...field}
+                              id="profile-first-name"
+                              placeholder="Enter your first name"
+                              aria-invalid={fieldState.invalid}
+                              disabled={profileMutation.isPending}
+                            />
+                            {fieldState.invalid && (
+                              <FieldError errors={[fieldState.error]} />
+                            )}
+                          </Field>
+                        )}
+                      />
+
+                      <Controller
+                        name="lastName"
+                        control={profileForm.control}
+                        render={({ field, fieldState }) => (
+                          <Field data-invalid={fieldState.invalid}>
+                            <FieldLabel htmlFor="profile-last-name">
+                              Last name
+                            </FieldLabel>
+                            <Input
+                              {...field}
+                              id="profile-last-name"
+                              placeholder="Enter your last name"
+                              aria-invalid={fieldState.invalid}
+                              disabled={profileMutation.isPending}
+                            />
+                            {fieldState.invalid && (
+                              <FieldError errors={[fieldState.error]} />
+                            )}
+                          </Field>
+                        )}
+                      />
+                    </FieldGroup>
+
+                    <div className="mt-8 flex items-center gap-3">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full"
+                        onClick={() => {
+                          profileForm.reset({
+                            firstName: user.firstName,
+                            lastName: user.lastName,
+                          });
+                          setIsEditingProfile(false);
+                        }}
+                        disabled={profileMutation.isPending}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        type="submit"
+                        variant="secondary"
+                        className="w-full"
+                        disabled={
+                          profileForm.formState.isSubmitting ||
+                          profileMutation.isPending
+                        }
+                      >
+                        {profileMutation.isPending
+                          ? "Saving..."
+                          : "Save changes"}
+                      </Button>
+                    </div>
+                  </form>
+                </Card>
+              )
             ) : (
               <Card className="p-6 md:p-8">
                 <div className="mb-6 flex items-center gap-2">

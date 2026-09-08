@@ -2,11 +2,14 @@
 "use client";
 
 import * as React from "react";
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams, usePathname } from "next/navigation";
 import Link from "next/link";
 import { TemplateProps } from "./types";
 import { getFileUrl } from "@/lib/utils/getFileUrl";
+import EventMinimalFooter, {
+  isColorDark,
+} from "@/components/event/event-minimal-footer";
 import {
   Calendar,
   MapPin,
@@ -182,6 +185,13 @@ export default function MinimalTemplate({
 
   const mounted = useMounted();
 
+  const isDarkTheme = React.useMemo(() => {
+    if (isCustomTheme && theme?.backgroundColor) {
+      return isColorDark(theme.backgroundColor);
+    }
+    return false;
+  }, [isCustomTheme, theme?.backgroundColor]);
+
   const [selectedMedia, setSelectedMedia] = useState<string | null>(null);
   const [isRsvpModalOpen, setIsRsvpModalOpen] = useState(false);
   const [isRsvpSubmitted, setIsRsvpSubmitted] = useState(false);
@@ -191,31 +201,6 @@ export default function MinimalTemplate({
   const [toastApiError, setToastApiError] = useState<string | null>(null);
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
   const [isTicketSuccess, setIsTicketSuccess] = useState(false);
-
-  const asideRef = useRef<HTMLDivElement>(null);
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [isFixed, setIsFixed] = useState(false);
-  const [fixedWidth, setFixedWidth] = useState<number | undefined>(undefined);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!asideRef.current || !cardRef.current) return;
-      const asideRect = asideRef.current.getBoundingClientRect();
-      if (window.innerWidth >= 1024 && asideRect.top <= 32) {
-        setIsFixed(true);
-        setFixedWidth(asideRect.width);
-      } else {
-        setIsFixed(false);
-      }
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    window.addEventListener("resize", handleScroll);
-    handleScroll();
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("resize", handleScroll);
-    };
-  }, []);
 
   useEffect(() => {
     const toastParam = searchParams.get("toast");
@@ -368,10 +353,11 @@ export default function MinimalTemplate({
 
   return (
     <div
-      className="min-h-screen pb-10 lg:pb-20 px-4 xl:px-0 bg-white text-zinc-900 font-sans"
+      className="min-h-screen flex flex-col justify-between bg-white text-zinc-900 font-sans"
       style={customStyles}
     >
-      <div className="flex items-center justify-between xl:px-20 pt-10">
+      <div className="flex-1">
+        <div className="flex items-center justify-between px-4 xl:px-20 pt-10">
         <Link href={"/"}>
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-black text-black">
@@ -519,7 +505,7 @@ export default function MinimalTemplate({
         </div>
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 items-start">
           {/* Left Column */}
           <div className="md:col-span-2 space-y-8">
             {/* Description */}
@@ -673,20 +659,9 @@ export default function MinimalTemplate({
           </div>
 
           {/* Right Column - Sticky Sidebar */}
-          <div>
-            <div
-              ref={asideRef}
-              className="relative min-h-[200px]"
-            >
-              <div
-                ref={cardRef}
-                style={
-                  isFixed && fixedWidth
-                    ? { position: "fixed", top: "32px", width: `${fixedWidth}px`,  }
-                    : { position: "relative" }
-                }
-                className={`p-6 z-1 border bg-zinc-50 space-y-6 sticky top-6 ${borderRadiusClass}`}
-              >
+          <aside
+            className={`p-6 border bg-zinc-50 space-y-6 md:sticky md:top-8 self-start max-h-[calc(100vh-4rem)] overflow-y-auto ${borderRadiusClass}`}
+          >
                 {/* Date & Time */}
                 {formattedDate && (
                   <div className="flex items-start gap-3">
@@ -843,11 +818,13 @@ export default function MinimalTemplate({
                     </Button>
                   )}
                 </div>
-              </div>
-            </div>
+            </aside>
           </div>
         </div>
       </div>
+
+      {/* Minimal Footer */}
+      <EventMinimalFooter isDark={isDarkTheme} />
 
       {/* Lightbox */}
       {selectedMedia && (

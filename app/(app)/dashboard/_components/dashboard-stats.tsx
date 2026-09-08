@@ -123,8 +123,8 @@ export function DashboardStats() {
 
       <StatTile
         icon={Banknote}
-        label="Revenue"
-        value={summary ? formatCurrency(summary.totalRevenue ?? 0) : "—"}
+        label="Net Revenue"
+        value={summary ? formatCurrency(summary.netRevenue ?? 0) : "—"}
         className="w-[240px] sm:w-auto"
       />
       <StatTile

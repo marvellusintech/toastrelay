@@ -466,7 +466,7 @@ export function StepLogistics({ onNext, isSaving }: StepProps) {
             />
           </div>
 
-          <div className="flex items-center justify-between p-4 bg-zinc-50 rounded-xl border">
+          {/* <div className="flex items-center justify-between p-4 bg-zinc-50 rounded-xl border">
             <div className="space-y-0.5">
               <div className="flex items-center gap-1.5">
                 <Camera className="w-4 h-4 text-zinc-600" />
@@ -482,7 +482,7 @@ export function StepLogistics({ onNext, isSaving }: StepProps) {
               checked={allowMoments}
               onCheckedChange={(checked) => setValue("allowMoments", checked)}
             />
-          </div>
+          </div> */}
 
 
         </div>

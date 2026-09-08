@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useSyncExternalStore } from "react";
 import { Navbar } from "./layouts/navbar";
 import { Footer } from "./layouts/footer";
 import { TooltipProvider } from "./ui/tooltip";
@@ -9,9 +9,9 @@ import { AppSidebar } from "./layouts/appSidebar";
 import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import { getUserApi } from "@/lib/api/user";
-import { User } from "@/types/response";
 
 const NO_SIDEBAR_ROUTES = ["/events"];
+const emptySubscribe = () => () => {};
 
 export function MarketingAuthWrapper({
   children,
@@ -25,13 +25,13 @@ export function MarketingAuthWrapper({
   // Track whether we've hydrated on the client. During SSR `document` is
   // undefined, so the auth store initializes as unauthenticated and would
   // briefly flash the navbar. We wait until mount before deciding what to show.
-  const [mounted, setMounted] = useState(false);
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false,
+  );
 
   const pathname = usePathname();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     async function fetchUserSession() {
@@ -42,7 +42,7 @@ export function MarketingAuthWrapper({
           if (response.data) {
             setAuth(response.data);
           }
-        } catch (error) {
+        } catch {
           // logout();
         }
       }

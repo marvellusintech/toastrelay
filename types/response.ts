@@ -249,6 +249,7 @@ export interface QucikData {
   ticketsSold: number;
   totalRevenue: number;
   totalRsvps: number;
+  netRevenue: number;
 }
 
 export interface RevenueTrend {
@@ -256,6 +257,8 @@ export interface RevenueTrend {
   totalRevenue: number;
   ticketRevenue: number;
   contributionRevenue: number;
+  netRevenue: number;
+  serviceFees: number;
 }
 
 //////////////////////

@@ -66,8 +66,10 @@ export default function TicketPurchaseModal({
   const [quantity, setQuantity] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const callbackUrl = `${window.location.origin}/events/${slug}`;
+  const callbackUrl =
+    typeof window !== "undefined"
+      ? `${window.location.origin}/events/${slug}`
+      : `/events/${slug}`;
 
   const selectedTier = tiers.find((t) => t.id === selectedTierId);
   const remaining = selectedTier
@@ -94,8 +96,9 @@ export default function TicketPurchaseModal({
               </h3>
               <p className="text-sm text-zinc-500 leading-relaxed max-w-xs">
                 Your ticket{quantity > 1 ? "s" : ""} have been confirmed and a
-                pass has been sent to{" "}
-                <span className="font-semibold text-zinc-700">{email}</span>.
+                pass has been sent to your email.
+                {/* {" "}
+                <span className="font-semibold text-zinc-700">{email}</span>. */}
               </p>
             </div>
             <Button
@@ -118,6 +121,12 @@ export default function TicketPurchaseModal({
     setError(null);
 
     try {
+      const origin =
+        typeof window !== "undefined"
+          ? window.location.origin
+          : process.env.NEXT_PUBLIC_APP_URL || "";
+      const resolvedCallbackUrl = origin ? `${origin}/events/${slug}` : callbackUrl;
+
       const res = await initializePaymentApi({
         amount: fees?.total ?? 0,
         currency,
@@ -125,7 +134,7 @@ export default function TicketPurchaseModal({
         intentType: PaymentIntentType.TICKET,
         intentId: selectedTier.id,
         quantity,
-        callbackUrl,
+        callbackUrl: resolvedCallbackUrl,
         email: email.trim(),
         eventId,
         metadata: { eventName, tierName: selectedTier.name },

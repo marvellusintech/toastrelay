@@ -21,7 +21,7 @@ import {
 const withdrawalSchema = z.object({
   amount: z
     .number({ message: "Amount is required" })
-    .min(100, "Minimum withdrawal is ₦100"),
+    .min(500, "Minimum withdrawal is ₦500"),
 });
 
 type WithdrawalValues = z.infer<typeof withdrawalSchema>;
@@ -44,7 +44,7 @@ export function FinanceWithdraw({ availableBalance }: FinanceWithdrawProps) {
   const withdrawalForm = useForm<WithdrawalValues>({
     resolver: zodResolver(withdrawalSchema),
     defaultValues: {
-      amount: 100,
+      amount: 0,
     },
   });
 
@@ -52,7 +52,7 @@ export function FinanceWithdraw({ availableBalance }: FinanceWithdrawProps) {
     mutationFn: requestWithdrawalApi,
     onSuccess: (res) => {
       toast.success(res.message || "Withdrawal request submitted successfully");
-      withdrawalForm.reset({ amount: 100 });
+      withdrawalForm.reset({ amount: 0 });
       queryClient.invalidateQueries({ queryKey: queryKeys.withdrawals.earnings() });
       queryClient.invalidateQueries({ queryKey: queryKeys.withdrawals.transactions() });
       queryClient.invalidateQueries({ queryKey: queryKeys.withdrawals.settlementStatus() });
@@ -98,7 +98,7 @@ export function FinanceWithdraw({ availableBalance }: FinanceWithdrawProps) {
       <Card className="px-6 py-6">
         <h2 className="text-base font-bold text-foreground mb-1">Request Manual Withdrawal</h2>
         <p className="text-sm text-muted-foreground mb-6">
-          Request a transfer from your Available balance to your saved bank account. Minimum withdrawal is ₦100.
+          Request a transfer from your Available balance to your saved bank account. Minimum withdrawal is ₦500.
         </p>
 
         <div className="mb-6 border-y border-border py-4">
@@ -142,7 +142,7 @@ export function FinanceWithdraw({ availableBalance }: FinanceWithdrawProps) {
             <Input
               id="amount"
               type="number"
-              min={100}
+              min={500}
               placeholder="e.g. 5000"
               {...withdrawalForm.register("amount", { valueAsNumber: true })}
             />

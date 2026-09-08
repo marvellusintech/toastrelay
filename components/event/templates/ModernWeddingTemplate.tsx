@@ -2,10 +2,11 @@
 "use client";
 
 import * as React from "react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams, usePathname } from "next/navigation";
 import { TemplateProps } from "./types";
 import { getFileUrl } from "@/lib/utils/getFileUrl";
+import EventMinimalFooter from "@/components/event/event-minimal-footer";
 import {
   Calendar,
   MapPin,
@@ -160,35 +161,6 @@ export default function ModernWeddingTemplate({
 
   // Lightbox Media Preview State
   const [selectedMedia, setSelectedMedia] = useState<string | null>(null);
-
-  // Sticky Sidebar Fallback logic
-  const asideRef = useRef<HTMLDivElement>(null);
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [isFixed, setIsFixed] = useState(false);
-  const [fixedWidth, setFixedWidth] = useState<number | undefined>(undefined);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!asideRef.current || !cardRef.current) return;
-
-      const asideRect = asideRef.current.getBoundingClientRect();
-      if (window.innerWidth >= 1024 && asideRect.top <= 32) {
-        setIsFixed(true);
-        setFixedWidth(asideRect.width);
-      } else {
-        setIsFixed(false);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    window.addEventListener("resize", handleScroll);
-    handleScroll();
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("resize", handleScroll);
-    };
-  }, []);
 
   // Handle returning from payment redirect
   useEffect(() => {
@@ -404,9 +376,10 @@ export default function ModernWeddingTemplate({
 
   return (
     <div
-      className="min-h-screen bg-stone-950 text-stone-100 font-serif selection:bg-rose-900 selection:text-white"
+      className="min-h-screen flex flex-col justify-between bg-stone-950 text-stone-100 font-serif selection:bg-rose-900 selection:text-white"
     >
-      {/* Immersive Hero Header */}
+      <div className="flex-1">
+        {/* Immersive Hero Header */}
       <section className="relative w-full h-[85vh] max-h-[900px] flex items-center justify-center overflow-hidden bg-stone-900">
         {isCoverVideo && coverImage ? (
           <video
@@ -565,24 +538,9 @@ export default function ModernWeddingTemplate({
 
           {/* Sticky Sidebar CTA Cards */}
           <aside
-            ref={asideRef}
-            className="lg:col-span-1 relative min-h-[300px]"
+            className={`lg:col-span-1 p-6 bg-stone-900/90 border border-stone-800/80 backdrop-blur-md space-y-6 lg:sticky lg:top-8 self-start max-h-[calc(100vh-4rem)] overflow-y-auto ${activeBorderRadiusClass}`}
           >
-            <div
-              ref={cardRef}
-              style={{
-                ...(isFixed && fixedWidth
-                  ? {
-                      position: "fixed",
-                      top: "32px",
-                      width: `${fixedWidth}px`,
-                      zIndex: 30,
-                    }
-                  : { position: "relative" }),
-              }}
-              className={`p-6 bg-stone-900/90 border border-stone-800/80 backdrop-blur-md space-y-6 ${activeBorderRadiusClass}`}
-            >
-              <div className="space-y-1 border-b border-stone-800 pb-4">
+            <div className="space-y-1 border-b border-stone-800 pb-4">
                 <span
                   className="text-xs font-semibold text-rose-400 uppercase tracking-widest"
                   style={accentTextStyle}
@@ -719,10 +677,13 @@ export default function ModernWeddingTemplate({
                   Toast the Couple
                 </Button>
               </div>
-            </div>
           </aside>
         </div>
       </main>
+      </div>
+
+      {/* Minimal Footer */}
+      <EventMinimalFooter isDark={true} />
 
       {/* Lightbox Modal */}
       {selectedMedia && (

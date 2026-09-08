@@ -4,8 +4,6 @@
 import * as React from "react";
 import { EventDetails } from "@/types/response";
 import { getTemplateComponent } from "@/components/event/templates";
-import {Footer} from "../layouts/footer";
-;
 
 interface EventPageClientProps {
   event: EventDetails;
@@ -66,9 +64,6 @@ export default function EventPageClient({ event }: EventPageClientProps) {
         borderRadiusClass,
         customStyles,
       })}
-      <div className="relative z-[999]">
-        <Footer />
-      </div>
     </>
   );
 }
