@@ -24,6 +24,7 @@ import {
   Tag,
   Hash,
   ScanLine,
+  Wifi,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -514,11 +515,21 @@ export function EventDetailsPage({ event }: EventDetailsPageProps) {
                     })}
                   />
                 )}
-                <DetailRow
-                  icon={MapPin}
-                  label="Location"
-                  value={event.location || "Not set"}
-                />
+                {event.format !== "ONLINE" && (
+                  <DetailRow
+                    icon={MapPin}
+                    label="Location"
+                    value={event.location || "Not set"}
+                  />
+                )}
+                {(event.format === "ONLINE" || event.format === "HYBRID") && event.onlineUrl && (
+                  <DetailRow
+                    icon={Wifi}
+                    label="Online URL"
+                    value={event.onlineUrl}
+                    href={event.onlineUrl}
+                  />
+                )}
                 <DetailRow
                   icon={event.isPublic ? Globe : Lock}
                   label="Visibility"

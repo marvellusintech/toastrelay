@@ -7,7 +7,6 @@ import { type WizardFormValues } from "@/validations/event.schema";
 import { Loader2, Plus, Trash2, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { usePayoutAccountGuard } from "@/lib/hooks/use-payout-account-guard";
 
 interface StepProps {
   onNext: () => Promise<void>;
@@ -18,7 +17,6 @@ export function StepContributions({ onNext, isSaving, eventId }: StepProps) {
   const router = useRouter();
   const { register, watch, setValue, control, getValues } =
     useFormContext<WizardFormValues>();
-  const { ensurePayoutAccount } = usePayoutAccountGuard();
   const enableContributions = watch("enableContributions");
   const allowToasts = watch("allowToasts");
 
@@ -28,24 +26,6 @@ export function StepContributions({ onNext, isSaving, eventId }: StepProps) {
   });
 
   const handleSubmit = async () => {
-    const items = getValues("contributionsData.items");
-    const hasPaidContribution = (items ?? []).some(
-      (item) => Number(item.price) > 0,
-    );
-    if (
-      !(await ensurePayoutAccount(hasPaidContribution, () => {
-        sessionStorage.setItem(
-          `event-setup-payment-draft:${eventId}`,
-          JSON.stringify({
-            enableContributions: getValues("enableContributions"),
-            contributionsData: getValues("contributionsData"),
-          }),
-        );
-      }))
-    ) {
-      return;
-    }
-
     await onNext();
   };
 
@@ -86,15 +66,21 @@ export function StepContributions({ onNext, isSaving, eventId }: StepProps) {
             {fields.map((field, index) => (
               <div
                 key={field.id}
-                className="space-y-3 bg-zinc-50 p-4 rounded-xl border border-zinc-200 relative"
+                className="space-y-3 bg-zinc-50 p-3 sm:p-4 rounded-xl border border-zinc-200"
               >
-                <button
-                  type="button"
-                  onClick={() => remove(index)}
-                  className="absolute top-3 right-3 p-1.5 text-zinc-400 hover:text-red-500 rounded-lg"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
+                <div className="flex items-center justify-between pb-1">
+                  <span className="text-xs font-semibold text-zinc-500">
+                    Item #{index + 1}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => remove(index)}
+                    className="p-1.5 text-zinc-400 hover:text-red-500 rounded-lg transition-colors"
+                    title="Delete item"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
@@ -106,7 +92,7 @@ export function StepContributions({ onNext, isSaving, eventId }: StepProps) {
                       {...register(
                         `contributionsData.items.${index}.name` as const,
                       )}
-                      className="w-full text-sm mt-1 p-2 border rounded-lg bg-white"
+                      className="w-full text-sm mt-1 p-2 border rounded-lg bg-white min-w-0"
                       placeholder="e.g., Groom Family Lace Fabric"
                     />
                   </div>
@@ -120,7 +106,7 @@ export function StepContributions({ onNext, isSaving, eventId }: StepProps) {
                         `contributionsData.items.${index}.price` as const,
                         { valueAsNumber: true },
                       )}
-                      className="w-full text-sm mt-1 p-2 border rounded-lg bg-white"
+                      className="w-full text-sm mt-1 p-2 border rounded-lg bg-white min-w-0"
                     />
                   </div>
                 </div>
@@ -135,7 +121,7 @@ export function StepContributions({ onNext, isSaving, eventId }: StepProps) {
                       {...register(
                         `contributionsData.items.${index}.category` as const,
                       )}
-                      className="w-full text-sm mt-1 p-2 border rounded-lg bg-white"
+                      className="w-full text-sm mt-1 p-2 border rounded-lg bg-white min-w-0"
                       placeholder="Apparel, Cash Gift, Catering"
                     />
                   </div>
@@ -148,7 +134,7 @@ export function StepContributions({ onNext, isSaving, eventId }: StepProps) {
                       {...register(
                         `contributionsData.items.${index}.image` as const,
                       )}
-                      className="w-full text-sm mt-1 p-2 border rounded-lg bg-white text-zinc-500 font-mono"
+                      className="w-full text-sm mt-1 p-2 border rounded-lg bg-white text-zinc-500 font-mono min-w-0"
                     />
                   </div>
                 </div>
@@ -182,25 +168,26 @@ export function StepContributions({ onNext, isSaving, eventId }: StepProps) {
        </div>
       )}
 
-            <div className="flex items-center justify-between p-4 bg-zinc-50 rounded-xl border">
-        <div className="space-y-0.5">
+      <div className="flex items-center justify-between p-3.5 sm:p-4 bg-zinc-50 rounded-xl border gap-3">
+        <div className="space-y-0.5 min-w-0 flex-1">
           <div className="flex items-center gap-1.5">
-            <MessageCircle className="w-4 h-4 text-zinc-600" />
+            <MessageCircle className="w-4 h-4 text-zinc-600 shrink-0" />
             <label className="text-sm font-medium text-zinc-800">
               Allow Toasts &amp; Gifts
             </label>
           </div>
-          <span className="text-xs text-zinc-500">
+          <span className="text-xs text-zinc-500 block">
             Guests can send toast messages with optional cash gifts
           </span>
         </div>
         <Switch
+          className="shrink-0"
           checked={allowToasts}
           onCheckedChange={(checked) => setValue("allowToasts", checked)}
         />
       </div>
 
-      <div className="flex gap-3 justify-end pt-4 border-t">
+      <div className="flex items-center gap-3 justify-end pt-4 border-t">
         <Button
           type="button"
           onClick={() => router.push("?step=ticketing")}
@@ -210,7 +197,7 @@ export function StepContributions({ onNext, isSaving, eventId }: StepProps) {
         </Button>
         <Button
           variant={"secondary"}
-          className="flex-1 lg:flex-initial"
+          className="flex-1 sm:flex-initial"
           type="button"
           onClick={handleSubmit}
         >

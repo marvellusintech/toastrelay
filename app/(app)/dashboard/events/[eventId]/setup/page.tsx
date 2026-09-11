@@ -4,7 +4,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { FormProvider, useForm, type FieldPath } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, Loader2 } from "lucide-react";
-import React, { Suspense, use, useEffect, useMemo, useState } from "react";
+import React, { Suspense, use, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import {
@@ -244,6 +244,19 @@ function EventSetupWizard({ params }: PageProps) {
     (currentStepIndex / (WIZARD_STEPS.length - 1)) * 100,
   );
 
+  // Auto-center the active step in the horizontal navigation on mobile
+  const activeStepRef = useRef<HTMLLIElement | null>(null);
+
+  useEffect(() => {
+    if (activeStepRef.current) {
+      activeStepRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "center",
+      });
+    }
+  }, [currentStep]);
+
   // Redirect away from hidden steps when isExternal toggles
   useEffect(() => {
     const hiddenSteps = ["ticketing", "contributions"];
@@ -333,20 +346,20 @@ function EventSetupWizard({ params }: PageProps) {
 
   return (
     <FormProvider {...methods}>
-      <div className="max-w-6xl mx-auto px-4 pt-8 pb-32 space-y-8">
+      <div className="w-full min-w-0 max-w-6xl mx-auto px-3 sm:px-4 pt-8 pb-32 space-y-6 sm:space-y-8 overflow-x-hidden">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-zinc-100">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 sm:pb-6 border-b border-zinc-100 min-w-0">
           <div>
-            <h1 className="text-2xl font-bold font-display tracking-tight text-zinc-900">
+            <h1 className="text-xl lg:text-2xl font-bold font-display tracking-tight text-zinc-900">
               Event Setup
             </h1>
-            <p className="text-sm text-zinc-500">
+            <p className="text-xs sm:text-sm text-zinc-500">
               Configure your event details
             </p>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="w-32 bg-zinc-100 h-2 rounded-full overflow-hidden hidden sm:block">
+          <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4 w-full sm:w-auto">
+            <div className="hidden lg:flex-1 sm:w-32 bg-zinc-100 h-2 rounded-full overflow-hidden">
               <div
                 className="bg-zinc-950 h-full transition-all duration-300 ease-in-out"
                 style={{ width: `${progressPercentage}%` }}
@@ -358,7 +371,7 @@ function EventSetupWizard({ params }: PageProps) {
                 type="button"
                 onClick={() => handleSaveAndAdvance("review")}
                 disabled={isSaving}
-                className="text-xs font-bold text-white bg-zinc-950 hover:bg-zinc-800 border border-zinc-900 px-3 py-1.5 rounded-xl shadow-sm transition-all flex items-center gap-1.5"
+                className="text-xs font-bold text-white bg-zinc-950 hover:bg-zinc-800 border border-zinc-900 px-3 py-1.5 rounded-xl shadow-sm transition-all flex items-center gap-1.5 shrink-0"
               >
                 {isSaving ? (
                   <Loader2 className="h-3 w-3 animate-spin" />
@@ -373,7 +386,7 @@ function EventSetupWizard({ params }: PageProps) {
                 )}
               </button>
             ) : (
-              <span className="text-xs font-semibold text-zinc-500 font-mono bg-zinc-50 border border-zinc-200 px-2.5 py-1.5 rounded-xl">
+              <span className="text-xs font-semibold text-zinc-500 font-mono bg-zinc-50 border border-zinc-200 px-2.5 py-1.5 rounded-xl shrink-0">
                 {progressPercentage}% Complete
               </span>
             )}
@@ -381,13 +394,13 @@ function EventSetupWizard({ params }: PageProps) {
         </div>
 
         {/* Layout Grid */}
-        <div className="flex flex-col md:flex-row gap-8">
+        <div className="flex flex-col md:flex-row gap-6 md:gap-8 min-w-0 w-full">
           {/* Sidebar Roadmap */}
           <nav
             aria-label="Progress Roadmap"
-            className="w-full h-full md:w-64 bg-white border-b border-zinc-100 md:border md:border-zinc-200/80 rounded-none md:rounded-2xl p-4 md:p-5 shadow-none md:shadow-sm sticky top-0 md:top-6 z-20"
+            className="w-full min-w-0 md:w-64 bg-white border border-zinc-200/80 rounded-2xl p-3 sm:p-4 md:p-5 shadow-sm md:sticky md:top-6 z-10 md:self-start overflow-hidden"
           >
-            <ol className="flex flex-row md:flex-col gap-6 md:gap-6 overflow-x-auto scrollbar-none pb-2 md:pb-0 relative min-w-full">
+            <ol className="flex flex-row md:flex-col gap-3 sm:gap-4 md:gap-6 overflow-x-auto scrollbar-none pb-1 md:pb-0 relative w-full touch-pan-x">
               <div
                 className="absolute left-[15px] top-2 bottom-2 w-0.5 bg-zinc-100 hidden md:block"
                 aria-hidden="true"
@@ -400,8 +413,9 @@ function EventSetupWizard({ params }: PageProps) {
                 return (
                   <li
                     key={step.id}
+                    ref={isActive ? activeStepRef : null}
                     onClick={() => handleStepJump(step.id, idx)}
-                    className="group flex flex-row items-center md:items-start gap-3 shrink-0 relative z-10 transition-all duration-200 cursor-pointer"
+                    className="group flex flex-row items-center md:items-start gap-2.5 sm:gap-3 shrink-0 relative z-10 transition-all duration-200 cursor-pointer py-1 px-1.5 md:p-0 rounded-lg"
                   >
                     <div
                       className={`flex items-center justify-center h-8 w-8 rounded-full shrink-0 border text-xs font-mono font-bold transition-all duration-300 ${
@@ -442,7 +456,7 @@ function EventSetupWizard({ params }: PageProps) {
           </nav>
 
           {/* Step Form Container */}
-          <main className="flex-1 w-full bg-white rounded-2xl border border-zinc-200/80 p-6 sm:p-8 shadow-sm min-w-0">
+          <main className="flex-1 w-full bg-white rounded-2xl border border-zinc-200/80 p-4 sm:p-6 md:p-8 shadow-sm min-w-0 overflow-hidden">
             {currentStep === "logistics" && (
               <StepLogistics
                 onNext={handleSaveAndAdvance}

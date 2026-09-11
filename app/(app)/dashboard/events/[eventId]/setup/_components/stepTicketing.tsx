@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useMutation } from "@tanstack/react-query";
 import { upsertTicketApi } from "@/lib/api/events";
-import { usePayoutAccountGuard } from "@/lib/hooks/use-payout-account-guard";
 
 interface StepProps {
   onNext: () => Promise<void>;
@@ -32,31 +31,14 @@ export function StepTicketing({ onNext, isSaving, eventId }: StepProps) {
   const ticketEventMutation = useMutation({
     mutationFn: upsertTicketApi,
   });
-  const { ensurePayoutAccount } = usePayoutAccountGuard();
-
   const isPending = ticketEventMutation.isPending;
 
   const handleNext = async () => {
     const tiers = getValues("ticketingData.tiers");
     if (!tiers) return;
 
-    const hasPaidTicket = tiers.some((tier) => Number(tier.price) > 0);
-    if (
-      !(await ensurePayoutAccount(hasPaidTicket, () => {
-        sessionStorage.setItem(
-          `event-setup-payment-draft:${eventId}`,
-          JSON.stringify({
-            enableTicketing: getValues("enableTicketing"),
-            ticketingData: getValues("ticketingData"),
-          }),
-        );
-      }))
-    ) {
-      return;
-    }
-
     try {
-      const res = await ticketEventMutation.mutateAsync({eventId, tiers});
+      const res = await ticketEventMutation.mutateAsync({ eventId, tiers });
 
       toast.success("Ticket updated successfully");
       await onNext();
@@ -96,52 +78,72 @@ export function StepTicketing({ onNext, isSaving, eventId }: StepProps) {
             {fields.map((field, index) => (
               <div
                 key={field.id}
-                className="flex gap-2 items-end bg-zinc-50 p-3 rounded-xl border border-zinc-200"
+                className="bg-zinc-50 p-3 sm:p-4 rounded-xl border border-zinc-200"
               >
-                <div className="flex-1">
-                  <label className="text-[10px] font-bold text-zinc-400 uppercase">
-                    Tier Name
-                  </label>
-                  <input
-                    type="text"
-                    {...register(`ticketingData.tiers.${index}.name` as const)}
-                    className="w-full text-sm mt-1 p-2 border rounded-lg bg-white"
-                    placeholder="VIP, Early Access"
-                  />
+                <div className="flex flex-col sm:flex-row sm:items-end gap-2.5 sm:gap-2">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between mb-1 sm:hidden">
+                      <label className="text-[10px] font-bold text-zinc-400 uppercase">
+                        Tier Name
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => remove(index)}
+                        className="p-1 text-red-500 hover:bg-red-50 rounded-lg"
+                        title="Delete Tier"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                    <label className="hidden sm:block text-[10px] font-bold text-zinc-400 uppercase">
+                      Tier Name
+                    </label>
+                    <input
+                      type="text"
+                      {...register(`ticketingData.tiers.${index}.name` as const)}
+                      className="w-full text-sm sm:mt-1 p-2 border rounded-lg bg-white min-w-0"
+                      placeholder="VIP, Early Access"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:flex sm:items-end gap-2">
+                    <div className="w-full sm:w-28">
+                      <label className="text-[10px] font-bold text-zinc-400 uppercase">
+                        Price (₦)
+                      </label>
+                      <input
+                        type="number"
+                        {...register(
+                          `ticketingData.tiers.${index}.price` as const,
+                          { valueAsNumber: true },
+                        )}
+                        className="w-full text-sm mt-1 p-2 border rounded-lg bg-white min-w-0"
+                      />
+                    </div>
+                    <div className="w-full sm:w-24">
+                      <label className="text-[10px] font-bold text-zinc-400 uppercase">
+                        Qty
+                      </label>
+                      <input
+                        type="number"
+                        {...register(
+                          `ticketingData.tiers.${index}.capacity` as const,
+                          { valueAsNumber: true },
+                        )}
+                        className="w-full text-sm mt-1 p-2 border rounded-lg bg-white min-w-0"
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => remove(index)}
+                    className="hidden sm:flex p-2 text-red-500 hover:bg-red-50 rounded-lg mb-0.5 shrink-0"
+                    title="Delete Tier"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
                 </div>
-                <div className="w-20">
-                  <label className="text-[10px] font-bold text-zinc-400 uppercase">
-                    Price (₦)
-                  </label>
-                  <input
-                    type="number"
-                    {...register(
-                      `ticketingData.tiers.${index}.price` as const,
-                      { valueAsNumber: true },
-                    )}
-                    className="w-full text-sm mt-1 p-2 border rounded-lg bg-white"
-                  />
-                </div>
-                <div className="w-20">
-                  <label className="text-[10px] font-bold text-zinc-400 uppercase">
-                    Qty
-                  </label>
-                  <input
-                    type="number"
-                    {...register(
-                      `ticketingData.tiers.${index}.capacity` as const,
-                      { valueAsNumber: true },
-                    )}
-                    className="w-full text-sm mt-1 p-2 border rounded-lg bg-white"
-                  />
-                </div>
-                <button
-                  type="button"
-                  onClick={() => remove(index)}
-                  className="p-2 text-red-500 hover:bg-red-50 rounded-lg mb-0.5"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
               </div>
             ))}
           </div>
@@ -162,7 +164,7 @@ export function StepTicketing({ onNext, isSaving, eventId }: StepProps) {
         </div>
       )}
 
-      <div className="flex gap-3 justify-end pt-4 border-t">
+      <div className="flex items-center gap-3 justify-end pt-4 border-t">
         <Button
           type="button"
           onClick={() => router.push("?step=branding")}
@@ -174,10 +176,10 @@ export function StepTicketing({ onNext, isSaving, eventId }: StepProps) {
           type="button"
           onClick={handleNext}
           variant="secondary"
-          className="flex-1 lg:flex-initial"
+          className="flex-1 sm:flex-initial"
         >
           {isSaving || isPending ? (
-            <Loader2 />
+            <Loader2 className="h-4 w-4 animate-spin" />
           ) : enableTicketing ? (
             "Save & Continue"
           ) : (

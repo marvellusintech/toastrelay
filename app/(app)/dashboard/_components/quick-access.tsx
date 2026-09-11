@@ -35,7 +35,7 @@ export function QuickAccess() {
 
       {/* Credits */}
       <Link
-        href="/dashboard/finance"
+        href="/dashboard/finance?tab=topup"
         className="group flex items-start gap-4 rounded-2xl border border-line bg-panel p-5 transition hover:border-turquoise hover:shadow-sm"
       >
         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-muted">

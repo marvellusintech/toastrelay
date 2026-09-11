@@ -136,18 +136,18 @@ export function StepReview({ eventId, eventData }: { eventId: string; eventData:
       </div>
 
       {/* Preview Container */}
-      <div className="border border-zinc-200 rounded-2xl overflow-hidden bg-white shadow-sm">
-        <div className="bg-zinc-50 border-b border-zinc-100 px-4 py-2 flex items-center gap-2">
-          <div className="flex gap-1.5">
-            <div className="w-3 h-3 rounded-full bg-zinc-300" />
-            <div className="w-3 h-3 rounded-full bg-zinc-300" />
-            <div className="w-3 h-3 rounded-full bg-zinc-300" />
+      <div className="border border-zinc-200 rounded-2xl overflow-hidden bg-white shadow-sm w-full min-w-0">
+        <div className="bg-zinc-50 border-b border-zinc-100 px-3 sm:px-4 py-2 flex items-center gap-2 min-w-0">
+          <div className="flex gap-1.5 shrink-0">
+            <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-zinc-300" />
+            <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-zinc-300" />
+            <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-zinc-300" />
           </div>
-          <span className="text-xs text-zinc-400 font-mono ml-2">
+          <span className="text-xs text-zinc-400 font-mono ml-1 sm:ml-2 truncate min-w-0 flex-1">
             {`toastrelay.com/events/${values.slug || "event-preview"}`}
           </span>
         </div>
-        <div className="max-h-[600px] overflow-y-auto px-2">
+        <div className="max-h-[600px] overflow-y-auto overflow-x-hidden w-full min-w-0 px-1 sm:px-2">
           {React.createElement(TemplateComponent, {
             event: previewEvent,
             formattedDate,
@@ -159,11 +159,13 @@ export function StepReview({ eventId, eventData }: { eventId: string; eventData:
       </div>
 
       {/* Actions */}
-      <div className="flex gap-3 justify-end pt-4 border-t">
+      <div className="flex items-center gap-3 justify-end pt-4 border-t">
         <Button
           type="button"
           disabled={publishing}
-          onClick={() => router.push("?step=contributions")}
+          onClick={() =>
+            router.push(values.isExternal ? "?step=branding" : "?step=contributions")
+          }
           variant="outline"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
@@ -174,7 +176,7 @@ export function StepReview({ eventId, eventData }: { eventId: string; eventData:
           disabled={publishing}
           onClick={handlePublish}
           variant="secondary"
-          className="flex-1 lg:flex-initial"
+          className="flex-1 sm:flex-initial"
         >
           {publishing ? "Publishing..." : "Publish Event Live"}
         </Button>

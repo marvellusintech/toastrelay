@@ -26,10 +26,18 @@ export const logisticsBaseSchema = z.object({
   isPublic: z.boolean().default(true),
   isExternal: z.boolean(),
   location: z.string().optional(),
-  externalUrl: z.url("Please enter a valid URL").optional(),
+  externalUrl: z
+    .string()
+    .url("Please enter a valid URL")
+    .optional()
+    .or(z.literal("")),
   description: z.string().min(17, "Description must be at least 10 characters"),
   format: z.enum(["PHYSICAL", "ONLINE", "HYBRID"]).default("PHYSICAL"),
-  onlineUrl: z.string().url("Please enter a valid URL").optional(),
+  onlineUrl: z
+    .string()
+    .url("Please enter a valid URL")
+    .optional()
+    .or(z.literal("")),
   allowRsvp: z.boolean().default(true),
   allowMoments: z.boolean().default(true),
   allowToasts: z.boolean().default(true),
@@ -87,13 +95,13 @@ export const eventWizardSchema = logisticsBaseSchema
   .merge(contributionsSchema)
   .refine(
     (data) => {
-      if (data.isExternal && !data.externalUrl) return false;
+      if (data.isExternal && (!data.externalUrl || data.externalUrl.trim() === "")) return false;
       // Physical/Hybrid events show the location field, so it's required for
       // those. Pure ONLINE events don't render a location input.
       if (
         !data.isExternal &&
         data.format !== "ONLINE" &&
-        !data.location
+        (!data.location || data.location.trim() === "")
       ) {
         return false;
       }
@@ -106,7 +114,12 @@ export const eventWizardSchema = logisticsBaseSchema
   )
   .refine(
     (data) => {
-      if ((data.format === "ONLINE" || data.format === "HYBRID") && !data.onlineUrl) return false;
+      if (
+        (data.format === "ONLINE" || data.format === "HYBRID") &&
+        (!data.onlineUrl || data.onlineUrl.trim() === "")
+      ) {
+        return false;
+      }
       return true;
     },
     {

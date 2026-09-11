@@ -136,17 +136,22 @@ export function StepLogistics({ onNext, isSaving }: StepProps) {
   return (
     <div className="space-y-6">
       {/* Header with isExternal toggle */}
-      <div className="flex items-start justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2">
         <div>
-          <h2 className="text-xl font-bold text-zinc-900">Event Logistics</h2>
-          <p className="text-sm text-zinc-500">
+          <h2 className="text-lg sm:text-xl font-bold text-zinc-900">Event Logistics</h2>
+          <p className="text-xs sm:text-sm text-zinc-500">
             Where and when is this happening?
           </p>
         </div>
-        <div className="flex items-center gap-2 bg-zinc-50 border border-zinc-200 rounded-full px-3 py-1.5">
+        <div className="flex items-center self-start sm:self-auto gap-2 bg-zinc-50 border border-zinc-200 rounded-full px-3 py-1.5 shrink-0">
           <Switch
             checked={isExternal}
-            onCheckedChange={(checked) => setValue("isExternal", checked)}
+            onCheckedChange={(checked) => {
+              setValue("isExternal", checked, { shouldValidate: true });
+              if (!checked) {
+                setValue("externalUrl", undefined, { shouldValidate: true });
+              }
+            }}
           />
           <span className="text-xs font-medium text-zinc-700 whitespace-nowrap">
             External Event
@@ -339,29 +344,29 @@ export function StepLogistics({ onNext, isSaving }: StepProps) {
                 key={fmt}
                 type="button"
                 onClick={() => {
-                  setValue("format", fmt);
+                  setValue("format", fmt, { shouldValidate: true });
                   if (fmt === "ONLINE") {
-                    setValue("location", undefined);
+                    setValue("location", undefined, { shouldValidate: true });
                   }
                   if (fmt === "PHYSICAL") {
-                    setValue("onlineUrl", undefined);
+                    setValue("onlineUrl", undefined, { shouldValidate: true });
                   }
                 }}
-                className={`flex items-center justify-center gap-2 p-3 rounded-xl border text-sm font-medium transition-all ${
+                className={`flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-2.5 px-2 sm:p-3 rounded-xl border text-xs sm:text-sm font-medium transition-all min-w-0 ${
                   format === fmt
                     ? "border-zinc-950 bg-zinc-950 text-white shadow-sm"
                     : "border-zinc-200 bg-zinc-50 text-zinc-600 hover:bg-zinc-100"
                 }`}
               >
-                {fmt === "PHYSICAL" && <MapPin className="w-4 h-4" />}
-                {fmt === "ONLINE" && <Wifi className="w-4 h-4" />}
+                {fmt === "PHYSICAL" && <MapPin className="w-4 h-4 shrink-0" />}
+                {fmt === "ONLINE" && <Wifi className="w-4 h-4 shrink-0" />}
                 {fmt === "HYBRID" && (
-                  <>
+                  <div className="flex items-center gap-0.5 shrink-0">
                     <MapPin className="w-3.5 h-3.5" />
                     <Wifi className="w-3.5 h-3.5" />
-                  </>
+                  </div>
                 )}
-                {fmt.charAt(0) + fmt.slice(1).toLowerCase()}
+                <span className="truncate">{fmt.charAt(0) + fmt.slice(1).toLowerCase()}</span>
               </button>
             ))}
           </div>
@@ -376,7 +381,7 @@ export function StepLogistics({ onNext, isSaving }: StepProps) {
             <input
               type="text"
               {...register("location")}
-              className="w-full mt-1 p-2.5 border rounded-xl bg-zinc-50 focus:bg-white text-sm"
+              className="w-full mt-1 p-2.5 border rounded-xl bg-zinc-50 focus:bg-white text-sm min-w-0"
               placeholder="e.g., Calgary Central Library Ballroom"
             />
             {errors.location && (
@@ -390,14 +395,17 @@ export function StepLogistics({ onNext, isSaving }: StepProps) {
         {(format === "ONLINE" || format === "HYBRID") && (
           <div className="animate-in fade-in slide-in-from-top-2 duration-200">
             <label className="text-sm font-medium text-zinc-700">
-              Streaming / Online URL
+              Online URL
             </label>
             <input
               type="url"
               {...register("onlineUrl")}
-              className="w-full mt-1 p-2.5 border rounded-xl bg-zinc-50 focus:bg-white text-sm"
-              placeholder="https://zoom.us/j/... or https://youtube.com/live/..."
+              className="w-full mt-1 p-2.5 border rounded-xl bg-zinc-50 focus:bg-white text-sm min-w-0"
+              placeholder="https://zoom.us/j/... or https://meet.google.com/..."
             />
+            <p className="text-xs text-zinc-500 mt-1">
+              Direct link for guests to join this online event (e.g., Zoom, Google Meet, YouTube Live).
+            </p>
             {errors.onlineUrl && (
               <p className="text-xs text-red-500 mt-1">
                 {errors.onlineUrl.message}
@@ -415,9 +423,12 @@ export function StepLogistics({ onNext, isSaving }: StepProps) {
             <input
               type="url"
               {...register("externalUrl")}
-              className="w-full mt-1 p-2.5 border rounded-xl bg-zinc-50 focus:bg-white text-sm"
-              placeholder="https://zoom.us/j/... or https://ticketlink.com"
+              className="w-full mt-1 p-2.5 border rounded-xl bg-zinc-50 focus:bg-white text-sm min-w-0"
+              placeholder="https://eventbrite.com/e/... or https://lu.ma/..."
             />
+            <p className="text-xs text-zinc-500 mt-1">
+              Link to the external platform where this event is hosted or ticketed.
+            </p>
             {errors.externalUrl && (
               <p className="text-xs text-red-500 mt-1">
                 {errors.externalUrl.message}
@@ -428,30 +439,31 @@ export function StepLogistics({ onNext, isSaving }: StepProps) {
 
         {/* Event settings toggles */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div className="flex items-center justify-between p-4 bg-zinc-50 rounded-xl border">
-            <div className="space-y-0.5">
+          <div className="flex items-center justify-between p-3.5 sm:p-4 bg-zinc-50 rounded-xl border gap-3">
+            <div className="space-y-0.5 min-w-0 flex-1">
               <div className="flex items-center gap-1.5">
-                <Globe2 className="w-4 h-4 text-zinc-600" />
+                <Globe2 className="w-4 h-4 text-zinc-600 shrink-0" />
                 <label className="text-sm font-medium text-zinc-800">
                   Public Event
                 </label>
               </div>
-              <span className="text-xs text-zinc-500">
+              <span className="text-xs text-zinc-500 line-clamp-2 sm:line-clamp-none">
                 {isPublic
                   ? "Anyone can discover and view this event"
                   : "Only guests with your event link can view it"}
               </span>
             </div>
             <Switch
+              className="shrink-0"
               checked={isPublic}
               onCheckedChange={(checked) => setValue("isPublic", checked)}
             />
           </div>
 
-          <div className="flex items-center justify-between p-4 bg-zinc-50 rounded-xl border">
-            <div className="space-y-0.5">
+          <div className="flex items-center justify-between p-3.5 sm:p-4 bg-zinc-50 rounded-xl border gap-3">
+            <div className="space-y-0.5 min-w-0 flex-1">
               <div className="flex items-center gap-1.5">
-                <Users className="w-4 h-4 text-zinc-600" />
+                <Users className="w-4 h-4 text-zinc-600 shrink-0" />
                 <label className="text-sm font-medium text-zinc-800">
                   Allow RSVPs
                 </label>
@@ -461,35 +473,16 @@ export function StepLogistics({ onNext, isSaving }: StepProps) {
               </span>
             </div>
             <Switch
+              className="shrink-0"
               checked={allowRsvp}
               onCheckedChange={(checked) => setValue("allowRsvp", checked)}
             />
           </div>
-
-          {/* <div className="flex items-center justify-between p-4 bg-zinc-50 rounded-xl border">
-            <div className="space-y-0.5">
-              <div className="flex items-center gap-1.5">
-                <Camera className="w-4 h-4 text-zinc-600" />
-                <label className="text-sm font-medium text-zinc-800">
-                  Allow Moments
-                </label>
-              </div>
-              <span className="text-xs text-zinc-500">
-                Guests can upload photos &amp; clips
-              </span>
-            </div>
-            <Switch
-              checked={allowMoments}
-              onCheckedChange={(checked) => setValue("allowMoments", checked)}
-            />
-          </div> */}
-
-
         </div>
       </div>
 
-      <div className="flex justify-end gap-3 mt-6">
-        <Link href="/dashboard/events">
+      <div className="flex items-center justify-end gap-3 mt-6 pt-4 border-t border-zinc-100">
+        <Link href="/dashboard/events" className="sm:w-auto">
           <Button variant={"outline"} type="button">
             Cancel
           </Button>
@@ -497,7 +490,7 @@ export function StepLogistics({ onNext, isSaving }: StepProps) {
         <Button
           variant={"secondary"}
           type="button"
-          className="flex-1 lg:flex-initial"
+          className="flex-1 sm:flex-initial"
           onClick={handleNext}
         >
           {isSaving ? (

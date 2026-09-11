@@ -143,7 +143,7 @@ export function StepBranding({ onNext, isSaving }: StepProps) {
   };
 
   return (
-    <div className="space-y-8 max-w-3xl mx-auto">
+    <div className="space-y-6 sm:space-y-8 max-w-3xl mx-auto w-full min-w-0">
       {/* Header */}
       <div>
         <h2 className="text-xl font-bold tracking-tight text-zinc-900">
@@ -367,23 +367,25 @@ export function StepBranding({ onNext, isSaving }: StepProps) {
 
         {/* 5. Horizontal Scrollable Cards for Templates (Dynamic) */}
         <div className="space-y-2">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <label className="text-sm font-medium text-zinc-900">
               Layout Template
             </label>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               <span
                 className={cn(
                   "inline-flex items-center gap-1.5 text-xs font-semibold",
                   walletLoading ? "text-zinc-400" : "text-zinc-700",
                 )}
               >
-                <Coins className="w-3.5 h-3.5 text-amber-500" />
+                <Coins className="w-3.5 h-3.5 text-amber-500 shrink-0" />
                 {walletLoading
                   ? "Loading credits…"
                   : `${creditsBalance.toLocaleString()} credits`}
               </span>
-              <span className="text-xs text-zinc-400">Scroll to view all</span>
+              <span className="text-xs text-zinc-400 hidden xs:inline-block">
+                Scroll to view all
+              </span>
             </div>
           </div>
 
@@ -392,7 +394,7 @@ export function StepBranding({ onNext, isSaving }: StepProps) {
               <Loader2 className="w-5 h-5 animate-spin text-zinc-400" />
             </div>
           ) : (
-            <div className="flex gap-4 overflow-x-auto pb-3 pt-1 scrollbar-none snap-x snap-mandatory -mx-1 px-1">
+            <div className="w-full min-w-0 flex gap-3 sm:gap-4 overflow-x-auto pb-3 pt-1 scrollbar-none snap-x snap-mandatory -mx-1 px-1">
               {templates.map((tpl) => {
                 const isSelected = selectedTemplate === tpl.id;
                 const isDefault = tpl.id === defaultTemplateId;
@@ -527,7 +529,7 @@ export function StepBranding({ onNext, isSaving }: StepProps) {
                       onChange={(e) =>
                         setValue("theme.primaryColor", e.target.value)
                       }
-                      className="w-10 h-10 rounded-xl border cursor-pointer p-0 overflow-hidden bg-transparent"
+                      className="w-10 h-10 shrink-0 rounded-xl border cursor-pointer p-0 overflow-hidden bg-transparent"
                     />
                     <input
                       type="text"
@@ -535,7 +537,7 @@ export function StepBranding({ onNext, isSaving }: StepProps) {
                       onChange={(e) =>
                         setValue("theme.primaryColor", e.target.value)
                       }
-                      className="w-full text-sm px-3 border rounded-xl bg-white font-mono text-zinc-700"
+                      className="w-full min-w-0 flex-1 text-sm px-3 border rounded-xl bg-white font-mono text-zinc-700"
                     />
                   </div>
                 </div>
@@ -551,7 +553,7 @@ export function StepBranding({ onNext, isSaving }: StepProps) {
                       onChange={(e) =>
                         setValue("theme.backgroundColor", e.target.value)
                       }
-                      className="w-10 h-10 rounded-xl border cursor-pointer p-0 overflow-hidden bg-transparent"
+                      className="w-10 h-10 shrink-0 rounded-xl border cursor-pointer p-0 overflow-hidden bg-transparent"
                     />
                     <input
                       type="text"
@@ -559,7 +561,7 @@ export function StepBranding({ onNext, isSaving }: StepProps) {
                       onChange={(e) =>
                         setValue("theme.backgroundColor", e.target.value)
                       }
-                      className="w-full text-sm px-3 border rounded-xl bg-white font-mono text-zinc-700"
+                      className="w-full min-w-0 flex-1 text-sm px-3 border rounded-xl bg-white font-mono text-zinc-700"
                     />
                   </div>
                 </div>
@@ -593,7 +595,7 @@ export function StepBranding({ onNext, isSaving }: StepProps) {
       </div>
 
       {/* Footer Navigation */}
-      <div className="flex gap-3 pt-4 border-t justify-end">
+      <div className="flex items-center gap-3 pt-4 border-t justify-end">
         <Button
           type="button"
           variant="outline"

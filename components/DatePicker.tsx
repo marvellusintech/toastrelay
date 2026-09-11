@@ -62,17 +62,17 @@ export function DatePicker({
         <Button
           variant="outline"
           data-empty={!date}
-          className="w-full justify-between px-3 py-2 bg-input/20 text-left font-normal data-[empty=true]:text-muted-foreground"
+          className="w-full min-w-0 justify-between px-3 py-2 bg-input/20 text-left font-normal data-[empty=true]:text-muted-foreground"
         >
-          <span>
+          <span className="truncate min-w-0 flex-1 mr-2">
             {date
               ? format(date, showTime ? "PPP 'at' p" : "PPP")
               : placeholder}
           </span>
           {showTime ? (
-            <Clock className="h-4 w-4 opacity-50" />
+            <Clock className="h-4 w-4 opacity-50 shrink-0" />
           ) : (
-            <CalendarIcon className="h-4 w-4 opacity-50" />
+            <CalendarIcon className="h-4 w-4 opacity-50 shrink-0" />
           )}
         </Button>
       </PopoverTrigger>

@@ -618,7 +618,7 @@ export default function DiscoveryMasonry() {
                           ) : null}
 
                           {event.eventType && (
-                            <div className="absolute top-3 left-3 z-10 transition-opacity duration-300 group-hover:opacity-0">
+                            <div className="absolute top-2 lg:top-3 left-2 lg:left-3 z-10 transition-opacity duration-300 group-hover:opacity-0">
                               <span className="text-[10px] font-medium tracking-wide bg-white/70 backdrop-blur-md px-2 py-1 rounded-full shadow-sm text-neutral-800">
                                 {event.eventType.label || event.eventType.name}
                               </span>
@@ -626,19 +626,19 @@ export default function DiscoveryMasonry() {
                           )}
 
                           {isToday ? (
-                            <div className="absolute top-3 right-3 z-10 transition-opacity duration-300 group-hover:opacity-0">
+                            <div className="absolute right-2 lg:right-3 top-2 lg:top-3  z-10 transition-opacity duration-300 group-hover:opacity-0">
                               <Badge className="bg-green-600 text-white backdrop-blur-md text-[10px] font-semibold px-2 py-0.5 rounded-full border-0 shadow-sm hover:bg-green-600">
                                 Today
                               </Badge>
                             </div>
                           ) : isThisWeekend && !isEnded ? (
-                            <div className="absolute top-3 right-3 z-10 transition-opacity duration-300 group-hover:opacity-0">
+                            <div className="absolute top-2 lg:top-3 right-2 lg:right-3 z-10 transition-opacity duration-300 group-hover:opacity-0">
                               <Badge className="bg-indigo-600 text-white backdrop-blur-md text-[10px] font-semibold px-2 py-0.5 rounded-full border-0 shadow-sm hover:bg-indigo-600">
                                 This weekend
                               </Badge>
                             </div>
                           ) : isEnded ? (
-                            <div className="absolute top-3 right-3 z-10 transition-opacity duration-300 group-hover:opacity-0">
+                            <div className="absolute top-2 lg:top-3 right-2 lg:right-3 z-10 transition-opacity duration-300 group-hover:opacity-0">
                               <Badge
                                 variant="secondary"
                                 className="bg-neutral-900/80 text-white backdrop-blur-md text-[10px] font-semibold px-2 py-0.5 rounded-full border border-neutral-700/50 shadow-sm"
