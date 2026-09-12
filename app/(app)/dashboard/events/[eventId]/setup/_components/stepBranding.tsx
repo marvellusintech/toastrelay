@@ -43,7 +43,7 @@ import { cn } from "@/lib/utils";
 
 import { getEventTemplatesApi } from "@/lib/api/events";
 import { EventTemplate } from "@/types/response";
-// import { type EventCategory, type EventTemplate } from "@/types/response";
+import { BUILTIN_TEMPLATES } from "@/components/event/templates";
 
 const MAX_EXTRA_MEDIA = 10;
 
@@ -102,9 +102,17 @@ export function StepBranding({ onNext, isSaving }: StepProps) {
           fetched = (parsedTemplates as { data: EventTemplate[] }).data;
         }
 
-        setTemplates(fetched);
+        const merged = [...fetched];
+        for (const builtin of BUILTIN_TEMPLATES) {
+          if (!merged.some((t) => t.id === builtin.id)) {
+            merged.push(builtin);
+          }
+        }
+
+        setTemplates(merged.length > 0 ? merged : BUILTIN_TEMPLATES);
       } catch (error) {
         console.error("Failed to load event metadata:", error);
+        setTemplates(BUILTIN_TEMPLATES);
       } finally {
         setIsLoadingMeta(false);
       }
@@ -418,13 +426,23 @@ export function StepBranding({ onNext, isSaving }: StepProps) {
                         : !isDisabled && "border-transparent opacity-80 hover:opacity-100",
                     )}
                   >
-                    {tpl.preview && (
-                      <img
-                        src={getFileUrl(tpl.preview)}
-                        alt={tpl.name}
-                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                      />
-                    )}
+                    <div
+                      className="absolute inset-0"
+                      style={{
+                        backgroundColor: tpl.theme?.primaryColor || tpl.theme?.backgroundColor || "#18181b",
+                      }}
+                    >
+                      {tpl.preview && (
+                        <img
+                          src={getFileUrl(tpl.preview)}
+                          alt={tpl.name}
+                          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                          onError={(e) => {
+                            (e.target as HTMLElement).style.display = "none";
+                          }}
+                        />
+                      )}
+                    </div>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
                     {isDisabled && (
@@ -445,7 +463,8 @@ export function StepBranding({ onNext, isSaving }: StepProps) {
                           cannotAfford ? "bg-rose-500" : "bg-amber-500",
                         )}
                       >
-                        {cannotAfford ? "Insufficient" : `${tpl.priceCredits} credits`}
+                        {/* {cannotAfford ? "Insufficient" : `${tpl.priceCredits} credits`} */}
+                        {`${tpl.priceCredits} credits`}
                       </div>
                     )}
 
