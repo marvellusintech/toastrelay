@@ -44,6 +44,7 @@ import { cn } from "@/lib/utils";
 import { getEventTemplatesApi } from "@/lib/api/events";
 import { EventTemplate } from "@/types/response";
 import { BUILTIN_TEMPLATES } from "@/components/event/templates";
+import { numberWithCommas } from "@/lib/utils/helpers";
 
 const MAX_EXTRA_MEDIA = 10;
 
@@ -464,7 +465,7 @@ export function StepBranding({ onNext, isSaving }: StepProps) {
                         )}
                       >
                         {/* {cannotAfford ? "Insufficient" : `${tpl.priceCredits} credits`} */}
-                        {`${tpl.priceCredits} credits`}
+                        {`${numberWithCommas(tpl.priceCredits)} credits`}
                       </div>
                     )}
 
