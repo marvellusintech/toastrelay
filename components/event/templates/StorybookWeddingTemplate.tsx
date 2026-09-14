@@ -3181,8 +3181,8 @@ export default function StorybookWeddingTemplate({
                         className={`h-11 px-3 bg-stone-950 border border-stone-800 ${buttonRadius} text-sm text-stone-100 focus:border-amber-400 focus:outline-none`}
                       >
                         <option value="NGN">NGN (₦)</option>
-                        <option value="USD">USD ($)</option>
-                        <option value="GBP">GBP (£)</option>
+                        {/* <option value="USD">USD ($)</option> */}
+                        {/* <option value="GBP">GBP (£)</option> */}
                       </select>
                       <input
                         {...registerToast("amount")}
