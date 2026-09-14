@@ -19,6 +19,7 @@ import {
   X,
   GlassWater,
   ZoomIn,
+  Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EventShare } from "@/components/reuseables/event-share";
@@ -143,7 +144,81 @@ export default function ModernWeddingTemplate({
     ticketEvent,
     currency,
     isExternal = false,
+    eventType,
+    eventTypeId,
   } = event;
+
+  // Determine if this event is a wedding or generic celebration.
+  // Default is wedding ONLY if no event type is specified at all.
+  // If an event type is specified (via eventTypeId, eventType, etc.):
+  // - If it contains "wedding", it is a wedding.
+  // - If it is anything else (such as "anniversary", "birthday", "social", "other"),
+  //   it is strictly NOT a wedding and uses generic celebration copy.
+  const isWedding = React.useMemo(() => {
+    const rawTokens: string[] = [];
+
+    // 1. Check eventTypeId (e.g. "anniversary", "wedding", "birthday")
+    if (eventTypeId) {
+      rawTokens.push(String(eventTypeId));
+    }
+
+    // Check potential loose properties on event
+    const looseEvent = event as unknown as Record<string, unknown>;
+    if (looseEvent?.typeId && typeof looseEvent.typeId === "string") {
+      rawTokens.push(looseEvent.typeId);
+    }
+    if (looseEvent?.category && typeof looseEvent.category === "string") {
+      rawTokens.push(looseEvent.category);
+    }
+
+    // 2. Check eventType (object with id, name, label or string)
+    if (eventType) {
+      if (typeof eventType === "object" && eventType !== null) {
+        if (eventType.id) rawTokens.push(String(eventType.id));
+        if (eventType.name) rawTokens.push(String(eventType.name));
+        if (eventType.label) rawTokens.push(String(eventType.label));
+      } else if (typeof eventType === "string") {
+        rawTokens.push(eventType);
+      }
+    }
+
+    // Normalize and filter tokens
+    const normalizedTokens = rawTokens
+      .map((t) => t.trim().toLowerCase())
+      .filter(Boolean);
+
+    // If no event type token is found anywhere, default to wedding
+    if (normalizedTokens.length === 0) {
+      return true;
+    }
+
+    // An event is a wedding ONLY if at least one token includes "wedding"
+    return normalizedTokens.some((token) => token.includes("wedding"));
+  }, [eventType, eventTypeId, event]);
+
+  // Centralized dynamic event copy: wedding vs generic celebration
+  const eventCopy = React.useMemo(() => {
+    const categoryLabel = eventType?.label || eventType?.name;
+    return {
+      heroBadge: isWedding
+        ? "We Are Getting Married"
+        : categoryLabel || "Special Celebration",
+      storyBadge: isWedding ? "Our Story" : "About the Event",
+      storyHeading: isWedding ? "Join Us in Celebrating" : "About the Celebration",
+      sidebarHeader: isWedding ? "RSVP & Gifts" : "RSVP & Toasts",
+      toastButton: isWedding ? "Toast the Couple" : "Send a Toast",
+      toastSuccess: isWedding
+        ? "Thank you for your warm wish and contribution to the couple!"
+        : "Thank you for your warm wish and celebratory contribution!",
+      toastModalTitle: isWedding ? "Celebrate the Couple" : "Celebrate the Occasion",
+      toastModalSubtitle: isWedding
+        ? "Leave a sweet message, with an optional cash gift attached."
+        : "Leave a warm message, with an optional cash gift attached.",
+      toastPlaceholder: isWedding
+        ? "Wishing you a lifetime of happiness..."
+        : "Wishing you joy, celebration, and wonderful memories...",
+    };
+  }, [isWedding, eventType]);
 
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -414,7 +489,7 @@ export default function ModernWeddingTemplate({
               className="w-3.5 h-3.5 text-rose-400"
               style={accentTextStyle}
             />
-            <span style={accentTextStyle}>We Are Getting Married</span>
+            <span style={accentTextStyle}>{eventCopy.heroBadge}</span>
           </div>
 
           <h1 className="text-4xl sm:text-6xl md:text-7xl font-normal tracking-tight text-stone-50 leading-[1.15]">
@@ -454,8 +529,12 @@ export default function ModernWeddingTemplate({
                 className="flex items-center gap-2 text-rose-400 font-serif text-sm tracking-widest uppercase"
                 style={accentTextStyle}
               >
-                <Heart className="w-4 h-4 fill-rose-400/20" />
-                <span>Our Story</span>
+                {isWedding ? (
+                  <Heart className="w-4 h-4 fill-rose-400/20" />
+                ) : (
+                  <Sparkles className="w-4 h-4 text-rose-400" />
+                )}
+                <span>{eventCopy.storyBadge}</span>
               </div>
               <h2
                 className="text-2xl sm:text-3xl font-serif text-stone-100"
@@ -466,7 +545,7 @@ export default function ModernWeddingTemplate({
                       : undefined,
                 }}
               >
-                Join Us in Celebrating
+                {eventCopy.storyHeading}
               </h2>
               {description ? (
                 <div
@@ -548,7 +627,7 @@ export default function ModernWeddingTemplate({
                   Event Details
                 </span>
                 <h4 className="text-lg font-serif text-stone-100">
-                  RSVP & Gifts
+                  {eventCopy.sidebarHeader}
                 </h4>
               </div>
 
@@ -590,10 +669,17 @@ export default function ModernWeddingTemplate({
 
                 {host && (
                   <div className="flex items-start gap-3 border-t border-stone-800/60 pt-3">
-                    <Heart
-                      className="w-4 h-4 text-rose-400 shrink-0 mt-0.5"
-                      style={accentTextStyle}
-                    />
+                    {isWedding ? (
+                      <Heart
+                        className="w-4 h-4 text-rose-400 shrink-0 mt-0.5"
+                        style={accentTextStyle}
+                      />
+                    ) : (
+                      <Users
+                        className="w-4 h-4 text-rose-400 shrink-0 mt-0.5"
+                        style={accentTextStyle}
+                      />
+                    )}
                     <div>
                       <p className="font-medium text-stone-200">Listed by</p>
                       <p className="text-xs text-stone-400 mt-0.5">
@@ -674,7 +760,7 @@ export default function ModernWeddingTemplate({
                     className="w-4 h-4 mr-2 text-rose-400"
                     style={accentTextStyle}
                   />{" "}
-                  Toast the Couple
+                  {eventCopy.toastButton}
                 </Button>
               </div>
           </aside>
@@ -938,7 +1024,7 @@ export default function ModernWeddingTemplate({
                   Toast Sent!
                 </h3>
                 <p className="text-stone-300 text-sm mt-2">
-                  Thank you for your warm wish and contribution to the couple!
+                  {eventCopy.toastSuccess}
                 </p>
                 <Button
                   onClick={handleCloseToastModal}
@@ -958,10 +1044,10 @@ export default function ModernWeddingTemplate({
                     <span>Send a Toast</span>
                   </div>
                   <h3 className="text-2xl font-serif text-stone-100">
-                    Celebrate the Couple
+                    {eventCopy.toastModalTitle}
                   </h3>
                   <p className="text-xs text-stone-400">
-                    Leave a sweet message, with an optional cash gift attached.
+                    {eventCopy.toastModalSubtitle}
                   </p>
                 </div>
 
@@ -998,7 +1084,7 @@ export default function ModernWeddingTemplate({
                     <textarea
                       {...registerToast("content")}
                       rows={3}
-                      placeholder="Wishing you a lifetime of happiness..."
+                      placeholder={eventCopy.toastPlaceholder}
                       className="w-full p-3 bg-stone-950 border border-stone-800 rounded-lg text-sm text-stone-100 focus:outline-none focus:border-rose-500 resize-none"
                     />
                     {toastErrors.content && (

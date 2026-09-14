@@ -1,22 +1,12 @@
-"use client";
+import { cookies } from "next/headers";
+import { AUTH_COOKIE_NAME } from "@/lib/constants";
+import { HomeView } from "./_components/HomeView";
 
-import DiscoveryPage from "@/components/DiscoveryMasonry";
-import LandingPage from "@/components/LandingPage";
-import { useAuthStore } from "@/lib/store/useAuthStore";
-import { useState } from "react";
+export default async function DefaultPage() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(AUTH_COOKIE_NAME)?.value;
+  const isAuthenticated = Boolean(token);
 
-
-
-export default function DefaultPage() {
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-  
-  return (
-    <main>
-     {isAuthenticated ? (
-        <DiscoveryPage />
-      ) : (
-        <LandingPage />
-      )}
-    </main>
-  );
+  return <HomeView initialIsAuthenticated={isAuthenticated} />;
 }
+
