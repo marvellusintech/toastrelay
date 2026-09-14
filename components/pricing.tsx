@@ -20,8 +20,8 @@ export function Pricing() {
     ["Email", "₦4 / email"],
     // ["SMS", "₦2 / SMS"],
     ["Tickets", "5% + ₦100 / ticket"],
-    ["Toasts", "3%"],
-    ["Contributions", "2%"],
+    ["Toasts", "3% + ₦100 / transaction"],
+    ["Contributions", "2% + ₦100 / transaction"],
   ];
 
   const customFeatures = [
