@@ -474,14 +474,16 @@ export type InitializePaymentResult = {
   reference: string;
   amount: number;
   currency: string;
+  status?: string;
+  isFree?: boolean;
   quantity?: number;
   ticketSubtotal?: number;
   serviceFee?: number;
   storageMb?: number;
   costCredits?: number;
   total?: number;
-  authorizationUrl: string;
-  accessCode: string;
+  authorizationUrl?: string | null;
+  accessCode?: string | null;
 };
 
 //////////////////////

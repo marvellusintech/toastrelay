@@ -32,9 +32,17 @@ const SERVICE_FEE_PERCENT = 0.05;
 const SERVICE_FEE_FLAT_NGN = 100;
 
 function calculateFees(unitPrice: number, quantity: number, currency: string) {
-  const subtotal = unitPrice * quantity;
+  const safeUnitPrice = Math.max(0, unitPrice);
+  if (safeUnitPrice === 0) {
+    return {
+      subtotal: 0,
+      serviceFee: 0,
+      total: 0,
+    };
+  }
+  const subtotal = safeUnitPrice * quantity;
   const perTicketFee =
-    unitPrice * SERVICE_FEE_PERCENT +
+    safeUnitPrice * SERVICE_FEE_PERCENT +
     (currency === "NGN" ? SERVICE_FEE_FLAT_NGN : 0);
   const serviceFee = perTicketFee * quantity;
   return {
@@ -66,6 +74,7 @@ export default function TicketPurchaseModal({
   const [quantity, setQuantity] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isPurchasedSuccessfully, setIsPurchasedSuccessfully] = useState(false);
   const callbackUrl =
     typeof window !== "undefined"
       ? `${window.location.origin}/events/${slug}`
@@ -82,9 +91,20 @@ export default function TicketPurchaseModal({
 
   const isFree = selectedTier && Number(selectedTier.price) === 0;
 
-  if (success) {
+  const isConfirmed = success || isPurchasedSuccessfully;
+
+  if (isConfirmed) {
     return (
-      <Dialog open={open} onOpenChange={onOpenChange}>
+      <Dialog
+        open={open}
+        onOpenChange={(nextOpen) => {
+          if (!nextOpen) {
+            setIsPurchasedSuccessfully(false);
+            setError(null);
+          }
+          onOpenChange(nextOpen);
+        }}
+      >
         <DialogContent className="sm:max-w-md">
           <div className="flex flex-col items-center gap-4 py-6 text-center">
             <div className="flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
@@ -97,14 +117,15 @@ export default function TicketPurchaseModal({
               <p className="text-sm text-zinc-500 leading-relaxed max-w-xs">
                 Your ticket{quantity > 1 ? "s" : ""} have been confirmed and a
                 pass has been sent to your email.
-                {/* {" "}
-                <span className="font-semibold text-zinc-700">{email}</span>. */}
               </p>
             </div>
             <Button
               type="button"
               className="w-full"
-              onClick={() => onOpenChange(false)}
+              onClick={() => {
+                setIsPurchasedSuccessfully(false);
+                onOpenChange(false);
+              }}
             >
               Done
             </Button>
@@ -140,9 +161,18 @@ export default function TicketPurchaseModal({
         metadata: { eventName, tierName: selectedTier.name },
       });
 
-      const authUrl =
-        (res.data as Record<string, unknown>)?.authorizationUrl ||
-        (res.data as Record<string, unknown>)?.authorization_url;
+      const paymentResult = res.data;
+      const isFreeTicket =
+        paymentResult?.isFree ||
+        paymentResult?.status === "SUCCESS" ||
+        isFree ||
+        fees?.total === 0;
+      const authUrl = paymentResult?.authorizationUrl;
+
+      if (isFreeTicket && !authUrl) {
+        setIsPurchasedSuccessfully(true);
+        return;
+      }
 
       if (authUrl && typeof authUrl === "string") {
         window.location.assign(authUrl);
@@ -159,7 +189,15 @@ export default function TicketPurchaseModal({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={(nextOpen) => {
+        if (!nextOpen) {
+          setError(null);
+        }
+        onOpenChange(nextOpen);
+      }}
+    >
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Get Tickets</DialogTitle>
