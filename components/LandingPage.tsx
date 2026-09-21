@@ -9,6 +9,7 @@ import { ArrowRight } from "lucide-react";
 import { Pricing } from "@/components/pricing";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { RandomEventsGrid } from "@/components/reuseables/random-events-grid";
 
 export default function LandingPage() {
   const router = useRouter();
@@ -57,15 +58,7 @@ export default function LandingPage() {
               </div>
             }
           >
-            <video
-              src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4"
-              autoPlay
-              loop
-              muted
-              playsInline
-              poster="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=1600&auto=format&fit=crop"
-              className="mx-auto rounded-2xl object-cover h-full w-full object-left-top"
-            />
+            <RandomEventsGrid />
           </ContainerScroll>
         </motion.div>
       </AnimatePresence>

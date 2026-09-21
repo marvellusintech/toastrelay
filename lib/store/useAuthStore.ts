@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { User } from '../../types/response';
-import { AUTH_COOKIE_NAME } from '@/lib/constants';
-import { removeAuthToken } from '../auth-cookies';
+import { hasAuthToken, removeAuthToken } from '../auth-cookies';
 
 interface AuthState {
   user: User | null;
@@ -10,13 +9,6 @@ interface AuthState {
   setAuth: (user: User | null) => void;
   setLoading: (loading: boolean) => void;
   logout: () => void;
-}
-
-
-function hasAuthToken(): boolean {
-  if (typeof document === "undefined") return false;
-  const match = document.cookie.match(new RegExp(`(?:^|; )${AUTH_COOKIE_NAME}=([^;]*)`));
-  return !!match && match[1] !== "";
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
