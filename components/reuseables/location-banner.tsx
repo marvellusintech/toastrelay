@@ -41,7 +41,7 @@ export function LocationBanner({
         <div className="flex items-center gap-2.5 min-w-0 flex-1">
           <div
             className={cn(
-              "w-7 h-7 rounded-lg shrink-0 flex items-center justify-center transition-colors",
+              " w-7 h-7 rounded-lg shrink-0 hidden md:flex items-center justify-center transition-colors",
               isActive
                 ? "bg-teal-500/10 text-teal-600 dark:text-teal-400"
                 : "bg-neutral-200/70 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400",

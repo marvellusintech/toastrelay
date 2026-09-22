@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useRouter } from "next/navigation";
 import {
   Search,
+  MoreHorizontal,
   Loader2,
   Ticket,
   CalendarDays,
@@ -11,9 +12,7 @@ import {
   MapPin,
   Plus,
   Navigation,
-  X,
 } from "lucide-react";
-import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
@@ -25,11 +24,11 @@ import { getFileUrl } from "@/lib/utils/getFileUrl";
 import Link from "next/link";
 import { format, addDays } from "date-fns";
 import { LocationBanner } from "@/components/reuseables/location-banner";
-import { useLocationStore } from "@/lib/store/useLocationStore";
 import {
   getEventDistance,
   formatDistance,
   reverseGeocode,
+  type UserCoordinates,
 } from "@/lib/utils/location";
 
 const CATEGORIES = [
@@ -222,31 +221,40 @@ export default function DiscoveryMasonry() {
   const [events, setEvents] = useState<EventDetails[]>([]);
   const [page, setPage] = useState<number>(0);
 
-  // Location & Proximity Sorting State (persisted across refreshes)
-  const {
-    userLocation,
-    isLocationSortActive,
-    isBannerDismissed,
-    setUserLocation,
-    setIsBannerDismissed,
-    resetLocation,
-  } = useLocationStore();
-
+  // Location & Proximity Sorting States
+  const [userLocation, setUserLocation] = useState<UserCoordinates | null>(null);
   const [isLocating, setIsLocating] = useState(false);
+  const [isLocationSortActive, setIsLocationSortActive] = useState(false);
   const [locationError, setLocationError] = useState<string | null>(null);
+  const [isBannerDismissed, setIsBannerDismissed] = useState(false);
+
+  // Restore saved location if available
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("toastrelay_user_location");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (
+          parsed &&
+          typeof parsed.latitude === "number" &&
+          typeof parsed.longitude === "number"
+        ) {
+          setUserLocation(parsed);
+        }
+      }
+    } catch {
+      // Ignore localStorage errors
+    }
+  }, []);
 
   const handleUseLocation = useCallback(() => {
-    // Immediately dismiss the banner so it leaves the screen
-    setIsBannerDismissed(true);
-
     if (typeof window === "undefined" || !("geolocation" in navigator)) {
-      toast.error("Geolocation is not supported by your browser.");
+      setLocationError("Geolocation is not supported by your browser.");
       return;
     }
 
     setIsLocating(true);
     setLocationError(null);
-    const toastId = toast.loading("Finding events near you...");
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
@@ -256,13 +264,18 @@ export default function DiscoveryMasonry() {
         try {
           const coords = await reverseGeocode(lat, lon);
           setUserLocation(coords);
-          toast.success(
-            `Showing events near ${coords.city || coords.formattedAddress || "your location"}`,
-            { id: toastId },
-          );
+          setIsLocationSortActive(true);
+          try {
+            localStorage.setItem(
+              "toastrelay_user_location",
+              JSON.stringify(coords),
+            );
+          } catch {
+            // Ignore storage errors
+          }
         } catch {
           setUserLocation({ latitude: lat, longitude: lon });
-          toast.success("Showing events near your location", { id: toastId });
+          setIsLocationSortActive(true);
         } finally {
           setIsLocating(false);
         }
@@ -270,26 +283,25 @@ export default function DiscoveryMasonry() {
       (err) => {
         setIsLocating(false);
         if (err.code === 1) {
-          toast.error(
-            "Location access was denied. Please allow access in browser settings.",
-            { id: toastId },
+          setLocationError(
+            "Location permission was denied. Please allow access in browser settings.",
           );
         } else if (err.code === 2) {
-          toast.error("Position unavailable. Please try again.", { id: toastId });
+          setLocationError("Position unavailable. Please try again.");
         } else if (err.code === 3) {
-          toast.error("Location request timed out. Please try again.", { id: toastId });
+          setLocationError("Location request timed out. Please try again.");
         } else {
-          toast.error("Unable to retrieve your location.", { id: toastId });
+          setLocationError("Unable to retrieve your location.");
         }
       },
       { enableHighAccuracy: false, timeout: 10000, maximumAge: 600000 },
     );
-  }, [setIsBannerDismissed, setUserLocation]);
+  }, []);
 
   const handleResetLocation = useCallback(() => {
-    resetLocation();
+    setIsLocationSortActive(false);
     setLocationError(null);
-  }, [resetLocation]);
+  }, []);
 
   // Sort events: proximity sort when location is active, chronological otherwise
   const sortedEvents = useMemo(() => {
@@ -628,19 +640,31 @@ export default function DiscoveryMasonry() {
                   </button>
                 ))}
 
-                {isLocationSortActive && (
-                  <div className="inline-flex items-center gap-1.5 rounded-full pl-3 pr-2 py-1 text-xs font-semibold bg-teal-50 dark:bg-teal-950/50 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800 transition whitespace-nowrap">
-                    <Navigation className="w-3 h-3 text-teal-600 animate-pulse" />
-                    <span>Near {userLocation?.city || "You"}</span>
-                    <button
-                      type="button"
-                      onClick={handleResetLocation}
-                      title="Clear location filter"
-                      className="p-0.5 rounded-full hover:bg-teal-200/60 dark:hover:bg-teal-800/60 text-teal-600 dark:text-teal-300 transition cursor-pointer"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </div>
+                {isBannerDismissed && (
+                  <button
+                    type="button"
+                    onClick={() => setIsBannerDismissed(false)}
+                    className={cn(
+                      "inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-semibold transition whitespace-nowrap cursor-pointer",
+                      isLocationSortActive
+                        ? "bg-teal-50 dark:bg-teal-950/50 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800 hover:bg-teal-100"
+                        : "bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200",
+                    )}
+                  >
+                    <Navigation
+                      className={cn(
+                        "w-3 h-3",
+                        isLocationSortActive
+                          ? "text-teal-600 animate-pulse"
+                          : "text-neutral-500",
+                      )}
+                    />
+                    <span>
+                      {isLocationSortActive
+                        ? `Near ${userLocation?.city || "You"}`
+                        : "Near you"}
+                    </span>
+                  </button>
                 )}
               </div>
             </section>
@@ -648,8 +672,8 @@ export default function DiscoveryMasonry() {
         </div>
 
         {/* Location Banner */}
-        {!isBannerDismissed && !isLocationSortActive && (
-          <div className="px-2 pt-2 pb-1">
+        {!isBannerDismissed && (
+          <div className="px-2 pt-4">
             <LocationBanner
               onUseLocation={handleUseLocation}
               onResetLocation={handleResetLocation}
@@ -667,7 +691,7 @@ export default function DiscoveryMasonry() {
             No events found matching your criteria.
           </div>
         ) : (
-          <section className="px-2 mt-2 flex gap-4 items-start">
+          <section className="px-2 mt-4 flex gap-4 items-start">
             {columnEvents.map((colEvents, colIdx) => (
               <div key={colIdx} className="flex-1 flex flex-col gap-4 min-w-0">
                 {colEvents.map((event) => {
