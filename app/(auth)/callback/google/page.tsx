@@ -24,20 +24,8 @@ function GoogleCallbackContent() {
   const searchParams = useSearchParams();
   const setAuth = useAuthStore((state) => state.setAuth);
 
-  const code = searchParams.get("code");
-  const state = searchParams.get("state");
-  const error = searchParams.get("error");
-
-  const paramError = error
-    ? `Authentication failed: ${error}`
-    : !code || !state
-      ? "Invalid callback URL configuration. Required parameters are missing."
-      : null;
-
-  const [status, setStatus] = useState<"loading" | "success" | "error">(
-    paramError ? "error" : "loading"
-  );
-  const [errorMessage, setErrorMessage] = useState<string | null>(paramError);
+  const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isTakingLonger, setIsTakingLonger] = useState(false);
 
   // Prevent multiple calls within the same component mount
@@ -53,11 +41,6 @@ function GoogleCallbackContent() {
   }, []);
 
   useEffect(() => {
-    if (paramError) {
-      toast.error(paramError);
-      return;
-    }
-
     if (isHandshakeTriggered.current) return;
 
     // If the user already has an active auth session (e.g. from hot reload or prior completed handshake),
@@ -71,30 +54,50 @@ function GoogleCallbackContent() {
       return;
     }
 
+    const code = searchParams.get("code");
+    const state = searchParams.get("state");
+    const error = searchParams.get("error");
+
+    if (error) {
+      const msg = `Authentication failed: ${error}`;
+      setStatus("error");
+      setErrorMessage(msg);
+      toast.error(msg);
+      return;
+    }
+
+    if (!code || !state) {
+      const msg = "Invalid callback URL configuration. Required parameters are missing.";
+      setStatus("error");
+      setErrorMessage(msg);
+      toast.error(msg);
+      return;
+    }
+
+    const savedState = sessionStorage.getItem("oauth_state");
+    const codeVerifier = sessionStorage.getItem("pkce_verifier");
+
+    // Check if an existing in-flight handshake promise already exists for this code
+    const existingHandshake = handshakePromiseCache.get(code);
+
+    if (!existingHandshake && (state !== savedState || !codeVerifier)) {
+      const msg = "Security validation failed. Cross-site request detected.";
+      setStatus("error");
+      setErrorMessage(msg);
+      toast.error(msg);
+      return;
+    }
+
     isHandshakeTriggered.current = true;
 
     const runHandshake = async () => {
-      const savedState = sessionStorage.getItem("oauth_state");
-      const codeVerifier = sessionStorage.getItem("pkce_verifier");
-
-      // Check if an existing in-flight handshake promise already exists for this code
-      const existingHandshake = handshakePromiseCache.get(code!);
-
-      if (!existingHandshake && (state !== savedState || !codeVerifier)) {
-        const msg = "Security validation failed. Cross-site request detected.";
-        setStatus("error");
-        setErrorMessage(msg);
-        toast.error(msg);
-        return;
-      }
-
       try {
-        let handshakePromise = handshakePromiseCache.get(code!);
+        let handshakePromise = handshakePromiseCache.get(code);
 
         if (!handshakePromise) {
           handshakePromise = (async () => {
             const apiResponse = await socialAuthApi({
-              token: code!,
+              token: code,
               codeVerifier: codeVerifier ?? undefined,
               provider: SocialProvider.GOOGLE,
             });
@@ -128,7 +131,7 @@ function GoogleCallbackContent() {
             return { token, user, tokenExpiresOn };
           })();
 
-          handshakePromiseCache.set(code!, handshakePromise);
+          handshakePromiseCache.set(code, handshakePromise);
         }
 
         await handshakePromise;
@@ -145,7 +148,7 @@ function GoogleCallbackContent() {
           router.replace("/dashboard");
         }
       } catch (err) {
-        handshakePromiseCache.delete(code!);
+        handshakePromiseCache.delete(code);
         isHandshakeTriggered.current = false;
         const msg = err instanceof Error ? err.message : "Server authentication failed.";
         setStatus("error");
@@ -155,7 +158,7 @@ function GoogleCallbackContent() {
     };
 
     runHandshake();
-  }, [paramError, code, state, router, setAuth]);
+  }, [searchParams, router, setAuth]);
 
   return (
     <div className="flex min-h-screen w-full items-center justify-center bg-[#FAF9F6] px-4 py-12">
@@ -166,7 +169,7 @@ function GoogleCallbackContent() {
               <Loader2 className="h-10 w-10 animate-spin text-neutral-900" />
             </div>
             <div className="space-y-1.5">
-              <h2 className="text-xl font-bold font-display text-neutral-900 tracking-tight">
+              <h2 className="text-xl font-bold font-body text-neutral-900 tracking-tight">
                 Completing secure handshake...
               </h2>
               <p className="text-sm font-medium text-neutral-500 font-sans">
@@ -212,7 +215,7 @@ function GoogleCallbackContent() {
               <CheckCircle2 className="h-8 w-8 text-emerald-600" />
             </div>
             <div className="space-y-1.5">
-              <h2 className="text-xl font-bold font-display text-neutral-900 tracking-tight">
+              <h2 className="text-xl font-bold font-body text-neutral-900 tracking-tight">
                 Authentication Successful
               </h2>
               <p className="text-sm font-medium text-neutral-500 font-sans">
@@ -241,7 +244,7 @@ function GoogleCallbackContent() {
               <AlertCircle className="h-8 w-8 text-red-600" />
             </div>
             <div className="space-y-1.5">
-              <h2 className="text-xl font-bold font-display text-neutral-900 tracking-tight">
+              <h2 className="text-xl font-bold font-body text-neutral-900 tracking-tight">
                 Authentication Failed
               </h2>
               <p className="text-sm text-neutral-600 font-sans">
@@ -250,7 +253,7 @@ function GoogleCallbackContent() {
             </div>
             <div className="pt-2">
               <Button
-                variant="default"
+                variant="secondary"
                 className="w-full"
                 onClick={() => router.push("/login")}
               >
