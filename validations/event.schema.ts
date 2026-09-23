@@ -14,6 +14,7 @@ export type CreateEventValues = z.infer<typeof createEventSchema>;
 
 export const logisticsBaseSchema = z.object({
   name: z.string().min(3, "Event name must be at least 3 characters"),
+  eventTypeId: z.string().min(1, "Please select an event category"),
   slug: z
     .string()
     .min(3, "Slug must be at least 3 characters")
@@ -31,7 +32,6 @@ export const logisticsBaseSchema = z.object({
     .url("Please enter a valid URL")
     .optional()
     .or(z.literal("")),
-  description: z.string().min(17, "Description must be at least 10 characters"),
   format: z.enum(["PHYSICAL", "ONLINE", "HYBRID"]).default("PHYSICAL"),
   onlineUrl: z
     .string()
@@ -46,8 +46,7 @@ export const logisticsBaseSchema = z.object({
 export const brandingSchema = z.object({
   coverImage: z.string().min(1, "Please upload a cover banner image"),
   extraMedia: z.array(z.string()).default([]), // Defaults to an empty array for clean list operations
-
-  eventTypeId: z.string().min(1, "Please select an event category"),
+  description: z.string().min(17, "Description must be at least 10 characters"),
   templateId: z.string().min(1, "Please select a base layout template"),
   isCustomTheme: z.boolean().default(false),
   theme: z.object({

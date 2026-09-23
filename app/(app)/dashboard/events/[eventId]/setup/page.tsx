@@ -34,12 +34,13 @@ const ALL_WIZARD_STEPS = [
 const STEP_VALIDATION: Record<string, FieldPath<WizardFormValues>[]> = {
   logistics: [
     "name",
+    "eventTypeId",
     "slug",
     "startDate",
     "endDate",
     "format",
   ],
-  branding: ["eventTypeId", "templateId", "description", "coverImage"],
+  branding: ["templateId", "description", "coverImage"],
   ticketing: ["ticketingData.tiers"],
   contributions: ["contributionsData.items"],
   review: [],
@@ -171,7 +172,7 @@ function EventSetupWizard({ params }: PageProps) {
           allowRsvp: Boolean(eventData.allowRsvp ?? true),
           allowMoments: Boolean(eventData.allowMoments ?? true),
           allowToasts: Boolean(eventData.allowToasts ?? true),
-          eventTypeId: eventData.eventTypeId ?? "",
+          eventTypeId: eventData.eventTypeId ?? eventData.eventType?.id ?? "",
           templateId: eventData.templateId ?? "",
           isCustomTheme: Boolean(eventData.isCustomTheme),
           theme: parsedTheme || {

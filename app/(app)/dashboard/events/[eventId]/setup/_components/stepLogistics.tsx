@@ -80,6 +80,7 @@ export function StepLogistics({ onNext, isSaving }: StepProps) {
   const handleNext = async () => {
     const fieldsToValidate: FieldPath<WizardFormValues>[] = [
       "name",
+      "eventTypeId",
       "slug",
       "startDate",
       "endDate",
@@ -190,7 +191,10 @@ export function StepLogistics({ onNext, isSaving }: StepProps) {
                     role="combobox"
                     aria-expanded={openCategory}
                     disabled={isLoadingMeta}
-                    className="w-full justify-between h-11 bg-white border-zinc-200 hover:bg-zinc-50 text-left font-normal"
+                    className={cn(
+                      "w-full justify-between h-11 bg-white border-zinc-200 hover:bg-zinc-50 text-left font-normal",
+                      errors.eventTypeId && "border-red-500",
+                    )}
                   >
                     {isLoadingMeta ? (
                       <span className="flex items-center gap-2 text-zinc-400">

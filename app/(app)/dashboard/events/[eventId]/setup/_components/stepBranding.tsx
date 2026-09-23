@@ -141,7 +141,6 @@ export function StepBranding({ onNext, isSaving }: StepProps) {
 
   const handleNext = async () => {
     const isValid = await trigger([
-      "eventTypeId",
       "templateId",
       "description",
       "coverImage",
