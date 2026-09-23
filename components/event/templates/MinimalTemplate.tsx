@@ -534,11 +534,11 @@ export default function MinimalTemplate({
           </div>
 
           {/* Main Content Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+          <div className="pb-8 grid grid-cols-1 md:grid-cols-3 gap-10">
             {/* Left Column */}
             <div className="md:col-span-2 space-y-8">
               {/* Description */}
-              <div className="space-y-4">
+              <div className="space-y-4 ">
                 <h3 className="text-lg font-bold text-zinc-900">Description</h3>
                 {description ? (
                   <div
